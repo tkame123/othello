@@ -1,0 +1,7 @@
+board:
+  size: 4
+style:
+  color:
+    general: d50080
+  zindex:
+    progress: 999
