@@ -5,11 +5,13 @@ import {
     GameActionType,
     ICallbackCreateGameAction,
     ICallbackUpdateGameAction,
+    ICallbackFinishGameAction,
 } from "../action/game_action";
 
 const initialState: GameState = {
     game: null,
     gameTree: null,
+    score: null,
     isLoading: false,
 };
 
@@ -20,6 +22,7 @@ const gameReducer: Reducer<GameState, GameDetailAction> = (state = initialState,
             return Object.assign({}, state, {
                 game: state.game,
                 gameTree: state.gameTree,
+                score: state.score,
                 isLoading: true,
             });
         }
@@ -29,12 +32,14 @@ const gameReducer: Reducer<GameState, GameDetailAction> = (state = initialState,
                 return Object.assign({}, state, {
                     game: _action.item ? _action.item.game : null,
                     gameTree: _action.item ? _action.item.gameTree : null,
+                    score: state.score,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     game: state.game,
                     gameTree: state.gameTree,
+                    score: state.score,
                     isLoading: false,
                 });
             }
@@ -44,6 +49,7 @@ const gameReducer: Reducer<GameState, GameDetailAction> = (state = initialState,
             return Object.assign({}, state, {
                 game: state.game,
                 gameTree: state.gameTree,
+                score: state.score,
                 isLoading: true,
             });
         }
@@ -53,12 +59,41 @@ const gameReducer: Reducer<GameState, GameDetailAction> = (state = initialState,
                 return Object.assign({}, state, {
                     game: _action.item ? _action.item.game : null,
                     gameTree: _action.item ? _action.item.gameTree : null,
+                    score: state.score,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     game: state.game,
                     gameTree: state.gameTree,
+                    score: state.score,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case GameActionType.REQUEST_FINISH_GAME: {
+            return Object.assign({}, state, {
+                game: state.game,
+                gameTree: state.gameTree,
+                score: state.score,
+                isLoading: true,
+            });
+        }
+        case GameActionType.CALLBACK_FINISH_GAME: {
+            const _action = action as ICallbackFinishGameAction;
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    game: _action.item ? _action.item.game : null,
+                    gameTree: state.gameTree,
+                    score: _action.item ? _action.item.score : null,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    game: state.game,
+                    gameTree: state.gameTree,
+                    score: state.score,
                     isLoading: false,
                 });
             }

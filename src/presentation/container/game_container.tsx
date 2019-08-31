@@ -11,7 +11,7 @@ import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
 import {IRequestCreateGameActionItem, IRequestUpdateGameActionItem} from "../action/game_action_item";
 import {User} from "../../domain/model/user";
-import {Game, GameTree} from "../../domain/model/game";
+import {Game, GameTree, Score} from "../../domain/model/game";
 import {config} from "../../util/config";
 import GameBoard from "../component/gameboard";
 import Progress from "../component/common/progress";
@@ -43,12 +43,11 @@ export class GameContainer extends React.Component <IProps, IState> {
         this.props.dispatcher.createGame(req);
     }
 
-    // ToDo：なぜか初期のIsloadingの変化が取れない。。
-    // public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
-    //     // init処理の終了
-    //     const isInitFinished: boolean = this.state.isInit && !this.props.state.isLoading && prevProps.state.isLoading;
-    //     if (isInitFinished) { return this.setState({isInit: false}) }
-    // }
+    public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
+        // init処理の終了
+        const isInitFinished: boolean = this.state.isInit && !this.props.state.isLoading && prevProps.state.isLoading;
+        if (isInitFinished) { return this.setState({isInit: false}) }
+    }
 
     public render(): JSX.Element {
 
@@ -59,6 +58,7 @@ export class GameContainer extends React.Component <IProps, IState> {
 
         const game: Game | null = state.game;
         const gameTree: GameTree | null = state.gameTree;
+        const score: Score | null = state.score;
 
         if (isInit) { return <Progress/>}
         if (!game || !gameTree) { return <div>初期化失敗</div>}
@@ -69,19 +69,28 @@ export class GameContainer extends React.Component <IProps, IState> {
                 size={size}
                 game={game}
                 gameTree={gameTree}
+                score={score}
+                handleCreateNewGame={this.handleCreateNewGame}
                 handleUpdateGameTree={this.handleUpdateGameTree}
             />
         )
 
     };
 
+    private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {
+        event.preventDefault();
+        const playerWhite: User = User.New("white@local");
+        const playerBlack: User = User.New("black@local");
+        const req: IRequestCreateGameActionItem = { playerWhite, playerBlack }
+        this.props.dispatcher.createGame(req);
+    };
+
     private handleUpdateGameTree = (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        // ToDO：エラー処理
         if (!this.props.state.game) { throw new Error("")}
         const req: IRequestUpdateGameActionItem = { game: this.props.state.game ,gameTreePromise: gameTreePromise};
         this.props.dispatcher.updateGame(req);
-    }
+    };
 
 }
 

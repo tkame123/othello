@@ -2,12 +2,14 @@ import {Action} from "redux";
 
 import{
     IRequestCreateGameActionItem,
-    IRequestUpdateGameActionItem
+    IRequestUpdateGameActionItem,
+    IRequestFinishGameActionItem,
 } from "./game_action_item";
 
 import{
     ICallbackCreateGameActionItem,
     ICallbackUpdateGameActionItem,
+    ICallbackFinishGameActionItem,
 } from "./game_action_item";
 
 export enum GameActionType {
@@ -16,6 +18,9 @@ export enum GameActionType {
 
     REQUEST_UPDATE_GAME = "GAME_REQUEST_UPDATE_GAME",
     CALLBACK_UPDATE_GAME = "GAME_CALLBACK_UPDATE_GAME",
+
+    REQUEST_FINISH_GAME = "GAME_REQUEST_FINISH_GAME",
+    CALLBACK_FINISH_GAME = "GAME_CALLBACK_FINISH_GAME",
 
 }
 
@@ -39,11 +44,23 @@ export interface ICallbackUpdateGameAction extends Action {
     item?: ICallbackUpdateGameActionItem;
 }
 
+export interface IRequestFinishGameAction extends Action {
+    type: GameActionType.REQUEST_FINISH_GAME;
+    item: IRequestFinishGameActionItem;
+}
+export interface ICallbackFinishGameAction extends Action {
+    type: GameActionType.CALLBACK_FINISH_GAME;
+    isSuccess: boolean;
+    item?: ICallbackFinishGameActionItem;
+}
+
 export type GameDetailAction =
     IRequestCreateGameAction |
     ICallbackCreateGameAction |
     IRequestUpdateGameAction |
-    ICallbackUpdateGameAction;
+    ICallbackUpdateGameAction |
+    IRequestFinishGameAction |
+    ICallbackFinishGameAction;
 
 export interface IGameActionCreator {
 
@@ -62,6 +79,14 @@ export interface IGameActionCreator {
         isSuccess: boolean,
         item?: ICallbackUpdateGameActionItem,
     ): ICallbackUpdateGameAction;
+
+    requestFinishGameAction(
+        item: IRequestFinishGameActionItem,
+    ): IRequestFinishGameAction;
+    callbackFinishGameAction(
+        isSuccess: boolean,
+        item?: ICallbackFinishGameActionItem,
+    ): ICallbackFinishGameAction;
 
 }
 
@@ -100,6 +125,25 @@ class ActionCreator implements IGameActionCreator {
     ): ICallbackUpdateGameAction => {
         return {
             type: GameActionType.CALLBACK_UPDATE_GAME,
+            isSuccess,
+            item,
+        };
+    };
+
+    public requestFinishGameAction = (
+        item: IRequestFinishGameActionItem,
+    ): IRequestFinishGameAction => {
+        return {
+            type: GameActionType.REQUEST_FINISH_GAME,
+            item,
+        };
+    };
+    public callbackFinishGameAction = (
+        isSuccess: boolean,
+        item?: ICallbackFinishGameActionItem,
+    ): ICallbackFinishGameAction => {
+        return {
+            type: GameActionType.CALLBACK_FINISH_GAME,
             isSuccess,
             item,
         };

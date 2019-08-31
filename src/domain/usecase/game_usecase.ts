@@ -1,6 +1,6 @@
 import {Board, State} from "../model/board";
 import {config} from "../../util/config";
-import {Cell, GameTree, Move, Player} from "../model/game";
+import {Cell, GameTree, Move, Player, Score} from "../model/game";
 
 const size: number = config().board.size;
 
@@ -9,6 +9,8 @@ export interface IGameUseCase {
     makeGameTree(board: Board, player: Player, wasPassed: boolean, nest: number) : GameTree;
 
     nextGameTree(promise: any): GameTree;
+
+    finishGame(board: Board) : Score;
 
     listPossibleMoves(board: Board, player: Player, wasPassed: boolean, nest :number): Move[];
 
@@ -35,6 +37,24 @@ class GameUseCase implements IGameUseCase {
             }
             return result;
         };
+    };
+
+    public finishGame = (board: Board): Score => {
+        let whiteScore: number = 0;
+        let blackScore: number = 0;
+
+        [...Array(size)].forEach((item, y) => {
+            [...Array(size)].forEach((item, x) => {
+                const disk: State = board.boardState[[x, y].toString()];
+                if (disk === State.State_White) {
+                    whiteScore++
+                }
+                if (disk === State.State_Black) {
+                    blackScore++
+                }
+            })
+        });
+        return {whiteScore: whiteScore, blackScore: blackScore}
     };
 
     public makeGameTree = (board: Board, player: Player, wasPassed: boolean, nest: number): GameTree => {
@@ -79,7 +99,6 @@ class GameUseCase implements IGameUseCase {
 
         [...Array(size)].forEach((item, y) => {
             [...Array(size)].forEach((item, x) => {
-                console.log(`turn:${nest} player:${player} point:${x}${y}`);
                 const cell: Cell = {x: x, y: y};
                 const vulnerableCells: Cell[] = this.listVulnerableCells(board, cell, player);
                 if (this.canAttack(vulnerableCells)) {

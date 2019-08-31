@@ -1,23 +1,23 @@
 import React from 'react';
 import styled, {css} from "styled-components";
 import {Board, State} from "../../domain/model/board";
-import {Game, GameTree, Move} from "../../domain/model/game";
+import {Game, GameTree, Move, Score} from "../../domain/model/game";
 import Progress from "./common/progress";
-// import {createGameUsecase, IGameUseCase} from "../../domain/usecase/game_usecase";
-// const gameUseCase: IGameUseCase = createGameUsecase();
 
 interface IProps {
     isLoading: boolean;
     size: number;
     game: Game;
+    score: Score | null;
     gameTree: GameTree;
+    handleCreateNewGame: (event: React.MouseEvent<HTMLButtonElement>) => void;
     handleUpdateGameTree: (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const GameBoard: React.FC<IProps> = (props) => {
 
     const {isLoading, size} = props;
-    const {game, gameTree, handleUpdateGameTree} = props;
+    const {game, gameTree, score, handleCreateNewGame, handleUpdateGameTree} = props;
 
     const board: Board = game.board;
 
@@ -25,7 +25,13 @@ const GameBoard: React.FC<IProps> = (props) => {
         <>
             {isLoading && <Progress/>}
 
-            {gameTree.player === State.State_White ? "白の番です"　: "黒の番です" }
+            <button onClick={handleCreateNewGame}>New Game</button>
+
+            {score
+                ? `白の得点：${score.whiteScore} 黒の得点：${score.blackScore} `
+                : gameTree.player === State.State_White ? "白の番です"　: "黒の番です"
+            }
+
 
             <table>
                 <tbody>
@@ -105,7 +111,7 @@ const Disk = styled.span`
     width: 2em;
     height: 2em;
     border-radius: 1em;
-    margin: 0.25em;  
+    margin: 0.25em;
     ${(props:ComponentProps) => props.state === State.State_Empty && css`
     `}
     ${(props:ComponentProps) => props.state === State.State_Black && css`

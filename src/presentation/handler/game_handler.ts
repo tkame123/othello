@@ -5,11 +5,18 @@ import {
     GameActionType,
     IGameActionCreator,
     IRequestCreateGameAction,
+    IRequestFinishGameAction,
     IRequestUpdateGameAction,
 } from "../action/game_action";
+import {
+    IRequestFinishGameActionItem,
+    ICallbackCreateGameActionItem,
+    ICallbackUpdateGameActionItem,
+    ICallbackFinishGameActionItem,
+} from "../action/game_action_item";
+
 import {createGameUsecase, IGameUseCase} from "../../domain/usecase/game_usecase";
-import {Game, GameTree, Player} from "../../domain/model/game";
-import {ICallbackCreateGameActionItem, ICallbackUpdateGameActionItem} from "../action/game_action_item";
+import {Game, GameStatus, GameTree, Player, Score} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 
 const gameUsecase: IGameUseCase = createGameUsecase();
@@ -42,12 +49,40 @@ function* handleUpdateGameInGame() {
                 action.item.game.playerBlack,
                 action.item.game.gameStatus,
                 action.item.game.createdAt);
+            // 終了判定 && 終了処理
+            let isFinished: boolean = false;
+            if (gameTree.moves === []) { isFinished = true }
+            if (gameTree.moves.length === 1 && gameTree.moves[0].cell === null) { isFinished = true }
+            if (isFinished) {
+                const req: IRequestFinishGameActionItem = { game };
+                yield put(actionCreator.requestFinishGameAction(req));
+            }
+
             const res: ICallbackUpdateGameActionItem = { game, gameTree};
             yield put(actionCreator.callbackUpdateGameAction(true, res));
         } catch (error) {
             yield put(actionCreator.callbackUpdateGameAction(false));
         }
+    }
+}
 
+function* handleFinishGameInGame() {
+    while (true) {
+        try {
+            const action: IRequestFinishGameAction = yield take(GameActionType.REQUEST_FINISH_GAME);
+            const game: Game = Game.From(
+                action.item.game.id,
+                action.item.game.board,
+                action.item.game.playerWhite,
+                action.item.game.playerBlack,
+                GameStatus.GameStatus_End,
+                action.item.game.createdAt);
+            const score: Score = finishGame(game.board);
+            const res: ICallbackFinishGameActionItem = { game, score};
+            yield put(actionCreator.callbackFinishGameAction(true, res));
+        } catch (error) {
+            yield put(actionCreator.callbackFinishGameAction(false));
+        }
     }
 }
 
@@ -59,5 +94,8 @@ const nextGameTree = (promise: any):GameTree => {
     return gameUsecase.nextGameTree(promise);
 };
 
+const finishGame = (board: Board):Score => {
+    return gameUsecase.finishGame(board);
+};
 
-export {handleCreateGameInGame, handleUpdateGameInGame}
+export {handleCreateGameInGame, handleUpdateGameInGame, handleFinishGameInGame}

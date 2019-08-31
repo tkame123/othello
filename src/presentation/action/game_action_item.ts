@@ -1,5 +1,6 @@
 import {User} from "../../domain/model/user";
-import {Game, GameTree, Move, Player} from "../../domain/model/game";
+import {Game, GameTree, Score} from "../../domain/model/game";
+import {State} from "../../domain/model/board";
 
 export interface IRequestCreateGameActionItem {
     playerWhite: User,
@@ -18,4 +19,13 @@ export interface IRequestUpdateGameActionItem {
 export interface ICallbackUpdateGameActionItem {
     game: Game,
     gameTree: GameTree,
+}
+
+export interface IRequestFinishGameActionItem {
+    game: Game,
+}
+
+export interface ICallbackFinishGameActionItem {
+    game: Game,
+    score: Score,
 }

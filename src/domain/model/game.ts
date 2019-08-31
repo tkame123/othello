@@ -12,6 +12,7 @@ export type Player = State.State_White | State.State_Black;
 export type GameTree ={board: Board, player: Player, moves: Move[], nest: number}
 export type Cell = {x: number, y: number}
 export type Move = {isPassingMove: boolean, cell: Cell | null, gameTreePromise: GameTree | null};
+export type Score = { whiteScore: number, blackScore: number }
 
 export class Game {
 
