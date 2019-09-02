@@ -48,6 +48,7 @@ function* handleUpdateGameInGame() {
                 action.item.game.playerWhite,
                 action.item.game.playerBlack,
                 action.item.game.gameStatus,
+                action.item.game.updatedAt,
                 action.item.game.createdAt);
             // 終了判定 && 終了処理
             let isFinished: boolean = false;
@@ -76,6 +77,7 @@ function* handleFinishGameInGame() {
                 action.item.game.playerWhite,
                 action.item.game.playerBlack,
                 GameStatus.GameStatus_End,
+                action.item.game.updatedAt,
                 action.item.game.createdAt);
             const score: Score = finishGame(game.board);
             const res: ICallbackFinishGameActionItem = { game, score};

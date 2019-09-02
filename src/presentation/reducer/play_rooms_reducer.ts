@@ -3,8 +3,8 @@ import {PlayRoomsState} from "../store/play_rooms_state";
 import {
     PlayRoomsAction,
     PlayRoomsActionType,
+    IListenerOnPlayRoomsAction,
     ICallbackGetPlayRoomsAction,
-    ICallbackCreatePlayRoomAction,
 } from "../action/play_rooms_action";
 
 const initialState: PlayRoomsState = {
@@ -14,6 +14,21 @@ const initialState: PlayRoomsState = {
 
 const playRoomsReducer: Reducer<PlayRoomsState, PlayRoomsAction> = (state = initialState, action: PlayRoomsAction): PlayRoomsState => {
     switch (action.type) {
+
+        case PlayRoomsActionType.LISTENER_ON_PLAYROOMS: {
+            const _action = action as IListenerOnPlayRoomsAction;
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRooms: _action.item ? _action.item.playRooms : [],
+                    isLoading: state.isLoading,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRooms: state.playRooms,
+                    isLoading: state.isLoading,
+                });
+            }
+        }
 
         case PlayRoomsActionType.REQUEST_GET_PLAY_ROOMS: {
             return Object.assign({}, state, {
@@ -43,14 +58,9 @@ const playRoomsReducer: Reducer<PlayRoomsState, PlayRoomsAction> = (state = init
             });
         }
         case PlayRoomsActionType.CALLBACK_CREATE_PLAY_ROOM: {
-            const _action = action as ICallbackCreatePlayRoomAction;
             if (action.isSuccess) {
-                const playRooms = _action.item
-                    ? state.playRooms.concat(_action.item.playRoom)
-                    : state.playRooms;
-
                 return Object.assign({}, state, {
-                    playRooms: playRooms,
+                    playRooms: state.playRooms,
                     isLoading: false,
                 });
             } else {

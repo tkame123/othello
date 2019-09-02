@@ -1,7 +1,7 @@
 import {Action} from "redux";
 
 import{
-    ICallbackOnAuthUserActionItem,
+    IListenerOnAuthUserActionItem,
     IRequestGetAuthUserActionItem,
     IRequestLoginOnGoogleActionItem,
     IRequestLogoutActionItem,
@@ -11,7 +11,7 @@ import{
 } from "./auth_action_item";
 
 export enum AuthActionType {
-    CALLBACK_ON_AUTH_USER_AUTH = "AUTH_ROOMS_CALLBACK_ON_AUTH_USER",
+    LISTENER_ON_AUTH_USER_AUTH = "AUTH_ROOMS_LISTENER_ON_AUTH_USER",
 
     REQUEST_GET_AUTH_USER_AUTH = "AUTH_ROOMS_REQUEST_GET_AUTH_USER",
     CALLBACK_GET_AUTH_USER_ROOMS = "AUTH_ROOMS_CALLBACK_GET_AUTH_USER",
@@ -24,10 +24,10 @@ export enum AuthActionType {
 
 }
 
-export interface ICallbackOnAuthUserAction extends Action {
-    type: AuthActionType.CALLBACK_ON_AUTH_USER_AUTH;
+export interface IListenerOnAuthUserAction extends Action {
+    type: AuthActionType.LISTENER_ON_AUTH_USER_AUTH;
     isSuccess: boolean;
-    item?: ICallbackOnAuthUserActionItem;
+    item?: IListenerOnAuthUserActionItem;
 }
 
 export interface IRequestGetAuthUserAction extends Action {
@@ -61,7 +61,7 @@ export interface ICallbackLogoutAction extends Action {
 }
 
 export type AuthAction =
-    ICallbackOnAuthUserAction |
+    IListenerOnAuthUserAction |
     IRequestGetAuthUserAction |
     IRequestLoginOnGoogleAction |
     IRequestLogoutAction |
@@ -71,10 +71,10 @@ export type AuthAction =
 
 export interface IAuthActionCreator {
 
-    callbackOnAuthUserAction(
+    listenerOnAuthUserAction(
         isSuccess: boolean,
-        item?: ICallbackOnAuthUserActionItem,
-    ): ICallbackOnAuthUserAction;
+        item?: IListenerOnAuthUserActionItem,
+    ): IListenerOnAuthUserAction;
 
     requestGetAuthUserAction(
         item: IRequestGetAuthUserActionItem,
@@ -104,12 +104,12 @@ export interface IAuthActionCreator {
 
 class ActionCreator implements IAuthActionCreator {
 
-    public callbackOnAuthUserAction = (
+    public listenerOnAuthUserAction = (
         isSuccess: boolean,
-        item?: ICallbackOnAuthUserActionItem,
-    ): ICallbackOnAuthUserAction => {
+        item?: IListenerOnAuthUserActionItem,
+    ): IListenerOnAuthUserAction => {
         return {
-            type: AuthActionType.CALLBACK_ON_AUTH_USER_AUTH,
+            type: AuthActionType.LISTENER_ON_AUTH_USER_AUTH,
             isSuccess,
             item,
         };

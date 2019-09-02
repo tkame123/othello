@@ -8,7 +8,7 @@ import {
     IPlayRoomsDispatcher,
 } from "../dispatcher/play_rooms_dispatcher";
 import {
-    IRequestGetPlayRoomsActionItem,
+    // IRequestGetPlayRoomsActionItem,
     IRequestCreatePlayRoomActionItem,
 } from "../action/play_rooms_action_item";
 import {AppState} from "../store/app_state";
@@ -34,13 +34,13 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            isInit: true,
+            isInit: false,
         };
     };
 
     public componentDidMount() {
-        const req: IRequestGetPlayRoomsActionItem = {};
-        this.props.dispatcher.getPlayRooms(req);
+        // const req: IRequestGetPlayRoomsActionItem = {};
+        // this.props.dispatcher.getPlayRooms(req);
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {

@@ -7,7 +7,7 @@ import {
     IAuthActionCreator,
 } from "../action/auth_action";
 import {
-    ICallbackOnAuthUserActionItem,
+    IListenerOnAuthUserActionItem,
     ICallbackGetAuthUserActionItem,
     ICallbackLoginOnGoogleActionItem,
     ICallbackLogoutActionItem,
@@ -37,8 +37,8 @@ function* onAuth() {
         try {
             const { user } = yield take(channel);
             const authState: boolean = !!user;
-            const res: ICallbackOnAuthUserActionItem = {user, authState};
-            yield put(actionCreator.callbackOnAuthUserAction(true, res));
+            const res: IListenerOnAuthUserActionItem = {user, authState};
+            yield put(actionCreator.listenerOnAuthUserAction(true, res));
         } catch (error) {
             yield put(actionCreator.callbackGetAuthUserAction(false));
         }

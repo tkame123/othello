@@ -38,6 +38,7 @@ export class Board {
             createId(),
             Board.initBoard(),
             new Date(),
+            new Date(),
         );
     }
 
@@ -47,12 +48,14 @@ export class Board {
             createId(),
             newBoardState,
             new Date(),
+            new Date(),
         );
     }
 
     constructor(public readonly id: string,
                 public readonly boardState: TBoardState,
-                public readonly createdAt: Date) {
-    }
+                public readonly updatedAt: Date,
+                public readonly createdAt: Date,
+                ) {}
 
 }

@@ -1,4 +1,4 @@
-import {put, take} from "redux-saga/effects";
+import {call, put, take} from "redux-saga/effects";
 
 import {
     createPlayroomActionCreator,
@@ -11,17 +11,16 @@ import {
 } from "../action/play_room_action_item";
 
 import {PlayRoom} from "../../domain/model/play_room";
-import {User} from "../../domain/model/user";
+import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
 
+const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
 const actionCreator: IPlayRoomActionCreator = createPlayroomActionCreator();
 
 function* handleGetPlayRoomInPlayRoom() {
     while (true) {
         try {
             const action: IRequestGetPlayRoomAction = yield take(PlayRoomActionType.REQUEST_GET_PLAY_ROOM);
-            // Todo: 仮実装
-            console.log(action.item.id);
-            const playRoom: PlayRoom = PlayRoom.New(User.New("test@local"));
+            const playRoom: PlayRoom = yield call(getPlayRoom, action.item.id);
             const res: ICallbackGetPlayRoomActionItem = {playRoom};
             yield put(actionCreator.callbackGetPlayRoomAction(true, res));
         } catch (error) {
@@ -29,5 +28,9 @@ function* handleGetPlayRoomInPlayRoom() {
         }
     }
 }
+
+const getPlayRoom = (id: string): Promise<PlayRoom | null> => {
+    return playRoomsUseCase.getPlayRoom(id);
+};
 
 export {handleGetPlayRoomInPlayRoom}

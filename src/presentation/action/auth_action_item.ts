@@ -1,6 +1,6 @@
 import {User} from "../../domain/model/user";
 
-export interface ICallbackOnAuthUserActionItem {
+export interface IListenerOnAuthUserActionItem {
     user: User | null,
     authState: boolean,
 }

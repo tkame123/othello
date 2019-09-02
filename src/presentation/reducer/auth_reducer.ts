@@ -3,7 +3,7 @@ import {AuthState} from "../store/auth_state";
 import {
     AuthAction,
     AuthActionType,
-    ICallbackOnAuthUserAction,
+    IListenerOnAuthUserAction,
     ICallbackGetAuthUserAction,
 } from "../action/auth_action";
 
@@ -16,8 +16,8 @@ const initialState: AuthState = {
 const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, action: AuthAction): AuthState => {
     switch (action.type) {
 
-        case AuthActionType.CALLBACK_ON_AUTH_USER_AUTH: {
-            const _action = action as ICallbackOnAuthUserAction;
+        case AuthActionType.LISTENER_ON_AUTH_USER_AUTH: {
+            const _action = action as IListenerOnAuthUserAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: _action.item ? _action.item.user : null,

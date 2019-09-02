@@ -24,16 +24,18 @@ export class Game {
             playerBlack,
             GameStatus.GameStatus_Playing,
             new Date(),
+            new Date(),
         );
     }
 
-    public static From(id: string, board: Board, playerWhite: User, playerBlack: User, gameStatus: GameStatus, createdAt: Date): Game {
+    public static From(id: string, board: Board, playerWhite: User, playerBlack: User, gameStatus: GameStatus, updatedAt: Date, createdAt: Date): Game {
         return new Game(
             id,
             board,
             playerWhite,
             playerBlack,
             gameStatus,
+            updatedAt,
             createdAt,
         );
     }
@@ -43,7 +45,8 @@ export class Game {
                 public readonly playerWhite: User,
                 public readonly playerBlack: User,
                 public readonly gameStatus: GameStatus,
-                public readonly createdAt: Date) {
-    }
+                public readonly updatedAt: Date,
+                public readonly createdAt: Date,
+                ) {}
 
 }

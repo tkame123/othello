@@ -1,6 +1,7 @@
 import {Action} from "redux";
 
 import{
+    IListenerOnPlayRoomsActionItem,
     IRequestGetPlayRoomsActionItem,
     IRequestCreatePlayRoomActionItem,
     ICallbackGetPlayRoomsActionItem,
@@ -8,12 +9,20 @@ import{
 } from "./play_rooms_action_item";
 
 export enum PlayRoomsActionType {
+    LISTENER_ON_PLAYROOMS = "PLAY_ROOMS_LISTENER_ON_PLAY_ROOMS",
+
     REQUEST_GET_PLAY_ROOMS = "PLAY_ROOMS_REQUEST_GET_PLAY_ROOMS",
     CALLBACK_GET_PLAY_ROOMS = "PLAY_ROOMS_CALLBACK_GET_PLAY_ROOMS",
 
     REQUEST_CREATE_PLAY_ROOM = "PLAY_ROOMS_REQUEST_CREATE_PLAY_ROOM",
     CALLBACK_CREATE_PLAY_ROOM = "PLAY_ROOMS_CALLBACK_CREATE_PLAY_ROOM",
 
+}
+
+export interface IListenerOnPlayRoomsAction extends Action {
+    type: PlayRoomsActionType.LISTENER_ON_PLAYROOMS;
+    isSuccess: boolean;
+    item?: IListenerOnPlayRoomsActionItem;
 }
 
 export interface IRequestGetPlayRoomsAction extends Action {
@@ -37,12 +46,18 @@ export interface ICallbackCreatePlayRoomAction extends Action {
 }
 
 export type PlayRoomsAction =
+    IListenerOnPlayRoomsAction |
     IRequestGetPlayRoomsAction |
     ICallbackGetPlayRoomsAction |
     IRequestCreatePlayRoomAction |
     ICallbackCreatePlayRoomAction ;
 
 export interface IPlayRoomsActionCreator {
+
+    listenerOnPlayRoomsAction(
+        isSuccess: boolean,
+        item?: IListenerOnPlayRoomsActionItem,
+    ): IListenerOnPlayRoomsAction;
 
     requestGetPlayRoomsAction(
         item: IRequestGetPlayRoomsActionItem,
@@ -63,6 +78,17 @@ export interface IPlayRoomsActionCreator {
 }
 
 class ActionCreator implements IPlayRoomsActionCreator {
+
+    public listenerOnPlayRoomsAction = (
+        isSuccess: boolean,
+        item?: IListenerOnPlayRoomsActionItem,
+    ): IListenerOnPlayRoomsAction => {
+        return {
+            type: PlayRoomsActionType.LISTENER_ON_PLAYROOMS,
+            isSuccess,
+            item,
+        };
+    };
 
     public requestGetPlayRoomsAction = (
         item: IRequestGetPlayRoomsActionItem,

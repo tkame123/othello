@@ -1,4 +1,5 @@
 import {put, take, call} from "redux-saga/effects";
+import {eventChannel} from 'redux-saga'
 
 import {
     createPlayroomsActionCreator,
@@ -14,10 +15,37 @@ import {
 
 import {PlayRoom} from "../../domain/model/play_room";
 import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
+import {User} from "../../domain/model/user";
+import {IListenerOnPlayRoomsActionItem} from "../action/play_rooms_action_item";
 
 const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
 const actionCreator: IPlayRoomsActionCreator = createPlayroomsActionCreator();
 
+const playRoomsChannel = () => {
+    const channel = eventChannel(emit => {
+        playRoomsUseCase.onPlayRooms((playRooms: PlayRoom[]) =>{
+            emit({playRooms})
+        });
+
+        const unsubscribe = () => {};
+
+        return unsubscribe
+    });
+    return channel
+};
+
+function* onPlayRooms() {
+    const channel = yield call(playRoomsChannel);
+    while (true) {
+        try {
+            const { playRooms } = yield take(channel);
+            const res: IListenerOnPlayRoomsActionItem = {playRooms};
+            yield put(actionCreator.listenerOnPlayRoomsAction(true, res));
+        } catch (error) {
+            yield put(actionCreator.listenerOnPlayRoomsAction(false));
+        }
+    }
+}
 
 function* handleGetPlayRoomsInPlayRooms() {
     while (true) {
@@ -36,11 +64,10 @@ function* handleCreatePlayRoomsInPlayRooms() {
     while (true) {
         try {
             const action: IRequestCreatePlayRoomAction = yield take(PlayRoomsActionType.REQUEST_CREATE_PLAY_ROOM);
-            const playRoom: PlayRoom = yield call(createPlayRoom, action.item.owner.id);
-            const res: ICallbackCreatePlayRoomActionItem = {playRoom};
+            yield call(createPlayRoom, action.item.owner);
+            const res: ICallbackCreatePlayRoomActionItem = {};
             yield put(actionCreator.callbackCreatePlayRoomAction(true, res));
         } catch (error) {
-            console.log(error);
             yield put(actionCreator.callbackCreatePlayRoomAction(false));
         }
     }
@@ -50,8 +77,8 @@ const getPlayRooms = (): Promise<PlayRoom[]> => {
     return playRoomsUseCase.getPlayRooms();
 };
 
-const createPlayRoom = (ownerId: string): Promise<PlayRoom> => {
-    return playRoomsUseCase.createPlayRoom(ownerId);
+const createPlayRoom = (owner: User): Promise<void> => {
+    return playRoomsUseCase.createPlayRoom(owner);
 };
 
-export {handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms}
+export {onPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms}
