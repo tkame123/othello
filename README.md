@@ -1,1 +1,6 @@
-Othello
+# Othello
+
+## Environment
+
+### Firebase:
+- Auth

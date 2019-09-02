@@ -13,7 +13,7 @@ import {IRequestCreateGameActionItem, IRequestUpdateGameActionItem} from "../act
 import {User} from "../../domain/model/user";
 import {Game, GameTree, Score} from "../../domain/model/game";
 import {config} from "../../util/config";
-import GameBoard from "../component/gameboard";
+import GameComponent from "../component/game/game";
 import Progress from "../component/common/progress";
 
 const size: number = config().board.size;
@@ -32,6 +32,7 @@ export class GameContainer extends React.Component <IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
+            // ToDo: なぜかisLoadingの変化を検知できない為、false
             isInit: false,
         };
     };
@@ -39,7 +40,7 @@ export class GameContainer extends React.Component <IProps, IState> {
     public componentDidMount() {
         const playerWhite: User = User.New("white@local");
         const playerBlack: User = User.New("black@local");
-        const req: IRequestCreateGameActionItem = { playerWhite, playerBlack }
+        const req: IRequestCreateGameActionItem = { playerWhite, playerBlack };
         this.props.dispatcher.createGame(req);
     }
 
@@ -64,7 +65,7 @@ export class GameContainer extends React.Component <IProps, IState> {
         if (!game || !gameTree) { return <div>初期化失敗</div>}
 
         return (
-            <GameBoard
+            <GameComponent
                 isLoading={isLoading}
                 size={size}
                 game={game}

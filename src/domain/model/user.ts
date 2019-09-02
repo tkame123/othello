@@ -6,13 +6,17 @@ export class User {
         return new User(
             createId(),
             email,
-            new Date(),
+        );
+    }
+
+    public static From(id: string, email: string): User {
+        return new User(
+            id,
+            email,
         );
     }
 
     constructor(public readonly id: string,
-                public readonly email: string,
-                public readonly createdAt: Date) {
-    }
+                public readonly email: string,) {}
 
 }

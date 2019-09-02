@@ -15,11 +15,11 @@ import {
     ICallbackFinishGameActionItem,
 } from "../action/game_action_item";
 
-import {createGameUsecase, IGameUseCase} from "../../domain/usecase/game_usecase";
+import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {Game, GameStatus, GameTree, Player, Score} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 
-const gameUsecase: IGameUseCase = createGameUsecase();
+const gameUsecase: IGameUseCase = createGameUseCase();
 const actionCreator: IGameActionCreator = createGameActionCreator();
 
 function* handleCreateGameInGame() {

@@ -1,7 +1,7 @@
 import {Reducer} from "redux";
 import {GameState} from "../store/game_state";
 import {
-    GameDetailAction,
+    GameAction,
     GameActionType,
     ICallbackCreateGameAction,
     ICallbackUpdateGameAction,
@@ -15,7 +15,7 @@ const initialState: GameState = {
     isLoading: false,
 };
 
-const gameReducer: Reducer<GameState, GameDetailAction> = (state = initialState, action: GameDetailAction): GameState => {
+const gameReducer: Reducer<GameState, GameAction> = (state = initialState, action: GameAction): GameState => {
     switch (action.type) {
 
         case GameActionType.REQUEST_CREATE_GAME: {

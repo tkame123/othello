@@ -178,6 +178,6 @@ class GameUseCase implements IGameUseCase {
 
 }
 
-export const createGameUsecase = (): IGameUseCase => {
+export const createGameUseCase = (): IGameUseCase => {
     return new GameUseCase();
 };

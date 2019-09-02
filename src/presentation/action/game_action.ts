@@ -4,9 +4,6 @@ import{
     IRequestCreateGameActionItem,
     IRequestUpdateGameActionItem,
     IRequestFinishGameActionItem,
-} from "./game_action_item";
-
-import{
     ICallbackCreateGameActionItem,
     ICallbackUpdateGameActionItem,
     ICallbackFinishGameActionItem,
@@ -54,7 +51,7 @@ export interface ICallbackFinishGameAction extends Action {
     item?: ICallbackFinishGameActionItem;
 }
 
-export type GameDetailAction =
+export type GameAction =
     IRequestCreateGameAction |
     ICallbackCreateGameAction |
     IRequestUpdateGameAction |

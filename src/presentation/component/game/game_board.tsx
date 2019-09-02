@@ -1,37 +1,27 @@
 import React from 'react';
 import styled, {css} from "styled-components";
-import {Board, State} from "../../domain/model/board";
-import {Game, GameTree, Move, Score} from "../../domain/model/game";
-import Progress from "./common/progress";
+import {Board, State} from "../../../domain/model/board";
+import {Game, GameTree, Move} from "../../../domain/model/game";
+import Progress from "../common/progress";
 
 interface IProps {
     isLoading: boolean;
     size: number;
     game: Game;
-    score: Score | null;
     gameTree: GameTree;
-    handleCreateNewGame: (event: React.MouseEvent<HTMLButtonElement>) => void;
     handleUpdateGameTree: (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const GameBoard: React.FC<IProps> = (props) => {
+const GameBoardComponent: React.FC<IProps> = (props) => {
 
     const {isLoading, size} = props;
-    const {game, gameTree, score, handleCreateNewGame, handleUpdateGameTree} = props;
+    const {game, gameTree, handleUpdateGameTree} = props;
 
     const board: Board = game.board;
 
     return (
         <>
             {isLoading && <Progress/>}
-
-            <button onClick={handleCreateNewGame}>New Game</button>
-
-            {score
-                ? `白の得点：${score.whiteScore} 黒の得点：${score.blackScore} `
-                : gameTree.player === State.State_White ? "白の番です"　: "黒の番です"
-            }
-
 
             <table>
                 <tbody>
@@ -83,7 +73,7 @@ const GameBoard: React.FC<IProps> = (props) => {
 };
 
 
-export default GameBoard;
+export default GameBoardComponent;
 
 const Header = styled.th`
   margin: 0;
