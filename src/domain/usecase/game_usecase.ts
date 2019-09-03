@@ -1,6 +1,8 @@
 import {Board, State} from "../model/board";
 import {config} from "../../util/config";
-import {Cell, GameTree, Move, Player, Score} from "../model/game_detail";
+import {Cell, GameTree, Move, Player} from "../model/game_detail";
+import {Score, TParamsScoreFrom} from "../model/score";
+import {Game} from "../model/game";
 
 const size: number = config().board.size;
 
@@ -10,7 +12,7 @@ export interface IGameUseCase {
 
     nextGameTree(promise: any): GameTree;
 
-    finishGame(board: Board) : Score;
+    finishGame(game: Game, board: Board) : Score;
 
     listPossibleMoves(board: Board, player: Player, wasPassed: boolean, nest :number): Move[];
 
@@ -39,9 +41,9 @@ class GameUseCase implements IGameUseCase {
         };
     };
 
-    public finishGame = (board: Board): Score => {
-        let whiteScore: number = 0;
+    public finishGame = (game: Game, board: Board): Score => {
         let blackScore: number = 0;
+        let whiteScore: number = 0;
 
         [...Array(size)].forEach((item, y) => {
             [...Array(size)].forEach((item, x) => {
@@ -54,7 +56,15 @@ class GameUseCase implements IGameUseCase {
                 }
             })
         });
-        return {whiteScore: whiteScore, blackScore: blackScore}
+        const params: TParamsScoreFrom = {
+            gameId: game.id,
+            blackPlayer: {userId: game.playerBlack.id, value: blackScore},
+            whitePlayer: {userId: game.playerWhite.id, value: whiteScore},
+            updatedAt: new Date(),
+            createdAt: new Date(),
+        };
+        const score: Score = Score.From(params);
+        return score
     };
 
     public makeGameTree = (board: Board, player: Player, wasPassed: boolean, turn: number): GameTree => {

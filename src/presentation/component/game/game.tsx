@@ -4,8 +4,9 @@ import {Game} from "../../../domain/model/game";
 
 import GameControllerComponent from "./game_controller";
 import GameBoardComponent from "./game_board";
-import {Cell, GameTree, Score} from "../../../domain/model/game_detail";
+import {Cell, GameTree} from "../../../domain/model/game_detail";
 import {User} from "../../../domain/model/user";
+import {Score} from "../../../domain/model/score";
 
 interface IProps {
     isLoading: boolean;

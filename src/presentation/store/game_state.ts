@@ -1,5 +1,6 @@
 import {Game} from "../../domain/model/game";
-import {GameDetail, GameTree, Score} from "../../domain/model/game_detail";
+import {GameDetail, GameTree} from "../../domain/model/game_detail";
+import {Score} from "../../domain/model/score";
 
 export type GameState = {
     game: Game | null,

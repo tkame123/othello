@@ -15,8 +15,9 @@ import {Game} from "../../domain/model/game";
 import {config} from "../../util/config";
 import GameComponent from "../component/game/game";
 import Progress from "../component/common/progress";
-import {Cell, GameTree, Score} from "../../domain/model/game_detail";
+import {Cell, GameTree} from "../../domain/model/game_detail";
 import {User} from "../../domain/model/user";
+import {Score} from "../../domain/model/score";
 
 const size: number = config().board.size;
 

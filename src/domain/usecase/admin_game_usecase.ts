@@ -4,9 +4,11 @@ import {config} from "../../util/config";
 
 import {User} from "../model/user";
 import {Game, TParamsGameFrom} from "../model/game";
+import {Score} from "../model/score";
 
 const version: string = config().ver;
 const gameRef: string = `version/${version}/game`;
+const scoreRef: string = `version/${version}/score`;
 
 export interface IAdminGameUseCase {
 
@@ -15,6 +17,8 @@ export interface IAdminGameUseCase {
     getGame(id: string): Promise<Game | null>;
 
     getGames(): Promise<Game[]>;
+
+    addScore(score: Score) :Promise<void>;
 
 }
 
@@ -84,6 +88,23 @@ class AdminGameUseCase implements IAdminGameUseCase {
                 reject(e);
             });
         });
+    };
+
+    public addScore = (score: Score): Promise<void> => {
+        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(scoreRef).doc(score.gameId);
+        return new Promise<void>((resolve, reject) => {
+            ref.set({
+                blackPlayer: { userId: score.blackPlayer.userId, value: score.blackPlayer.value },
+                whitePlayer: { userId: score.whitePlayer.userId, value: score.whitePlayer.value },
+                updatedAt: score.updatedAt,
+                createdAt: score.createdAt,
+            }).then(() =>{
+                resolve();
+            }).catch((error: any) => {
+                reject(error);
+            })
+        });
+
     };
 
 }

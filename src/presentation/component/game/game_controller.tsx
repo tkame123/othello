@@ -2,7 +2,7 @@ import React from 'react';
 // import styled, {css} from "styled-components";
 import {Game} from "../../../domain/model/game";
 import {User} from "../../../domain/model/user";
-import {Score} from "../../../domain/model/game_detail";
+import {Score} from "../../../domain/model/score";
 
 interface IProps {
     isLoading: boolean;
@@ -26,7 +26,7 @@ const GameControllerComponent: React.FC<IProps> = (props) => {
             {`白は${playerWhite.email}`}
 
             {score
-                ? `白の得点：${score.whiteScore} 黒の得点：${score.blackScore} `
+                ? `黒の得点：${score.blackPlayer.value}  白の得点：${score.whitePlayer.value} `
                 :  isPlayer && isMyTurn ? "あなたの番です"　: "相手の番です"
             }
 

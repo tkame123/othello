@@ -21,10 +21,11 @@ import {createAdminGameUseCase, IAdminGameUseCase} from "../../domain/usecase/ad
 import {createAdminGameDetailUseCase, IAdminGameDetailUseCase} from "../../domain/usecase/admin_game_detail_usecase";
 import {Game, GameStatus, TParamsGameFrom} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
-import {Cell, GameDetail, GameTree, Move, Player, Score} from "../../domain/model/game_detail";
+import {Cell, GameDetail, GameTree, Move, Player} from "../../domain/model/game_detail";
 import {eventChannel} from "@redux-saga/core";
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
+import {Score} from "../../domain/model/score";
 
 const adminGameUsecase: IAdminGameUseCase = createAdminGameUseCase();
 const adminGameDetailUsecase: IAdminGameDetailUseCase = createAdminGameDetailUseCase();
@@ -170,7 +171,8 @@ function* handleFinishGameInGame() {
             };
             const game: Game = Game.From(params);
             const gameTree: GameTree = action.item.gameTree;
-            const score: Score = finishGame(gameTree.board);
+            const score: Score = finishGame(game, gameTree.board);
+            yield call(addScore, score);
             const res: ICallbackFinishGameActionItem = { game, score};
             yield put(actionCreator.callbackFinishGameAction(true, res));
         } catch (error) {
@@ -181,6 +183,10 @@ function* handleFinishGameInGame() {
 
 const getGame = (id: string): Promise<Game | null> => {
     return adminGameUsecase.getGame(id);
+};
+
+const addScore = (score: Score): Promise<void> => {
+    return adminGameUsecase.addScore(score);
 };
 
 const connectGameDetail = (id:string): Promise<GameDetail[]> => {
@@ -199,9 +205,8 @@ const nextGameTree = (promise: any):GameTree => {
     return gameUsecase.nextGameTree(promise);
 };
 
-const finishGame = (board: Board):Score => {
-    return gameUsecase.finishGame(board);
+const finishGame = (game: Game, board: Board): Score => {
+    return gameUsecase.finishGame(game, board);
 };
-
 
 export {handleInitGameInGame, handleUpdateGameInGame, handleFinishGameInGame}

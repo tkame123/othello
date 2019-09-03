@@ -4,7 +4,6 @@ export type Player = State.State_Black | State.State_White ;
 export type GameTree ={board: Board, player: Player, moves: Move[], turn: number}
 export type Cell = {x: number, y: number}
 export type Move = {isPassingMove: boolean, cell: Cell | null, gameTreePromise: GameTree | null};
-export type Score = { whiteScore: number, blackScore: number }
 
 export type TParamsGameDetailFrom  = {
     id: string,

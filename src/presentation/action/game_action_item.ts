@@ -1,5 +1,6 @@
 import {Game} from "../../domain/model/game";
-import {Cell, GameDetail, GameTree, Score} from "../../domain/model/game_detail";
+import {Cell, GameDetail, GameTree} from "../../domain/model/game_detail";
+import {Score} from "../../domain/model/score";
 
 export interface IListenerOnGameDetailDiffActionItem {
     gameTree: GameTree,
