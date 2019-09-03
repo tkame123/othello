@@ -5,9 +5,11 @@ import {Game} from "../../../domain/model/game";
 import GameControllerComponent from "./game_controller";
 import GameBoardComponent from "./game_board";
 import {Cell, GameTree, Score} from "../../../domain/model/game_detail";
+import {User} from "../../../domain/model/user";
 
 interface IProps {
     isLoading: boolean;
+    myPlayer: User | null;
     size: number;
     game: Game;
     score: Score | null;
@@ -17,22 +19,32 @@ interface IProps {
 
 const GameComponent: React.FC<IProps> = (props) => {
 
-    const {isLoading, size} = props;
-    const {game, gameTree, score, handleUpdateGameTree} = props;
+    const {isLoading, myPlayer, size, game, gameTree, score, handleUpdateGameTree} = props;
 
-    const player: State = gameTree.player;
+    // Userの状態を設定
+    let isPlayer: boolean = false;
+    if (myPlayer && (myPlayer.id === game.playerWhite.id || myPlayer.id === game.playerBlack.id )) { isPlayer = true}
+
+    let isMyTurn: boolean = false;
+    if (myPlayer && (game.playerWhite.id === myPlayer.id)) { isMyTurn = gameTree.player === State.State_White }
+    if (myPlayer && (game.playerBlack.id === myPlayer.id)) { isMyTurn = gameTree.player === State.State_Black }
+    if (game.playerBlack.id === game.playerWhite.id) { isMyTurn = true }
+    if (!isPlayer) { isMyTurn = false}
 
     return (
         <>
             <GameControllerComponent
                 isLoading={isLoading}
+                isPlayer={isPlayer}
+                isMyTurn={isMyTurn}
                 game={game}
-                player={player}
                 score={score}
             />
 
             <GameBoardComponent
                 isLoading={isLoading}
+                isPlayer={isPlayer}
+                isMyTurn={isMyTurn}
                 size={size}
                 gameTree={gameTree}
                 handleUpdateGameTree={handleUpdateGameTree}

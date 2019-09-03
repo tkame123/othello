@@ -5,6 +5,8 @@ import {Cell, GameTree, Move} from "../../../domain/model/game_detail";
 
 interface IProps {
     isLoading: boolean;
+    isPlayer: boolean;
+    isMyTurn: boolean;
     size: number;
     gameTree: GameTree;
     handleUpdateGameTree: (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -12,8 +14,7 @@ interface IProps {
 
 const GameBoardComponent: React.FC<IProps> = (props) => {
 
-    const {size} = props;
-    const {gameTree, handleUpdateGameTree} = props;
+    const {size, isPlayer, isMyTurn, gameTree, handleUpdateGameTree} = props;
 
     const board: Board = gameTree.board;
 
@@ -48,7 +49,7 @@ const GameBoardComponent: React.FC<IProps> = (props) => {
                 </tbody>
             </table>
 
-            {
+            { isPlayer && isMyTurn &&
                 // eslint-disable-next-line array-callback-return
                 gameTree.moves.map((item: Move, index) => {
                     if (item.cell && item.gameTreePromise) {

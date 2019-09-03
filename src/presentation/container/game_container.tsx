@@ -9,17 +9,20 @@ import {
 } from "../dispatcher/game_dispatcher";
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
+import {AuthState} from "../store/auth_state";
 import {IRequestInitGameActionItem, IRequestUpdateGameActionItem} from "../action/game_action_item";
 import {Game} from "../../domain/model/game";
 import {config} from "../../util/config";
 import GameComponent from "../component/game/game";
 import Progress from "../component/common/progress";
 import {Cell, GameTree, Score} from "../../domain/model/game_detail";
+import {User} from "../../domain/model/user";
 
 const size: number = config().board.size;
 
 interface IProps extends RouteComponentProps<{id: string}>{
     state: GameState;
+    authState: AuthState;
     dispatcher: IGameDispatcher;
 }
 
@@ -50,7 +53,7 @@ export class GameContainer extends React.Component <IProps, IState> {
 
     public render(): JSX.Element {
 
-        const {state} = this.props;
+        const {state, authState} = this.props;
         const {isInit} = this.state;
 
         const isLoading: boolean = state.isLoading;
@@ -59,12 +62,15 @@ export class GameContainer extends React.Component <IProps, IState> {
         const gameTree: GameTree | null = state.gameTree;
         const score: Score | null = state.score;
 
+        const myPlayer: User | null = authState.user;
+
         if (isInit) { return <Progress/>}
         if (!game || !gameTree) { return <div>初期化失敗</div>}
 
         return (
             <GameComponent
                 isLoading={isLoading}
+                myPlayer={myPlayer}
                 size={size}
                 game={game}
                 gameTree={gameTree}
@@ -90,6 +96,7 @@ export class GameContainer extends React.Component <IProps, IState> {
 const mapStateToProps = (state: AppState) => {
     return {
         state: state.gameReducer,
+        authState: state.authReducer,
     };
 };
 

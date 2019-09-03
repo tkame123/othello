@@ -106,7 +106,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         });
     };
 
-    public createGameOnPlayRoom(id: string, playerWhite: User, playerBlack: User): Promise<PlayRoom> {
+    public createGameOnPlayRoom(id: string, playerBlack: User, playerWhite: User): Promise<PlayRoom> {
         return new Promise<PlayRoom>((resolve, reject) => {
             firebase.firestore().collection(gameRef).add({
                 playerBlack: {

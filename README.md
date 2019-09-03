@@ -4,3 +4,5 @@
 
 ### Firebase:
 - Auth
+- FireStore
+- Hosting
