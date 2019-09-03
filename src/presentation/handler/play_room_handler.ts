@@ -1,4 +1,4 @@
-import {call, put, take} from "redux-saga/effects";
+import {call, put, take, fork} from "redux-saga/effects";
 
 import {
     createPlayroomActionCreator,
@@ -15,6 +15,7 @@ import {
 import {PlayRoom} from "../../domain/model/play_room";
 import {createAdminPlayRoomUseCase, IAdminPlayRoomUseCase} from "../../domain/usecase/admin_play_room_usecae";
 import {User} from "../../domain/model/user";
+import {handleErrorForHandler} from "./handleErrorForHandler";
 
 const playRoomsUseCase: IAdminPlayRoomUseCase = createAdminPlayRoomUseCase();
 const actionCreator: IPlayRoomActionCreator = createPlayroomActionCreator();
@@ -27,6 +28,7 @@ function* handleGetPlayRoomInPlayRoom() {
             const res: ICallbackGetPlayRoomActionItem = {playRoom};
             yield put(actionCreator.callbackGetPlayRoomAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetPlayRoomAction(false));
         }
     }
@@ -40,6 +42,7 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
             const res: ICallbackCreateGameOnPlayRoomActionItem = {playRoom};
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(false));
         }
     }

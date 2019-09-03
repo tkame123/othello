@@ -1,4 +1,4 @@
-import {put, take, call} from "redux-saga/effects";
+import {put, take, call, fork} from "redux-saga/effects";
 import {eventChannel} from 'redux-saga'
 
 import {
@@ -14,6 +14,7 @@ import {
 } from "../action/auth_action_item";
 import {User} from "../../domain/model/user";
 import {createAuthUseCase, IAuthUseCase} from "../../domain/usecase/auth_usecase";
+import {handleErrorForHandler} from "./handleErrorForHandler";
 
 const authUsecase: IAuthUseCase = createAuthUseCase();
 const actionCreator: IAuthActionCreator = createAuthActionCreator();
@@ -40,6 +41,7 @@ function* onAuth() {
             const res: IListenerOnAuthUserActionItem = {user, authState};
             yield put(actionCreator.listenerOnAuthUserAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetAuthUserAction(false));
         }
     }
@@ -54,6 +56,7 @@ function* handleGetAuthUserInAuth() {
             const res: ICallbackGetAuthUserActionItem = {user, authState};
             yield put(actionCreator.callbackGetAuthUserAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetAuthUserAction(false));
         }
     }
@@ -67,6 +70,7 @@ function* handleLoginOnGoogleInAuth() {
             const res: ICallbackLoginOnGoogleActionItem = {};
             yield put(actionCreator.callbackLoginOnGoogleAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackLoginOnGoogleAction(false));
         }
     }
@@ -80,6 +84,7 @@ function* handleLogoutInAuth() {
             const res: ICallbackLogoutActionItem = {};
             yield put(actionCreator.callbackLogoutAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackLogoutAction(false));
         }
     }

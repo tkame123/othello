@@ -2,6 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import {config} from "../../util/config";
 import {Cell, GameDetail, TParamsGameDetailFrom} from "../model/game_detail";
+import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
 const version: string = config().ver;
 const gameDetailRef: string = `version/${version}/gameDetail`;
@@ -40,7 +41,7 @@ class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
                 this.gameDetails = gameDetails;
                 resolve(gameDetails);
             }).catch((error: any) => {
-                reject(error);
+                reject(handleErrorFirebaseFirestore(error));
             })
         });
     };
@@ -85,7 +86,7 @@ class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
             }).then(() =>{
                 resolve();
             }).catch((error: any) => {
-                reject(error);
+                reject(handleErrorFirebaseFirestore(error));
             })
         });
     };

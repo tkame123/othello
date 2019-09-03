@@ -1,6 +1,7 @@
 import {fork} from "redux-saga/effects";
 
 import {onAuth, handleGetAuthUserInAuth, handleLoginOnGoogleInAuth, handleLogoutInAuth} from "./auth_handler";
+import {handleAddInAppNotificationMessage, handleHiddenInAppNotificationMessage} from "./app_notification_message_handler";
 import {onGames, handleGamesInGames} from "./games_handler";
 import {handleInitGameInGame, handleUpdateGameInGame, handleFinishGameInGame} from "./game_handler";
 import {handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom} from "./play_room_handler";
@@ -15,6 +16,9 @@ function* rootHandler() {
     yield fork(handleGetAuthUserInAuth);
     yield fork(handleLoginOnGoogleInAuth);
     yield fork(handleLogoutInAuth);
+
+    yield fork(handleAddInAppNotificationMessage);
+    yield fork(handleHiddenInAppNotificationMessage);
 
     yield fork(handleGamesInGames);
 

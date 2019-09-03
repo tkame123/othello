@@ -5,6 +5,7 @@ import {config} from "../../util/config";
 import {User} from "../model/user";
 import {Game, TParamsGameFrom} from "../model/game";
 import {Score} from "../model/score";
+import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
 const version: string = config().ver;
 const gameRef: string = `version/${version}/game`;
@@ -42,7 +43,7 @@ class AdminGameUseCase implements IAdminGameUseCase {
 
             callback(games)
         }, (error: any) => {
-            throw new Error(error);
+            throw handleErrorFirebaseFirestore(error);
         })
     };
 
@@ -61,8 +62,8 @@ class AdminGameUseCase implements IAdminGameUseCase {
                 };
                 const game: Game = Game.From(params);
                 resolve(game);
-            }).catch((e: any) => {
-                reject(e);
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
             });
         });
     };
@@ -84,8 +85,8 @@ class AdminGameUseCase implements IAdminGameUseCase {
                     games.push(game);
                 });
                 resolve(games);
-            }).catch((e: any) => {
-                reject(e);
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
             });
         });
     };
@@ -101,7 +102,7 @@ class AdminGameUseCase implements IAdminGameUseCase {
             }).then(() =>{
                 resolve();
             }).catch((error: any) => {
-                reject(error);
+                reject(handleErrorFirebaseFirestore(error));
             })
         });
 

@@ -4,6 +4,7 @@ import {config} from "../../util/config";
 
 import {User} from "../model/user";
 import {GameStatus} from "../model/game";
+import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
 const version: string = config().ver;
 const playRoomsRef: string = `version/${version}/playroom`;
@@ -42,7 +43,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
 
             callback(playRooms)
         }, (error: any) => {
-            throw new Error(error);
+            throw handleErrorFirebaseFirestore(error);
         })
     };
 
@@ -60,8 +61,8 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                 };
                 const playRoom: PlayRoom = PlayRoom.From(params);
                 resolve(playRoom);
-            }).catch((e: any) => {
-                reject(e);
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
             });
         });
     };
@@ -82,8 +83,8 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                     playRooms.push(playRoom);
                 });
                 resolve(playRooms);
-            }).catch((e: any) => {
-                reject(e);
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
             });
         });
     };
@@ -101,7 +102,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
             }).then(() => {
                 resolve();
             }).catch((error: any) => {
-                reject(error);
+                reject(handleErrorFirebaseFirestore(error));
             })
         });
     };
@@ -139,7 +140,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                 const playRoom: PlayRoom = PlayRoom.From(params);
                 resolve(playRoom);
             }).catch((error: any) => {
-                reject(error);
+                reject(handleErrorFirebaseFirestore(error));
             })
         });
     };

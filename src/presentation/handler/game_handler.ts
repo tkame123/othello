@@ -26,6 +26,7 @@ import {eventChannel} from "@redux-saga/core";
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
 import {Score} from "../../domain/model/score";
+import {handleErrorForHandler} from "./handleErrorForHandler";
 
 const adminGameUsecase: IAdminGameUseCase = createAdminGameUseCase();
 const adminGameDetailUsecase: IAdminGameDetailUseCase = createAdminGameDetailUseCase();
@@ -87,6 +88,7 @@ function* onGameDetailDiff() {
             }
 
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.listenerOnGameDetailDiffAction(false));
         }
     }
@@ -133,6 +135,7 @@ function* handleInitGameInGame() {
             }
 
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackInitGameAction(false));
         }
     }
@@ -152,6 +155,7 @@ function* handleUpdateGameInGame() {
             yield put(actionCreator.callbackUpdateGameAction(true, res));
 
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackUpdateGameAction(false));
         }
     }
@@ -176,6 +180,7 @@ function* handleFinishGameInGame() {
             const res: ICallbackFinishGameActionItem = { game, score};
             yield put(actionCreator.callbackFinishGameAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackFinishGameAction(false));
         }
     }

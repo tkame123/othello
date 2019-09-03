@@ -1,6 +1,7 @@
 import {User} from "../model/user";
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import {handleErrorFirebaseAuth} from "./error_handler_firebase";
 
 export interface IAuthUseCase {
 
@@ -24,7 +25,7 @@ class AuthUseCase implements IAuthUseCase {
             }
             callback(user);
         }, (error: any) => {
-            throw new Error(error);
+            throw handleErrorFirebaseAuth(error);
         })
     }
 
@@ -35,7 +36,7 @@ class AuthUseCase implements IAuthUseCase {
                 .then(() => {
                     resolve();
                 }).catch((error: any) => {
-                    reject(error);
+                    reject(handleErrorFirebaseAuth(error));
                 })
         });
     };
@@ -47,7 +48,7 @@ class AuthUseCase implements IAuthUseCase {
                     resolve();
                 })
                 .catch((error: any) =>{
-                    reject(error);
+                    reject(handleErrorFirebaseAuth(error));
                 });
         });
     }
@@ -60,7 +61,7 @@ class AuthUseCase implements IAuthUseCase {
                 : null;
             resolve(user);
         }).catch((error: any) => {
-            throw new Error(error);
+            throw handleErrorFirebaseAuth(error);
         });
 
     }

@@ -1,4 +1,4 @@
-import {put, take, call} from "redux-saga/effects";
+import {put, take, call, fork} from "redux-saga/effects";
 import {eventChannel} from 'redux-saga'
 
 import {
@@ -13,6 +13,7 @@ import {
 
 import {Game} from "../../domain/model/game";
 import {createAdminGameUseCase, IAdminGameUseCase} from "../../domain/usecase/admin_game_usecase";
+import {handleErrorForHandler} from "./handleErrorForHandler";
 
 const gameUseCase: IAdminGameUseCase = createAdminGameUseCase();
 const actionCreator: IGamesActionCreator = createGamesActionCreator();
@@ -38,6 +39,7 @@ function* onGames() {
             const res: IListenerOnGamesActionItem = {games};
             yield put(actionCreator.listenerOnGamesAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.listenerOnGamesAction(false));
         }
     }
@@ -51,6 +53,7 @@ function* handleGamesInGames() {
             const res: ICallbackGetGamesActionItem = {games};
             yield put(actionCreator.callbackGetGamesAction(true, res));
         } catch (error) {
+            yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetGamesAction(false));
         }
     }

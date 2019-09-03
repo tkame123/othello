@@ -7,33 +7,34 @@ import createAppStore, { history } from "./presentation/store/app_store";
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-import {Switch} from "react-router";
-import Routing from "./routing";
-import NavbarContainer from "./presentation/container/navbar_container"
-
+import {config} from "./util/config";
 import firebase from 'firebase/app';
 
-const config = {
-    apiKey: "AIzaSyA-HNBbbY0JycbfOtRykX8UTpTmX263SE0",
-    authDomain: "tkame123-othello.firebaseapp.com",
-    databaseURL: "https://tkame123-othello.firebaseio.com",
-    projectId: "tkame123-othello",
-    storageBucket: "tkame123-othello.appspot.com",
-    messagingSenderId: "650086036833",
-    appId: "1:650086036833:web:100a41fb2683c527"
+import Routing from "./routing";
+import ErrorBoundary from "./error_boundary";
+import NavbarContainer from "./presentation/container/navbar_container"
+
+const firebaseConfig = {
+    apiKey: config().firebase.apiKey,
+    authDomain: config().firebase.authDomain,
+    databaseURL: config().firebase.databaseURL,
+    projectId: config().firebase.projectId,
+    storageBucket: config().firebase.storageBucket,
+    messagingSenderId: config().firebase.messagingSenderId,
+    appId: config().firebase.appId,
 };
 
 // Firebase Init
-firebase.initializeApp(config);
+firebase.initializeApp(firebaseConfig);
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 ReactDOM.render(
     <Provider store={createAppStore()}>
         <ConnectedRouter history={history}>
             <NavbarContainer>
-                <Switch>
+                <ErrorBoundary>
                     <Routing/>
-                </Switch>
+                </ErrorBoundary>
             </NavbarContainer>
         </ConnectedRouter>
     </Provider>
