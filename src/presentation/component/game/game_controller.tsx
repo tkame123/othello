@@ -1,32 +1,35 @@
 import React from 'react';
 // import styled, {css} from "styled-components";
 import {State} from "../../../domain/model/board";
-import {Game, Score} from "../../../domain/model/game";
-import Progress from "../common/progress";
+import {Game} from "../../../domain/model/game";
+import {User} from "../../../domain/model/user";
+import {Score} from "../../../domain/model/game_detail";
 
 interface IProps {
     isLoading: boolean;
     game: Game;
     player: State;
     score: Score | null;
-    handleCreateNewGame: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const GameControllerComponent: React.FC<IProps> = (props) => {
 
-    const {isLoading} = props;
-    const {player, score, handleCreateNewGame} = props;
+    const {game, player, score} = props;
+
+    const playerBlack: User = game.playerBlack;
+    const playerWhite: User = game.playerWhite;
 
     return (
         <>
-            {isLoading && <Progress/>}
 
-            <button onClick={handleCreateNewGame}>New Game</button>
+            {`黒は${playerBlack.email}`}
+            {`白は${playerWhite.email}`}
 
             {score
                 ? `白の得点：${score.whiteScore} 黒の得点：${score.blackScore} `
                 : player === State.State_White ? "白の番です"　: "黒の番です"
             }
+
 
         </>
     );

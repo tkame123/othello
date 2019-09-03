@@ -3,7 +3,7 @@ import {GameState} from "../store/game_state";
 import {
     GameAction,
     GameActionType,
-    ICallbackCreateGameAction,
+    ICallbackInitGameAction,
     ICallbackUpdateGameAction,
     ICallbackFinishGameAction,
 } from "../action/game_action";
@@ -11,6 +11,7 @@ import {
 const initialState: GameState = {
     game: null,
     gameTree: null,
+    gameDetails: [],
     score: null,
     isLoading: false,
 };
@@ -18,20 +19,22 @@ const initialState: GameState = {
 const gameReducer: Reducer<GameState, GameAction> = (state = initialState, action: GameAction): GameState => {
     switch (action.type) {
 
-        case GameActionType.REQUEST_CREATE_GAME: {
+        case GameActionType.REQUEST_INIT_GAME: {
             return Object.assign({}, state, {
                 game: state.game,
                 gameTree: state.gameTree,
+                gameDetails: state.gameDetails,
                 score: state.score,
                 isLoading: true,
             });
         }
-        case GameActionType.CALLBACK_CREATE_GAME: {
-            const _action = action as ICallbackCreateGameAction;
+        case GameActionType.CALLBACK_INIT_GAME: {
+            const _action = action as ICallbackInitGameAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     game: _action.item ? _action.item.game : null,
                     gameTree: _action.item ? _action.item.gameTree : null,
+                    gameDetails: _action.item ? _action.item.gameDetails : [],
                     score: state.score,
                     isLoading: false,
                 });
@@ -39,6 +42,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                 return Object.assign({}, state, {
                     game: state.game,
                     gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
                     score: state.score,
                     isLoading: false,
                 });
@@ -49,6 +53,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
             return Object.assign({}, state, {
                 game: state.game,
                 gameTree: state.gameTree,
+                gameDetails: state.gameDetails,
                 score: state.score,
                 isLoading: true,
             });
@@ -59,6 +64,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                 return Object.assign({}, state, {
                     game: _action.item ? _action.item.game : null,
                     gameTree: _action.item ? _action.item.gameTree : null,
+                    gameDetails: state.gameDetails,
                     score: state.score,
                     isLoading: false,
                 });
@@ -66,6 +72,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                 return Object.assign({}, state, {
                     game: state.game,
                     gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
                     score: state.score,
                     isLoading: false,
                 });
@@ -76,6 +83,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
             return Object.assign({}, state, {
                 game: state.game,
                 gameTree: state.gameTree,
+                gameDetails: state.gameDetails,
                 score: state.score,
                 isLoading: true,
             });
@@ -86,6 +94,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                 return Object.assign({}, state, {
                     game: _action.item ? _action.item.game : null,
                     gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
                     score: _action.item ? _action.item.score : null,
                     isLoading: false,
                 });
@@ -93,6 +102,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                 return Object.assign({}, state, {
                     game: state.game,
                     gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
                     score: state.score,
                     isLoading: false,
                 });

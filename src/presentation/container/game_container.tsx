@@ -9,16 +9,16 @@ import {
 } from "../dispatcher/game_dispatcher";
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
-import {IRequestCreateGameActionItem, IRequestUpdateGameActionItem} from "../action/game_action_item";
-import {User} from "../../domain/model/user";
-import {Game, GameTree, Score} from "../../domain/model/game";
+import {IRequestInitGameActionItem, IRequestUpdateGameActionItem} from "../action/game_action_item";
+import {Game} from "../../domain/model/game";
 import {config} from "../../util/config";
 import GameComponent from "../component/game/game";
 import Progress from "../component/common/progress";
+import {Cell, GameTree, Score} from "../../domain/model/game_detail";
 
 const size: number = config().board.size;
 
-interface IProps extends RouteComponentProps<{}>{
+interface IProps extends RouteComponentProps<{id: string}>{
     state: GameState;
     dispatcher: IGameDispatcher;
 }
@@ -32,16 +32,14 @@ export class GameContainer extends React.Component <IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            // ToDo: なぜかisLoadingの変化を検知できない為、false
-            isInit: false,
+            isInit: true,
         };
     };
 
     public componentDidMount() {
-        const playerWhite: User = User.New("white@local");
-        const playerBlack: User = User.New("black@local");
-        const req: IRequestCreateGameActionItem = { playerWhite, playerBlack };
-        this.props.dispatcher.createGame(req);
+        const id: string = this.props.match.params.id;
+        const req: IRequestInitGameActionItem = {id};
+        this.props.dispatcher.initGame(req);
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
@@ -71,25 +69,16 @@ export class GameContainer extends React.Component <IProps, IState> {
                 game={game}
                 gameTree={gameTree}
                 score={score}
-                handleCreateNewGame={this.handleCreateNewGame}
                 handleUpdateGameTree={this.handleUpdateGameTree}
             />
         )
 
     };
 
-    private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {
-        event.preventDefault();
-        const playerBlack: User = User.New("black@local");
-        const playerWhite: User = User.New("white@local");
-        const req: IRequestCreateGameActionItem = { playerBlack, playerWhite }
-        this.props.dispatcher.createGame(req);
-    };
-
-    private handleUpdateGameTree = (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>): void => {
+    private handleUpdateGameTree = (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
         if (!this.props.state.game) { throw new Error("")}
-        const req: IRequestUpdateGameActionItem = { game: this.props.state.game ,gameTreePromise: gameTreePromise};
+        const req: IRequestUpdateGameActionItem = { game: this.props.state.game ,gameTreePromise: gameTreePromise, cell: cell };
         this.props.dispatcher.updateGame(req);
     };
 

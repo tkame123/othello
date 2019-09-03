@@ -1,12 +1,12 @@
 import {Board, State} from "../model/board";
 import {config} from "../../util/config";
-import {Cell, GameTree, Move, Player, Score} from "../model/game";
+import {Cell, GameTree, Move, Player, Score} from "../model/game_detail";
 
 const size: number = config().board.size;
 
 export interface IGameUseCase {
 
-    makeGameTree(board: Board, player: Player, wasPassed: boolean, nest: number) : GameTree;
+    makeGameTree(board: Board, player: Player, wasPassed: boolean, turn: number) : GameTree;
 
     nextGameTree(promise: any): GameTree;
 
@@ -57,26 +57,26 @@ class GameUseCase implements IGameUseCase {
         return {whiteScore: whiteScore, blackScore: blackScore}
     };
 
-    public makeGameTree = (board: Board, player: Player, wasPassed: boolean, nest: number): GameTree => {
+    public makeGameTree = (board: Board, player: Player, wasPassed: boolean, turn: number): GameTree => {
         return {
             board: board,
             player: player,
-            moves: this.listPossibleMoves(board, player, wasPassed, nest),
-            nest: nest,
+            moves: this.listPossibleMoves(board, player, wasPassed, turn),
+            turn: turn,
         }
     };
 
-    public listPossibleMoves = (board: Board, player: Player, wasPassed: boolean, nest: number): Move[] =>{
+    public listPossibleMoves = (board: Board, player: Player, wasPassed: boolean, turn: number): Move[] =>{
         return this.completePassingMove(
-            this.listAttackingMoves(board, player, nest),
+            this.listAttackingMoves(board, player, turn),
             board,
             player,
             wasPassed,
-            nest,
+            turn,
         )
     };
 
-    public completePassingMove = (attackingMoves: Move[], board: Board, player: Player, wasPassed: boolean, nest: number): Move[] =>{
+    public completePassingMove = (attackingMoves: Move[], board: Board, player: Player, wasPassed: boolean, turn: number): Move[] =>{
         if (0 < attackingMoves.length) { return attackingMoves }
         if (!wasPassed) {
             return [{
@@ -87,14 +87,14 @@ class GameUseCase implements IGameUseCase {
                         board,
                         this.nextPlayer(player),
                         true,
-                        nest + 1);
+                        turn + 1);
                 })
             }]
         }
         return [];
     };
 
-    public listAttackingMoves = (board: Board, player: Player, nest: number): Move[] =>{
+    public listAttackingMoves = (board: Board, player: Player, turn: number): Move[] =>{
         let moves: Move[] = [];
 
         [...Array(size)].forEach((item, y) => {
@@ -110,7 +110,7 @@ class GameUseCase implements IGameUseCase {
                                 this.makeAttackedBoard(board, cell, player),
                                 this.nextPlayer(player),
                                 false,
-                                nest + 1);
+                                turn + 1);
                         }),
                     })
                 }

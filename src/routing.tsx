@@ -28,8 +28,8 @@ export class Routing extends React.Component<IProps, IState> {
                     <Route path='/playrooms' component={PlayRoomsContainer}/>
                     <Route path='/playroom/:id' component={PlayRoomContainer}/>
                     <Route path='/games' component={GamesContainer}/>
-                    <Route path='/gameboard' component={GameContainer}/>
-                    <Redirect to="/gameboard" />
+                    <Route path='/game/:id' component={GameContainer}/>
+                    <Redirect to="/playrooms" />
                 </Switch>
             </React.Fragment>
         )

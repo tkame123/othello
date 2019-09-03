@@ -1,9 +1,10 @@
 import React from 'react';
 import {State} from "../../../domain/model/board";
-import {Game, GameTree, Score} from "../../../domain/model/game";
+import {Game} from "../../../domain/model/game";
 
 import GameControllerComponent from "./game_controller";
 import GameBoardComponent from "./game_board";
+import {Cell, GameTree, Score} from "../../../domain/model/game_detail";
 
 interface IProps {
     isLoading: boolean;
@@ -11,14 +12,13 @@ interface IProps {
     game: Game;
     score: Score | null;
     gameTree: GameTree;
-    handleCreateNewGame: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    handleUpdateGameTree: (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>) => void;
+    handleUpdateGameTree: (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const GameComponent: React.FC<IProps> = (props) => {
 
     const {isLoading, size} = props;
-    const {game, gameTree, score, handleCreateNewGame, handleUpdateGameTree} = props;
+    const {game, gameTree, score, handleUpdateGameTree} = props;
 
     const player: State = gameTree.player;
 
@@ -29,7 +29,6 @@ const GameComponent: React.FC<IProps> = (props) => {
                 game={game}
                 player={player}
                 score={score}
-                handleCreateNewGame={handleCreateNewGame}
             />
 
             <GameBoardComponent

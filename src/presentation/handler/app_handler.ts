@@ -2,7 +2,7 @@ import {fork} from "redux-saga/effects";
 
 import {onAuth, handleGetAuthUserInAuth, handleLoginOnGoogleInAuth, handleLogoutInAuth} from "./auth_handler";
 import {onGames, handleGamesInGames} from "./games_handler";
-import {handleCreateGameInGame, handleUpdateGameInGame, handleFinishGameInGame} from "./game_handler";
+import {handleInitGameInGame, handleUpdateGameInGame, handleFinishGameInGame} from "./game_handler";
 import {handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom} from "./play_room_handler";
 import {onPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms} from "./play_rooms_handler";
 
@@ -18,7 +18,7 @@ function* rootHandler() {
 
     yield fork(handleGamesInGames);
 
-    yield fork(handleCreateGameInGame);
+    yield fork(handleInitGameInGame);
     yield fork(handleUpdateGameInGame);
     yield fork(handleFinishGameInGame);
 

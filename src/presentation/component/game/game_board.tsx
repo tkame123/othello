@@ -1,27 +1,24 @@
 import React from 'react';
 import styled, {css} from "styled-components";
 import {Board, State} from "../../../domain/model/board";
-import {GameTree, Move} from "../../../domain/model/game";
-import Progress from "../common/progress";
+import {Cell, GameTree, Move} from "../../../domain/model/game_detail";
 
 interface IProps {
     isLoading: boolean;
     size: number;
     gameTree: GameTree;
-    handleUpdateGameTree: (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>) => void;
+    handleUpdateGameTree: (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const GameBoardComponent: React.FC<IProps> = (props) => {
 
-    const {isLoading, size} = props;
+    const {size} = props;
     const {gameTree, handleUpdateGameTree} = props;
 
     const board: Board = gameTree.board;
 
     return (
         <>
-            {isLoading && <Progress/>}
-
             <table>
                 <tbody>
                 <tr>
@@ -40,7 +37,7 @@ const GameBoardComponent: React.FC<IProps> = (props) => {
                                 <Header>{y}</Header>
                                 {
                                     [...Array(size)].map((item, x) => {
-                                        return <Cell key={x}><Disk state={board.boardState[[x, y].toString()]}/></Cell>
+                                        return <BoardCell key={x}><Disk state={board.boardState[[x, y].toString()]}/></BoardCell>
                                     })
                                 }
                             </tr>
@@ -57,10 +54,11 @@ const GameBoardComponent: React.FC<IProps> = (props) => {
                     if (item.cell && item.gameTreePromise) {
                         const x: number = item.cell.x;
                         const y: number = item.cell.y;
+                        const cell: Cell = {x: x, y: y};
                         const value: string = x.toString() + y.toString();
 
                         return (
-                            <button key={index} onClick={handleUpdateGameTree(item.gameTreePromise)}>{value}</button>
+                            <button key={index} onClick={handleUpdateGameTree(item.gameTreePromise, cell)}>{value}</button>
                         )
                     }
                 })
@@ -80,7 +78,7 @@ const Header = styled.th`
   line-height: 100%;
 `;
 
-const Cell = styled.td`
+const BoardCell = styled.td`
   background: #090;
   border: 1px solid #ccc;
   padding: 0;

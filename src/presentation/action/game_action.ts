@@ -1,17 +1,17 @@
 import {Action} from "redux";
 
 import{
-    IRequestCreateGameActionItem,
+    IRequestInitGameActionItem,
     IRequestUpdateGameActionItem,
     IRequestFinishGameActionItem,
-    ICallbackCreateGameActionItem,
+    ICallbackInitGameActionItem,
     ICallbackUpdateGameActionItem,
     ICallbackFinishGameActionItem,
 } from "./game_action_item";
 
 export enum GameActionType {
-    REQUEST_CREATE_GAME = "GAME_REQUEST_CREATE_GAME",
-    CALLBACK_CREATE_GAME = "GAME_CALLBACK_CREATE_GAME",
+    REQUEST_INIT_GAME = "GAME_REQUEST_INIT_GAME",
+    CALLBACK_INIT_GAME = "GAME_CALLBACK_INIT_GAME",
 
     REQUEST_UPDATE_GAME = "GAME_REQUEST_UPDATE_GAME",
     CALLBACK_UPDATE_GAME = "GAME_CALLBACK_UPDATE_GAME",
@@ -21,14 +21,14 @@ export enum GameActionType {
 
 }
 
-export interface IRequestCreateGameAction extends Action {
-    type: GameActionType.REQUEST_CREATE_GAME;
-    item: IRequestCreateGameActionItem;
+export interface IRequestInitGameAction extends Action {
+    type: GameActionType.REQUEST_INIT_GAME;
+    item: IRequestInitGameActionItem;
 }
-export interface ICallbackCreateGameAction extends Action {
-    type: GameActionType.CALLBACK_CREATE_GAME;
+export interface ICallbackInitGameAction extends Action {
+    type: GameActionType.CALLBACK_INIT_GAME;
     isSuccess: boolean;
-    item?: ICallbackCreateGameActionItem;
+    item?: ICallbackInitGameActionItem;
 }
 
 export interface IRequestUpdateGameAction extends Action {
@@ -52,8 +52,8 @@ export interface ICallbackFinishGameAction extends Action {
 }
 
 export type GameAction =
-    IRequestCreateGameAction |
-    ICallbackCreateGameAction |
+    IRequestInitGameAction |
+    ICallbackInitGameAction |
     IRequestUpdateGameAction |
     ICallbackUpdateGameAction |
     IRequestFinishGameAction |
@@ -61,13 +61,13 @@ export type GameAction =
 
 export interface IGameActionCreator {
 
-    requestCreateGameAction(
-        item: IRequestCreateGameActionItem,
-    ): IRequestCreateGameAction;
-    callbackCreateGameAction(
+    requestInitGameAction(
+        item: IRequestInitGameActionItem,
+    ): IRequestInitGameAction;
+    callbackInitGameAction(
         isSuccess: boolean,
-        item?: ICallbackCreateGameActionItem,
-    ): ICallbackCreateGameAction;
+        item?: ICallbackInitGameActionItem,
+    ): ICallbackInitGameAction;
 
     requestUpdateGameAction(
         item: IRequestUpdateGameActionItem,
@@ -89,20 +89,20 @@ export interface IGameActionCreator {
 
 class ActionCreator implements IGameActionCreator {
 
-    public requestCreateGameAction = (
-        item: IRequestCreateGameActionItem,
-    ): IRequestCreateGameAction => {
+    public requestInitGameAction = (
+        item: IRequestInitGameActionItem,
+    ): IRequestInitGameAction => {
         return {
-            type: GameActionType.REQUEST_CREATE_GAME,
+            type: GameActionType.REQUEST_INIT_GAME,
             item,
         };
     };
-    public callbackCreateGameAction = (
+    public callbackInitGameAction = (
         isSuccess: boolean,
-        item?: ICallbackCreateGameActionItem,
-    ): ICallbackCreateGameAction => {
+        item?: ICallbackInitGameActionItem,
+    ): ICallbackInitGameAction => {
         return {
-            type: GameActionType.CALLBACK_CREATE_GAME,
+            type: GameActionType.CALLBACK_INIT_GAME,
             isSuccess,
             item,
         };

@@ -2,13 +2,13 @@ import {Action} from "redux";
 import {IGameActionCreator} from "../action/game_action";
 
 import {
-    IRequestCreateGameActionItem,
+    IRequestInitGameActionItem,
     IRequestUpdateGameActionItem,
     IRequestFinishGameActionItem,
 } from "../action/game_action_item"
 
 export interface IGameDispatcher {
-    createGame(item: IRequestCreateGameActionItem): void;
+    initGame(item: IRequestInitGameActionItem): void;
 
     updateGame(item: IRequestUpdateGameActionItem): void;
 
@@ -21,8 +21,8 @@ class Dispatcher implements IGameDispatcher {
     constructor(private dispatch: (action: Action) => void,
                 private actionCreator: IGameActionCreator) {};
 
-    public createGame = (item: IRequestCreateGameActionItem,): void => {
-        this.dispatch(this.actionCreator.requestCreateGameAction(item));};
+    public initGame = (item: IRequestInitGameActionItem,): void => {
+        this.dispatch(this.actionCreator.requestInitGameAction(item));};
 
     public updateGame = (item: IRequestUpdateGameActionItem,): void => {
         this.dispatch(this.actionCreator.requestUpdateGameAction(item));};

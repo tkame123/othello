@@ -68,9 +68,9 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
 
     public getPlayRooms = (): Promise<PlayRoom[]> => {
         return new Promise<PlayRoom[]>((resolve, reject) => {
-            firebase.firestore().collection(playRoomsRef).get().then((querySnapshot) => {
+            firebase.firestore().collection(playRoomsRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let playRooms: PlayRoom[] = [];
-                querySnapshot.forEach((doc) => {
+                docs.forEach((doc) => {
                     const params: TParamsPlayRoomFrom ={
                         id: doc.id,
                         owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
@@ -124,6 +124,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                 const gameId: string = ref.id;
                 return firebase.firestore().collection(playRoomsRef).doc(id).update({
                     gameId: gameId,
+                    updatedAt: new Date(),
                 })
             }).then(() => {
                 return firebase.firestore().collection(playRoomsRef).doc(id).get()
@@ -138,7 +139,6 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                 const playRoom: PlayRoom = PlayRoom.From(params);
                 resolve(playRoom);
             }).catch((error: any) => {
-                console.log(error);
                 reject(error);
             })
         });
