@@ -2,27 +2,27 @@ import * as React from "react";
 import {Action, Dispatch} from "redux";
 import {RouteComponentProps} from "react-router";
 import {connect} from "react-redux";
-import {createPlayroomsActionCreator} from "../action/play_rooms_action"
+import {createPlayroomActionCreator} from "../action/play_room_action"
 import {
-    createPlayRoomsDispatcher,
-    IPlayRoomsDispatcher,
-} from "../dispatcher/play_rooms_dispatcher";
+    createPlayRoomDispatcher,
+    IPlayRoomDispatcher,
+} from "../dispatcher/play_room_dispatcher";
 import {
-    IRequestGetPlayRoomsActionItem,
-    IRequestCreatePlayRoomActionItem,
-} from "../action/play_rooms_action_item";
+    IRequestGetPlayRoomActionItem,
+    IRequestCreateGameOnPlayRoomActionItem,
+} from "../action/play_room_action_item";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
-import {PlayRoomsState} from "../store/play_rooms_state";
-import PlayRoomsComponent from "../component/play_rooms/play_rooms";
+import {PlayRoomState} from "../store/play_room_state";
+import PlayRoomComponent from "../component/play_room/play_room";
 import Progress from "../component/common/progress";
 import {PlayRoom} from "../../domain/model/play_room";
 import {User} from "../../domain/model/user";
 
-interface IProps extends RouteComponentProps<{}>{
-    state: PlayRoomsState;
+interface IProps extends RouteComponentProps<{id: string}>{
+    state: PlayRoomState;
     authState: AuthState;
-    dispatcher: IPlayRoomsDispatcher;
+    dispatcher: IPlayRoomDispatcher;
 }
 
 interface IState {
@@ -39,8 +39,9 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
-        const req: IRequestGetPlayRoomsActionItem = {};
-        this.props.dispatcher.getPlayRooms(req);
+        const id: string = this.props.match.params.id;
+        const req: IRequestGetPlayRoomActionItem = {id};
+        this.props.dispatcher.getPlayRoom(req);
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
@@ -56,28 +57,31 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
         const isLoading: boolean = state.isLoading;
 
-        const playRooms: PlayRoom[] = state.playRooms;
+        const playRoom: PlayRoom | null = state.playRoom;
 
         if (isInit) { return <Progress/>}
-        if (!playRooms) { return <div>初期化失敗</div>}
+        if (!playRoom) { return <div>初期化失敗</div>}
 
         return (
-            <PlayRoomsComponent
+            <PlayRoomComponent
                 isLoading={isLoading}
-                playRooms={playRooms}
-                handleCreatePlayRooms={this.handleCreatePlayRooms}
+                playRoom={playRoom}
+                handleCreateNewGame={this.handleCreateNewGame}
             />
         )
 
     };
 
-    private handleCreatePlayRooms = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        // ToDo: 仮実装
-        if (!this.props.authState.user) { throw new Error("Need Logon") }
-        const owner : User = this.props.authState.user;
-        const req: IRequestCreatePlayRoomActionItem = { owner };
-        this.props.dispatcher.createPlayRoom(req);
+        // PlayRoomのオーナが先手（黒）の固定ルールにて実装
+        if (!this.props.state.playRoom) { throw new Error("")}
+        if (!this.props.authState.user) { throw new Error("")}
+        const id: string = this.props.match.params.id;
+        const playerBlack: User = this.props.state.playRoom.owner;
+        const playerWhite: User = this.props.authState.user;
+        const req: IRequestCreateGameOnPlayRoomActionItem = { id, playerBlack, playerWhite }
+        this.props.dispatcher.createGameOnPlayRoom(req);
     };
 
 }
@@ -85,14 +89,14 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
 const mapStateToProps = (state: AppState) => {
     return {
-        state: state.playRoomsReducer,
+        state: state.playRoomReducer,
         authState: state.authReducer,
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
-        dispatcher: createPlayRoomsDispatcher(dispatch, createPlayroomsActionCreator()),
+        dispatcher: createPlayRoomDispatcher(dispatch, createPlayroomActionCreator()),
     };
 };
 

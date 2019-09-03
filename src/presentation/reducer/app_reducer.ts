@@ -4,12 +4,14 @@ import { History } from 'history'
 
 import authReducer from "./auth_reducer";
 import gameReducer from "./game_reducer";
+import gamesReducer from "./games_reducer";
 import playRoomReducer from "./play_room_reducer";
 import playRoomsReducer from "./play_rooms_reducer";
 
 const appReducer: Reducer<any> = (history: History) => combineReducers<any>({
     authReducer,
     gameReducer,
+    gamesReducer,
     playRoomReducer,
     playRoomsReducer,
     router: connectRouter(history),

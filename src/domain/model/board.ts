@@ -6,8 +6,8 @@ const size: number = config().board.size;
 export enum State {
     State_Unknown = 0,
     State_Empty = 1,
-    State_White = 2,
-    State_Black = 3,
+    State_Black = 2,
+    State_White = 3,
 }
 
 export type TBoardState = {[point: string]: State}

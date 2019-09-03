@@ -14,11 +14,11 @@ import {
 } from "../action/play_rooms_action_item";
 
 import {PlayRoom} from "../../domain/model/play_room";
-import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
+import {createAdminPlayRoomUseCase, IAdminPlayRoomUseCase} from "../../domain/usecase/admin_play_room_usecae";
 import {User} from "../../domain/model/user";
 import {IListenerOnPlayRoomsActionItem} from "../action/play_rooms_action_item";
 
-const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
+const playRoomsUseCase: IAdminPlayRoomUseCase = createAdminPlayRoomUseCase();
 const actionCreator: IPlayRoomsActionCreator = createPlayroomsActionCreator();
 
 const playRoomsChannel = () => {

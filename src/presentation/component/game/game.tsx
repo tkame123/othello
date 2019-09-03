@@ -35,7 +35,6 @@ const GameComponent: React.FC<IProps> = (props) => {
             <GameBoardComponent
                 isLoading={isLoading}
                 size={size}
-                game={game}
                 gameTree={gameTree}
                 handleUpdateGameTree={handleUpdateGameTree}
             />

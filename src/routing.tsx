@@ -3,8 +3,10 @@ import {Redirect, Route, RouteComponentProps, Switch, withRouter} from 'react-ro
 import {AppState} from "./presentation/store/app_state";
 import {connect} from "react-redux";
 
+import PlayRoomContainer from "./presentation/container/play_room_container";
 import PlayRoomsContainer from "./presentation/container/play_rooms_container";
 import GameContainer from "./presentation/container/game_container";
+import GamesContainer from "./presentation/container/games_container";
 
 interface IProps extends RouteComponentProps<{}>{
 }
@@ -24,6 +26,8 @@ export class Routing extends React.Component<IProps, IState> {
             <React.Fragment>
                 <Switch>
                     <Route path='/playrooms' component={PlayRoomsContainer}/>
+                    <Route path='/playroom/:id' component={PlayRoomContainer}/>
+                    <Route path='/games' component={GamesContainer}/>
                     <Route path='/gameboard' component={GameContainer}/>
                     <Redirect to="/gameboard" />
                 </Switch>

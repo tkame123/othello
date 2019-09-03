@@ -80,9 +80,9 @@ export class GameContainer extends React.Component <IProps, IState> {
 
     private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        const playerWhite: User = User.New("white@local");
         const playerBlack: User = User.New("black@local");
-        const req: IRequestCreateGameActionItem = { playerWhite, playerBlack }
+        const playerWhite: User = User.New("white@local");
+        const req: IRequestCreateGameActionItem = { playerBlack, playerWhite }
         this.props.dispatcher.createGame(req);
     };
 

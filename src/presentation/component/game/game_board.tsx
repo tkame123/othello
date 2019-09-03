@@ -1,13 +1,12 @@
 import React from 'react';
 import styled, {css} from "styled-components";
 import {Board, State} from "../../../domain/model/board";
-import {Game, GameTree, Move} from "../../../domain/model/game";
+import {GameTree, Move} from "../../../domain/model/game";
 import Progress from "../common/progress";
 
 interface IProps {
     isLoading: boolean;
     size: number;
-    game: Game;
     gameTree: GameTree;
     handleUpdateGameTree: (gameTreePromise: GameTree) => (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -15,9 +14,9 @@ interface IProps {
 const GameBoardComponent: React.FC<IProps> = (props) => {
 
     const {isLoading, size} = props;
-    const {game, gameTree, handleUpdateGameTree} = props;
+    const {gameTree, handleUpdateGameTree} = props;
 
-    const board: Board = game.board;
+    const board: Board = gameTree.board;
 
     return (
         <>
