@@ -1,4 +1,4 @@
-import {call, put, take} from "redux-saga/effects";
+import {call, put, take, fork, select} from "redux-saga/effects";
 
 import {
     createGameActionCreator,
@@ -9,6 +9,7 @@ import {
     IRequestUpdateGameAction,
 } from "../action/game_action";
 import {
+    IListenerOnGameDetailDiffActionItem,
     IRequestFinishGameActionItem,
     ICallbackInitGameActionItem,
     ICallbackUpdateGameActionItem,
@@ -21,12 +22,74 @@ import {createAdminGameDetailUseCase, IAdminGameDetailUseCase} from "../../domai
 import {Game, GameStatus, TParamsGameFrom} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 import {Cell, GameDetail, GameTree, Move, Player, Score} from "../../domain/model/game_detail";
+import {eventChannel} from "@redux-saga/core";
+import {AppState} from "../store/app_state";
+import {GameState} from "../store/game_state";
 
 const adminGameUsecase: IAdminGameUseCase = createAdminGameUseCase();
 const adminGameDetailUsecase: IAdminGameDetailUseCase = createAdminGameDetailUseCase();
 const gameUsecase: IGameUseCase = createGameUseCase();
 
 const actionCreator: IGameActionCreator = createGameActionCreator();
+
+const gameDetailChannel = () => {
+    const channel = eventChannel(emit => {
+        adminGameDetailUsecase.onGameDetailDiff((gameDetail: GameDetail) =>{
+            emit({gameDetail})
+        });
+
+        const unsubscribe = () => {};
+
+        return unsubscribe
+    });
+    return channel
+};
+
+function* onGameDetailDiff() {
+    const channel = yield call(gameDetailChannel);
+    while (true) {
+        try {
+            const { gameDetail } = yield take(channel);
+            // 現状のStateを取得し更新用のデータを作成する
+
+            const cell: Cell = gameDetail.cell;
+
+            const selector = (state: AppState) => state.gameReducer;
+            const _state: GameState = yield select(selector);
+            const _game: Game | null = _state.game;
+            const _gameTree: GameTree | null = _state.gameTree;
+
+            if (_game === null) { throw new Error("")}
+            if (_gameTree === null) { throw new Error("")}
+
+            const _moves: Move[] = _gameTree.moves;
+
+            // eslint-disable-next-line array-callback-return
+            const result: Move[] = _moves.filter((value) => {
+                if (value.cell !== null ) {
+                    return (value.cell.x === cell.x && value.cell.y === cell.y);
+                }
+            });
+            const gameTree = nextGameTree(result[0].gameTreePromise);
+            const res: IListenerOnGameDetailDiffActionItem = {gameTree, gameDetail};
+            yield put(actionCreator.listenerOnGameDetailDiffAction(true, res));
+
+            const game: Game = _game;
+
+            // 終了判定 && 終了処理
+            let isFinished: boolean = false;
+            if (gameTree.moves === []) { isFinished = true }
+            if (gameTree.moves.length === 1 && gameTree.moves[0].cell === null) { isFinished = true }
+            if (isFinished) {
+                const req: IRequestFinishGameActionItem = { game, gameTree };
+                yield put(actionCreator.requestFinishGameAction(req));
+            }
+
+        } catch (error) {
+            yield put(actionCreator.listenerOnGameDetailDiffAction(false));
+        }
+    }
+}
 
 function* handleInitGameInGame() {
     while (true) {
@@ -37,6 +100,7 @@ function* handleInitGameInGame() {
             const initGameTree: GameTree = makeGameTree(Board.New(), State.State_Black, false, 1);
             const gameDetails: GameDetail[] = yield call(connectGameDetail, action.item.id);
 
+            // 履歴の反映
             let gameTree: GameTree = initGameTree;
             if (gameDetails !== []) {
                 gameDetails.forEach((item: GameDetail) => {
@@ -51,6 +115,9 @@ function* handleInitGameInGame() {
                     gameTree = nextGameTree(result[0].gameTreePromise);
                 })
             }
+
+            // 同期処理の起動
+            yield fork(onGameDetailDiff);
 
             const res: ICallbackInitGameActionItem = {game, gameTree, gameDetails};
             yield put(actionCreator.callbackInitGameAction(true, res));
@@ -74,27 +141,14 @@ function* handleUpdateGameInGame() {
     while (true) {
         try {
             const action: IRequestUpdateGameAction = yield take(GameActionType.REQUEST_UPDATE_GAME);
-            const gameTree: GameTree = nextGameTree(action.item.gameTreePromise);
-            const game: Game = action.item.game;
-
             const id: string = action.item.game.id;
             const cell: Cell = action.item.cell;
-            const turn: number = gameTree.turn;
+            const turn: number = action.item.nextTurn;
 
             // Online情報の同期
             yield call(addGameDetail, id, turn, cell);
-
-            const res: ICallbackUpdateGameActionItem = { game, gameTree};
+            const res: ICallbackUpdateGameActionItem = {};
             yield put(actionCreator.callbackUpdateGameAction(true, res));
-
-            // 終了判定 && 終了処理
-            let isFinished: boolean = false;
-            if (gameTree.moves === []) { isFinished = true }
-            if (gameTree.moves.length === 1 && gameTree.moves[0].cell === null) { isFinished = true }
-            if (isFinished) {
-                const req: IRequestFinishGameActionItem = { game, gameTree };
-                yield put(actionCreator.requestFinishGameAction(req));
-            }
 
         } catch (error) {
             yield put(actionCreator.callbackUpdateGameAction(false));

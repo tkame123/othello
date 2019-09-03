@@ -3,8 +3,8 @@ import {GameState} from "../store/game_state";
 import {
     GameAction,
     GameActionType,
+    IListenerOnGameDetailDiffAction,
     ICallbackInitGameAction,
-    ICallbackUpdateGameAction,
     ICallbackFinishGameAction,
 } from "../action/game_action";
 
@@ -18,6 +18,31 @@ const initialState: GameState = {
 
 const gameReducer: Reducer<GameState, GameAction> = (state = initialState, action: GameAction): GameState => {
     switch (action.type) {
+
+        case GameActionType.LISTENER_ON_GAME_DETAIL_DIFF: {
+            const _action = action as IListenerOnGameDetailDiffAction;
+            if (action.isSuccess) {
+                const gameDetails = _action.item
+                    ? state.gameDetails.concat(_action.item.gameDetail)
+                    : state.gameDetails;
+
+                return Object.assign({}, state, {
+                    game: state.game,
+                    gameTree: _action.item ? _action.item.gameTree : null,
+                    gameDetails: gameDetails,
+                    score: state.score,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    game: state.game,
+                    gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
+                    score: state.score,
+                    isLoading: false,
+                });
+            }
+        }
 
         case GameActionType.REQUEST_INIT_GAME: {
             return Object.assign({}, state, {
@@ -59,11 +84,10 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
             });
         }
         case GameActionType.CALLBACK_UPDATE_GAME: {
-            const _action = action as ICallbackUpdateGameAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
-                    game: _action.item ? _action.item.game : null,
-                    gameTree: _action.item ? _action.item.gameTree : null,
+                    game: state.game,
+                    gameTree: state.gameTree,
                     gameDetails: state.gameDetails,
                     score: state.score,
                     isLoading: false,

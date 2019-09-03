@@ -77,8 +77,10 @@ export class GameContainer extends React.Component <IProps, IState> {
 
     private handleUpdateGameTree = (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
+        if (!this.props.state.gameTree) { throw new Error("")}
         if (!this.props.state.game) { throw new Error("")}
-        const req: IRequestUpdateGameActionItem = { game: this.props.state.game ,gameTreePromise: gameTreePromise, cell: cell };
+        const nextTurn: number = this.props.state.gameTree.turn + 1;
+        const req: IRequestUpdateGameActionItem = { game: this.props.state.game, cell: cell, nextTurn: nextTurn };
         this.props.dispatcher.updateGame(req);
     };
 
