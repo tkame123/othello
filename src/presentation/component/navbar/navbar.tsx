@@ -1,6 +1,8 @@
 import React from 'react';
 import {User} from "../../../domain/model/user";
 
+import NavbarMenuComponent from "./navbar_menu";
+
 interface IProps {
     isLoading: boolean;
     children: any;
@@ -16,10 +18,11 @@ const NavbarComponent: React.FC<IProps> = (props) => {
 
     return (
         <>
-            {user && <div>{user.email}</div>}
-
-            <button onClick={handleLoginOnGoogle}>Login</button>
-            <button onClick={handleLogout}>Logout</button>
+            <NavbarMenuComponent
+                user={user}
+                handleLoginOnGoogle={handleLoginOnGoogle}
+                handleLogout={handleLogout}
+            />
 
             {children}
 
