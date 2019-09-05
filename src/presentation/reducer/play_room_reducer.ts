@@ -9,6 +9,7 @@ import {
 
 const initialState: PlayRoomState = {
     playRoom: null,
+    game: null,
     isLoading: false,
 };
 
@@ -18,6 +19,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
         case PlayRoomActionType.REQUEST_GET_PLAY_ROOM: {
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
+                game: state.game,
                 isLoading: true,
             });
         }
@@ -26,11 +28,13 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     playRoom: _action.item ? _action.item.playRoom : null,
+                    game: _action.item ? _action.item.game : null,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
+                    game: state.game,
                     isLoading: false,
                 });
             }
@@ -39,6 +43,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
         case PlayRoomActionType.REQUEST_CREATE_GAME_ON_PLAY_ROOM: {
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
+                game: state.game,
                 isLoading: true,
             });
         }
@@ -47,11 +52,13 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     playRoom: _action.item ? _action.item.playRoom : null,
+                    game: _action.item ? _action.item.game : null,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
+                    game: state.game,
                     isLoading: false,
                 });
             }

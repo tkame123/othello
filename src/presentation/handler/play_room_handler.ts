@@ -13,11 +13,14 @@ import {
 } from "../action/play_room_action_item";
 
 import {PlayRoom} from "../../domain/model/play_room";
-import {createAdminPlayRoomUseCase, IAdminPlayRoomUseCase} from "../../domain/usecase/admin_play_room_usecae";
+import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
+import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {User} from "../../domain/model/user";
 import {handleErrorForHandler} from "./handleErrorForHandler";
+import {Game} from "../../domain/model/game";
 
-const playRoomsUseCase: IAdminPlayRoomUseCase = createAdminPlayRoomUseCase();
+const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
+const gameUseCase: IGameUseCase = createGameUseCase();
 const actionCreator: IPlayRoomActionCreator = createPlayroomActionCreator();
 
 function* handleGetPlayRoomInPlayRoom() {
@@ -25,7 +28,10 @@ function* handleGetPlayRoomInPlayRoom() {
         try {
             const action: IRequestGetPlayRoomAction = yield take(PlayRoomActionType.REQUEST_GET_PLAY_ROOM);
             const playRoom: PlayRoom = yield call(getPlayRoom, action.item.id);
-            const res: ICallbackGetPlayRoomActionItem = {playRoom};
+            const game: Game | null = playRoom.gameId
+                ? yield call(getGame, playRoom.gameId)
+                : null;
+            const res: ICallbackGetPlayRoomActionItem = {playRoom, game};
             yield put(actionCreator.callbackGetPlayRoomAction(true, res));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -39,7 +45,10 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
         try {
             const action: IRequestCreateGameOnPlayRoomAction = yield take(PlayRoomActionType.REQUEST_CREATE_GAME_ON_PLAY_ROOM);
             const playRoom: PlayRoom = yield call(createGameOnPlayRoom, action.item.id, action.item.playerBlack, action.item.playerWhite);
-            const res: ICallbackCreateGameOnPlayRoomActionItem = {playRoom};
+            const game: Game | null = playRoom.gameId
+                ? yield call(getGame, playRoom.gameId)
+                : null;
+            const res: ICallbackCreateGameOnPlayRoomActionItem = {playRoom, game};
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, res));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -50,6 +59,10 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
 
 const getPlayRoom = (id: string): Promise<PlayRoom | null> => {
     return playRoomsUseCase.getPlayRoom(id);
+};
+
+const getGame = (id: string): Promise<Game | null> => {
+    return gameUseCase.getGame(id);
 };
 
 const createGameOnPlayRoom = (id: string, playerBlack: User, playerWhite: User): Promise<PlayRoom> => {

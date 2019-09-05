@@ -3,14 +3,14 @@ import 'firebase/firestore';
 import {config} from "../../util/config";
 
 import {User} from "../model/user";
-import {Game, GameStatus} from "../model/game";
+import {GameStatus} from "../model/game";
 import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
 const version: string = config().ver;
 const playRoomsRef: string = `version/${version}/playroom`;
 const gameRef: string = `version/${version}/game`;
 
-export interface IAdminPlayRoomUseCase {
+export interface IPlayRoomUseCase {
 
     onPlayRooms(callback: (playRooms: PlayRoom[]) => void): void;
 
@@ -24,10 +24,10 @@ export interface IAdminPlayRoomUseCase {
 
 }
 
-class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
+class PlayRoomUseCase implements IPlayRoomUseCase {
 
     public onPlayRooms(callback: (playRooms: PlayRoom[]) => void): void {
-        firebase.firestore().collection(playRoomsRef).where("game", "==", null).onSnapshot((querySnapshot) => {
+        firebase.firestore().collection(playRoomsRef).onSnapshot((querySnapshot) => {
             let playRooms: PlayRoom[] = [];
             querySnapshot.forEach((doc) => {
                 const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
@@ -54,7 +54,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
 
     public getPlayRooms = (): Promise<PlayRoom[]> => {
         return new Promise<PlayRoom[]>((resolve, reject) => {
-            firebase.firestore().collection(playRoomsRef).where("game", "==", null).get().then((docs: firebase.firestore.QuerySnapshot) => {
+            firebase.firestore().collection(playRoomsRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let playRooms: PlayRoom[] = [];
                 docs.forEach((doc) => {
                     const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
@@ -74,7 +74,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                     id: owner.id,
                     email: owner.email,
                 },
-                game: null,
+                gameId: null,
                 updatedAt: new Date(),
                 createdAt: new Date(),
             }).then(() => {
@@ -100,17 +100,8 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                 updatedAt: new Date(),
                 createdAt: new Date(),
             }).then((ref: firebase.firestore.DocumentReference) => {
-                return firebase.firestore().collection(gameRef).doc(ref.id).get();
-            }).then((doc: firebase.firestore.DocumentData) => {
                 return firebase.firestore().collection(playRoomsRef).doc(id).update({
-                    game: {
-                        id: doc.id,
-                        playerBlack: { id: doc.get("playerBlack.id"), email: doc.get("playerBlack.email")},
-                        playerWhite: { id: doc.get("playerWhite.id"), email: doc.get("playerWhite.email")},
-                        gameStatus: doc.get("gameStatus"),
-                        updatedAt: doc.get("updatedAt"),
-                        createdAt: doc.get("createdAt"),
-                    },
+                    gameId: ref.id,
                     updatedAt: new Date(),
                 })
             }).then(() => {
@@ -128,16 +119,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         return PlayRoom.From({
             id: doc.id,
             owner: User.From(doc.get("owner.id"), doc.get("owner.email")),
-            game: doc.get("game")
-                    ? Game.From({
-                        id: doc.get("game.id"),
-                        playerBlack: User.From(doc.get("game.playerBlack.id"), doc.get("game.playerBlack.email")),
-                        playerWhite: User.From(doc.get("game.playerWhite.id"), doc.get("game.playerWhite.email")),
-                        gameStatus: doc.get("game.gameStatus"),
-                        updatedAt: doc.get("game.updatedAt").toDate(),
-                        createdAt: doc.get("game.createdAt").toDate(),
-                        })
-                    : null,
+            gameId: doc.get("gameId"),
             updatedAt: doc.get("updatedAt").toDate(),
             createdAt: doc.get("createdAt").toDate(),
         });
@@ -145,6 +127,6 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
 
 }
 
-export const createAdminPlayRoomUseCase = (): IAdminPlayRoomUseCase => {
-    return new AdminPlayRoomUseCase();
+export const createPlayRoomUseCase = (): IPlayRoomUseCase => {
+    return new PlayRoomUseCase();
 };

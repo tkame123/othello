@@ -18,10 +18,9 @@ const PlayRoomsListComponent: React.FC<IProps> = (props) => {
         <PlayRoomListUl>
 
             {playRooms.map((item: PlayRoom, index: number) => {
-                const playerName: string = item.game ? item.game.playerBlack.email : "まだいない";
                 return (
                     <PlayRoomListLi key={index} >
-                        <Link key={index}  to={`/playroom/${item.id}`}>{index} {item.owner.email}の部屋 {playerName}</Link>
+                        <Link key={index}  to={`/playroom/${item.id}`}>{index} {item.owner.email}の部屋</Link>
                     </PlayRoomListLi>)
             })}
 

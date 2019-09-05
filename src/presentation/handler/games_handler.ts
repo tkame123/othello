@@ -12,10 +12,10 @@ import {
 } from "../action/games_action_item";
 
 import {Game} from "../../domain/model/game";
-import {createAdminGameUseCase, IAdminGameUseCase} from "../../domain/usecase/admin_game_usecase";
+import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 
-const gameUseCase: IAdminGameUseCase = createAdminGameUseCase();
+const gameUseCase: IGameUseCase = createGameUseCase();
 const actionCreator: IGamesActionCreator = createGamesActionCreator();
 
 const gamessChannel = () => {

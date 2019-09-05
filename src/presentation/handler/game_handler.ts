@@ -16,9 +16,9 @@ import {
     ICallbackFinishGameActionItem,
 } from "../action/game_action_item";
 
+import {createGameGreeUseCase, IGameTreeUseCase} from "../../domain/usecase/game_tree_usecase";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
-import {createAdminGameUseCase, IAdminGameUseCase} from "../../domain/usecase/admin_game_usecase";
-import {createAdminGameDetailUseCase, IAdminGameDetailUseCase} from "../../domain/usecase/admin_game_detail_usecase";
+import {createGameDetailUseCase, IGameDetailUseCase} from "../../domain/usecase/game_detail_usecase";
 import {Game, GameStatus, TParamsGameFrom} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 import {Cell, GameDetail, GameTree, Move, Player} from "../../domain/model/game_detail";
@@ -28,15 +28,15 @@ import {GameState} from "../store/game_state";
 import {Score} from "../../domain/model/score";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 
-const adminGameUsecase: IAdminGameUseCase = createAdminGameUseCase();
-const adminGameDetailUsecase: IAdminGameDetailUseCase = createAdminGameDetailUseCase();
-const gameUsecase: IGameUseCase = createGameUseCase();
+const adminGameUsecase: IGameUseCase = createGameUseCase();
+const gameDetailUsecase: IGameDetailUseCase = createGameDetailUseCase();
+const gameTreeUsecase: IGameTreeUseCase = createGameGreeUseCase();
 
 const actionCreator: IGameActionCreator = createGameActionCreator();
 
 const gameDetailChannel = () => {
     const channel = eventChannel(emit => {
-        adminGameDetailUsecase.onGameDetailDiff((gameDetail: GameDetail) =>{
+        gameDetailUsecase.onGameDetailDiff((gameDetail: GameDetail) =>{
             emit({gameDetail})
         });
 
@@ -195,23 +195,23 @@ const addScore = (score: Score): Promise<void> => {
 };
 
 const connectGameDetail = (id:string): Promise<GameDetail[]> => {
-    return adminGameDetailUsecase.connectGameDetail(id);
+    return gameDetailUsecase.connectGameDetail(id);
 };
 
 const addGameDetail = (id: string, turn: number, cell: Cell) : Promise<void> => {
-    return adminGameDetailUsecase.addGameDetail(id, turn, cell);
+    return gameDetailUsecase.addGameDetail(id, turn, cell);
 };
 
 const makeGameTree = (board: Board, player: Player, wasPassed: boolean, turn: number):GameTree => {
-    return gameUsecase.makeGameTree(board, player, wasPassed, turn);
+    return gameTreeUsecase.makeGameTree(board, player, wasPassed, turn);
 };
 
 const nextGameTree = (promise: any):GameTree => {
-    return gameUsecase.nextGameTree(promise);
+    return gameTreeUsecase.nextGameTree(promise);
 };
 
 const finishGame = (game: Game, board: Board): Score => {
-    return gameUsecase.finishGame(game, board);
+    return gameTreeUsecase.finishGame(game, board);
 };
 
 export {handleInitGameInGame, handleUpdateGameInGame, handleFinishGameInGame}

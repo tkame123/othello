@@ -15,7 +15,7 @@ const PlayRoomInfoComponent: React.FC<IProps> = (props) => {
     const {isLoading} = props;
     const {playRoom, handleCreateNewGame} = props;
 
-    const gameId: string | null = playRoom.game ? playRoom.game.id : null;
+    const gameId: string | null = playRoom.gameId;
 
     return (
         <>

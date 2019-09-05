@@ -14,12 +14,15 @@ import {
 } from "../action/play_rooms_action_item";
 
 import {PlayRoom} from "../../domain/model/play_room";
-import {createAdminPlayRoomUseCase, IAdminPlayRoomUseCase} from "../../domain/usecase/admin_play_room_usecae";
+import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
+import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {User} from "../../domain/model/user";
 import {IListenerOnPlayRoomsActionItem} from "../action/play_rooms_action_item";
 import {handleErrorForHandler} from "./handleErrorForHandler";
+import {Game} from "../../domain/model/game";
 
-const playRoomsUseCase: IAdminPlayRoomUseCase = createAdminPlayRoomUseCase();
+const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
+const gameUseCase: IGameUseCase = createGameUseCase();
 const actionCreator: IPlayRoomsActionCreator = createPlayroomsActionCreator();
 
 const playRoomsChannel = () => {
@@ -40,7 +43,13 @@ function* onPlayRooms() {
     while (true) {
         try {
             const { playRooms } = yield take(channel);
-            const res: IListenerOnPlayRoomsActionItem = {playRooms};
+            let games: Game[] = [];
+            for (const playRoom of playRooms) {
+                if (playRoom.gameId) {
+                    games.push(yield call(getGame, playRoom.gameId));
+                }
+            }
+            const res: IListenerOnPlayRoomsActionItem = {playRooms, games};
             yield put(actionCreator.listenerOnPlayRoomsAction(true, res));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -54,7 +63,13 @@ function* handleGetPlayRoomsInPlayRooms() {
         try {
             yield take(PlayRoomsActionType.REQUEST_GET_PLAY_ROOMS);
             const playRooms: PlayRoom[] = yield call(getPlayRooms);
-            const res: ICallbackGetPlayRoomsActionItem = {playRooms};
+            let games: Game[] = [];
+            for (const playRoom of playRooms) {
+                if (playRoom.gameId) {
+                    games.push(yield call(getGame, playRoom.gameId));
+                }
+            }
+            const res: ICallbackGetPlayRoomsActionItem = {playRooms, games};
             yield put(actionCreator.callbackGetPlayRoomsAction(true, res));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -83,6 +98,10 @@ const getPlayRooms = (): Promise<PlayRoom[]> => {
 
 const createPlayRoom = (owner: User): Promise<void> => {
     return playRoomsUseCase.createPlayRoom(owner);
+};
+
+const getGame = (id: string): Promise<Game | null> => {
+    return gameUseCase.getGame(id);
 };
 
 export {onPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms}

@@ -7,7 +7,7 @@ import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 const version: string = config().ver;
 const gameDetailRef: string = `version/${version}/gameDetail`;
 
-export interface IAdminGameDetailUseCase {
+export interface IGameDetailUseCase {
 
     connectGameDetail(id:string) : Promise<GameDetail[]>;
 
@@ -17,7 +17,7 @@ export interface IAdminGameDetailUseCase {
 
 }
 
-class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
+class GameDetailUseCase implements IGameDetailUseCase {
 
     private gameId: string = "";
     private gameDetails: GameDetail[] = [];
@@ -89,6 +89,6 @@ class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
 
 }
 
-export const createAdminGameDetailUseCase = (): IAdminGameDetailUseCase => {
-    return new AdminGameDetailUseCase();
+export const createGameDetailUseCase = (): IGameDetailUseCase => {
+    return new GameDetailUseCase();
 };
