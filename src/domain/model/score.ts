@@ -2,6 +2,7 @@ export type TParamsScoreFrom  = {
     gameId: string,
     blackPlayer: { userId: string , value: number},
     whitePlayer: { userId: string , value: number},
+    boardSize: number,
     updatedAt: Date,
     createdAt: Date,
 }
@@ -14,6 +15,7 @@ export class Score {
             from.gameId,
             from.blackPlayer,
             from.whitePlayer,
+            from.boardSize,
             from.updatedAt,
             from.createdAt,
         );
@@ -22,6 +24,7 @@ export class Score {
     constructor(public readonly gameId: string,
                 public readonly blackPlayer: { userId: string , value: number},
                 public readonly whitePlayer: { userId: string , value: number},
+                public readonly boardSize: number,
                 public readonly updatedAt: Date,
                 public readonly createdAt: Date,
     ) {}

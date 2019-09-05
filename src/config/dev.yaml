@@ -13,7 +13,7 @@ appNotificationMessages:
   maxNotificationMessages: 10
   delayMessageSeconds: 5
 board:
-  size: 4
+  size: 8
 style:
   color:
     border: "#eee"

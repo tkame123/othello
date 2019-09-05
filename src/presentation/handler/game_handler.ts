@@ -19,7 +19,7 @@ import {
 import {createGameGreeUseCase, IGameTreeUseCase} from "../../domain/usecase/game_tree_usecase";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {createGameDetailUseCase, IGameDetailUseCase} from "../../domain/usecase/game_detail_usecase";
-import {Game, GameStatus, TParamsGameFrom} from "../../domain/model/game";
+import {Game, GameStatus} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 import {Cell, GameDetail, GameTree, Move, Player} from "../../domain/model/game_detail";
 import {eventChannel} from "@redux-saga/core";
@@ -28,7 +28,7 @@ import {GameState} from "../store/game_state";
 import {Score} from "../../domain/model/score";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 
-const adminGameUsecase: IGameUseCase = createGameUseCase();
+const gameUsecase: IGameUseCase = createGameUseCase();
 const gameDetailUsecase: IGameDetailUseCase = createGameDetailUseCase();
 const gameTreeUsecase: IGameTreeUseCase = createGameGreeUseCase();
 
@@ -100,7 +100,7 @@ function* handleInitGameInGame() {
             const action: IRequestInitGameAction = yield take(GameActionType.REQUEST_INIT_GAME);
             const game: Game | null = yield call(getGame, action.item.id);
             if (!game) { throw new Error("")}
-            const initGameTree: GameTree = makeGameTree(Board.New(), State.State_Black, false, 1);
+            const initGameTree: GameTree = makeGameTree(Board.New(game.boardSize), State.State_Black, false, 1);
             const gameDetails: GameDetail[] = yield call(connectGameDetail, action.item.id);
 
             // 履歴の反映
@@ -165,15 +165,16 @@ function* handleFinishGameInGame() {
     while (true) {
         try {
             const action: IRequestFinishGameAction = yield take(GameActionType.REQUEST_FINISH_GAME);
-            const params: TParamsGameFrom = {
+            //ToDo: Online同期
+            const game: Game = Game.From({
                 id: action.item.game.id,
                 playerBlack: action.item.game.playerBlack,
                 playerWhite: action.item.game.playerWhite,
                 gameStatus: GameStatus.GameStatus_End,
+                boardSize: action.item.game.boardSize,
                 updatedAt: action.item.game.updatedAt,
                 createdAt: action.item.game.createdAt,
-            };
-            const game: Game = Game.From(params);
+            });
             const gameTree: GameTree = action.item.gameTree;
             const score: Score = finishGame(game, gameTree.board);
             yield call(addScore, score);
@@ -187,11 +188,15 @@ function* handleFinishGameInGame() {
 }
 
 const getGame = (id: string): Promise<Game | null> => {
-    return adminGameUsecase.getGame(id);
+    return gameUsecase.getGame(id);
 };
 
 const addScore = (score: Score): Promise<void> => {
-    return adminGameUsecase.addScore(score);
+    return gameUsecase.addScore(score);
+};
+
+const finishGame = (game: Game, board: Board): Score => {
+    return gameUsecase.finishGame(game, board);
 };
 
 const connectGameDetail = (id:string): Promise<GameDetail[]> => {
@@ -210,8 +215,5 @@ const nextGameTree = (promise: any):GameTree => {
     return gameTreeUsecase.nextGameTree(promise);
 };
 
-const finishGame = (game: Game, board: Board): Score => {
-    return gameTreeUsecase.finishGame(game, board);
-};
 
 export {handleInitGameInGame, handleUpdateGameInGame, handleFinishGameInGame}

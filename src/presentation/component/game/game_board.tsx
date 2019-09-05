@@ -1,44 +1,58 @@
 import React from 'react';
 import styled, {css} from "styled-components";
 import {Board, State} from "../../../domain/model/board";
-import {Cell, GameTree, Move} from "../../../domain/model/game_detail";
+import {Cell, GameDetail, GameTree} from "../../../domain/model/game_detail";
 
 interface IProps {
     isLoading: boolean;
     isPlayer: boolean;
     isMyTurn: boolean;
-    size: number;
+    boardSize: number;
     gameTree: GameTree;
-    handleUpdateGameTree: (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>) => void;
+    gameDetails: GameDetail[];
+    handleToggleBoard: (cell: Cell, isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>) => void;
 }
 
 const GameBoardComponent: React.FC<IProps> = (props) => {
 
-    const {size, isPlayer, isMyTurn, gameTree, handleUpdateGameTree} = props;
+    const {boardSize, isPlayer, isMyTurn, gameTree, gameDetails, handleToggleBoard} = props;
 
     const board: Board = gameTree.board;
 
     return (
         <>
-            <table>
+            <BoardTable>
                 <tbody>
                 <tr>
                     <Header/>
                     {
-                        [...Array(size)].map((item, x) => {
+                        [...Array(boardSize)].map((item, x) => {
                             return <Header key={x}>{x}</Header>
                         })
                     }
                 </tr>
 
                 {
-                    [...Array(size)].map((item, y) =>{
+                    [...Array(boardSize)].map((item, y) =>{
                         return (
                             <tr key={y}>
                                 <Header>{y}</Header>
                                 {
-                                    [...Array(size)].map((item, x) => {
-                                        return <BoardCell key={x}><Disk state={board.boardState[[x, y].toString()]}/></BoardCell>
+                                    [...Array(boardSize)].map((item, x) => {
+                                        const cell: Cell = {x: x, y: y};
+                                        let isLastMove: boolean = false;
+                                        if (gameDetails[gameDetails.length -1]) {
+                                            const lastCell: Cell = gameDetails[gameDetails.length -1].cell;
+                                            isLastMove = ( (lastCell.x === cell.x) && (lastCell.y === cell.y) );
+                                        }
+                                        return (
+                                            <BoardCell
+                                                key={x}
+                                                onClick={handleToggleBoard(cell, isPlayer, isMyTurn)}
+                                                isLastMove={isLastMove}>
+                                                <Disk state={board.boardState[[x, y].toString()]} />
+                                            </BoardCell>
+                                        )
                                     })
                                 }
                             </tr>
@@ -47,23 +61,7 @@ const GameBoardComponent: React.FC<IProps> = (props) => {
                 }
 
                 </tbody>
-            </table>
-
-            { isPlayer && isMyTurn &&
-                // eslint-disable-next-line array-callback-return
-                gameTree.moves.map((item: Move, index) => {
-                    if (item.cell && item.gameTreePromise) {
-                        const x: number = item.cell.x;
-                        const y: number = item.cell.y;
-                        const cell: Cell = {x: x, y: y};
-                        const value: string = x.toString() + y.toString();
-
-                        return (
-                            <button key={index} onClick={handleUpdateGameTree(item.gameTreePromise, cell)}>{value}</button>
-                        )
-                    }
-                })
-            }
+            </BoardTable>
 
         </>
     );
@@ -73,6 +71,11 @@ const GameBoardComponent: React.FC<IProps> = (props) => {
 
 export default GameBoardComponent;
 
+const BoardTable = styled.table`
+  margin-left: auto;
+  margin-right: auto;
+`;
+
 const Header = styled.th`
   margin: 0;
   padding: 0.125em 0.25em;
@@ -80,32 +83,26 @@ const Header = styled.th`
 `;
 
 const BoardCell = styled.td`
-  background: #090;
-  border: 1px solid #ccc;
-  padding: 0;
-  margin: 0;
-  line-height: 0;
+    border: 1px solid #ccc;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    cursor: pointer;
+    background: ${(props:{isLastMove: boolean}) => props.isLastMove ? "#1E6C99" : "#090" };
 `;
 
-interface ComponentProps
-    extends React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLSpanElement>,
-        HTMLSpanElement
-        > {
-    state: State;
-}
 const Disk = styled.span`
     display: inline-block;
     width: 2em;
     height: 2em;
     border-radius: 1em;
     margin: 0.25em;
-    ${(props:ComponentProps) => props.state === State.State_Empty && css`
+    ${(props:{state: State}) => props.state === State.State_Empty && css`
     `}
-    ${(props:ComponentProps) => props.state === State.State_Black && css`
-    background: #000;
+    ${(props:{state: State}) => props.state === State.State_Black && css`
+        background: #000;
     `}
-    ${(props:ComponentProps) => props.state === State.State_White && css`
-    background: #fff;
+    ${(props:{state: State}) => props.state === State.State_White && css`
+        background: #fff;
     `}
 `;

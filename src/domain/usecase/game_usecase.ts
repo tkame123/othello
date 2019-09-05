@@ -6,6 +6,7 @@ import {User} from "../model/user";
 import {Game} from "../model/game";
 import {Score} from "../model/score";
 import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
+import {Board, State} from "../model/board";
 
 const version: string = config().ver;
 const gameRef: string = `version/${version}/game`;
@@ -20,6 +21,8 @@ export interface IGameUseCase {
     getGames(): Promise<Game[]>;
 
     addScore(score: Score) :Promise<void>;
+
+    finishGame(game: Game, board: Board) : Score;
 
 }
 
@@ -72,6 +75,7 @@ class GameUseCase implements IGameUseCase {
             ref.set({
                 blackPlayer: { id: score.blackPlayer.userId, value: score.blackPlayer.value },
                 whitePlayer: { id: score.whitePlayer.userId, value: score.whitePlayer.value },
+                boardSize: score.boardSize,
                 updatedAt: score.updatedAt,
                 createdAt: score.createdAt,
             }).then(() =>{
@@ -83,12 +87,39 @@ class GameUseCase implements IGameUseCase {
 
     };
 
+    public finishGame = (game: Game, board: Board): Score => {
+        let blackScore: number = 0;
+        let whiteScore: number = 0;
+
+        [...Array(game.boardSize)].forEach((item, y) => {
+            [...Array(game.boardSize)].forEach((item, x) => {
+                const disk: State = board.boardState[[x, y].toString()];
+                if (disk === State.State_White) {
+                    whiteScore++
+                }
+                if (disk === State.State_Black) {
+                    blackScore++
+                }
+            })
+        });
+        const score: Score = Score.From({
+            gameId: game.id,
+            blackPlayer: {userId: game.playerBlack.id, value: blackScore},
+            whitePlayer: {userId: game.playerWhite.id, value: whiteScore},
+            boardSize: game.boardSize,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+        });
+        return score
+    };
+
     private getGameFromFS = (doc: firebase.firestore.DocumentData): Game =>{
         return Game.From({
             id: doc.id,
             playerBlack: User.From(doc.get("playerBlack.id"), doc.get("playerBlack.email")),
             playerWhite: User.From(doc.get("playerWhite.id"), doc.get("playerWhite.email")),
             gameStatus: doc.get("gameStatus"),
+            boardSize: doc.get("boardSize"),
             updatedAt: doc.get("updatedAt").toDate(),
             createdAt: doc.get("createdAt").toDate(),
         });

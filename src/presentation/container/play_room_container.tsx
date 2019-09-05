@@ -19,6 +19,8 @@ import Progress from "../component/common/progress";
 import {PlayRoom} from "../../domain/model/play_room";
 import {User} from "../../domain/model/user";
 
+import {config} from "../../util/config";
+
 interface IProps extends RouteComponentProps<{id: string}>{
     state: PlayRoomState;
     authState: AuthState;
@@ -80,7 +82,8 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         const id: string = this.props.match.params.id;
         const playerBlack: User = this.props.state.playRoom.owner;
         const playerWhite: User = this.props.authState.user;
-        const req: IRequestCreateGameOnPlayRoomActionItem = { id, playerBlack, playerWhite }
+        const boardSize: number = config().board.size;
+        const req: IRequestCreateGameOnPlayRoomActionItem = { id, boardSize, playerBlack, playerWhite }
         this.props.dispatcher.createGameOnPlayRoom(req);
     };
 

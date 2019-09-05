@@ -13,15 +13,16 @@ appNotificationMessages:
   maxNotificationMessages: 10
   delayMessageSeconds: 5
 board:
-  size: 4
+  size: 8
 style:
   color:
+    border: "#eee"
     primary: "#3F51B5"
     primaryDark: "#303F9F"
     primaryLight: "#9FA8DA"
-    secondary: "#00BCD4"
-    secondaryDark: "#0097A7"
-    secondaryLight: "#80DEEA"
+    secondary: "#80DEEA"
+    secondaryDark: "#26C6DA"
+    secondaryLight: "#E0F7FA"
     background: "#FFFFFF"
     surface: "#FFFFFF"
     error: "#B00020"

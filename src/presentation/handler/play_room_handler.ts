@@ -44,7 +44,7 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
     while (true) {
         try {
             const action: IRequestCreateGameOnPlayRoomAction = yield take(PlayRoomActionType.REQUEST_CREATE_GAME_ON_PLAY_ROOM);
-            const playRoom: PlayRoom = yield call(createGameOnPlayRoom, action.item.id, action.item.playerBlack, action.item.playerWhite);
+            const playRoom: PlayRoom = yield call(createGameOnPlayRoom, action.item.id, action.item.boardSize, action.item.playerBlack, action.item.playerWhite);
             const game: Game | null = playRoom.gameId
                 ? yield call(getGame, playRoom.gameId)
                 : null;
@@ -65,8 +65,8 @@ const getGame = (id: string): Promise<Game | null> => {
     return gameUseCase.getGame(id);
 };
 
-const createGameOnPlayRoom = (id: string, playerBlack: User, playerWhite: User): Promise<PlayRoom> => {
-    return playRoomsUseCase.createGameOnPlayRoom(id, playerBlack, playerWhite);
+const createGameOnPlayRoom = (id: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<PlayRoom> => {
+    return playRoomsUseCase.createGameOnPlayRoom(id, boardSize, playerBlack, playerWhite);
 };
 
 export {handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom}

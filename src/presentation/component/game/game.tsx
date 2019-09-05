@@ -4,23 +4,23 @@ import {Game} from "../../../domain/model/game";
 
 import GameControllerComponent from "./game_controller";
 import GameBoardComponent from "./game_board";
-import {Cell, GameTree} from "../../../domain/model/game_detail";
+import {Cell, GameDetail, GameTree} from "../../../domain/model/game_detail";
 import {User} from "../../../domain/model/user";
 import {Score} from "../../../domain/model/score";
 
 interface IProps {
     isLoading: boolean;
     myPlayer: User | null;
-    size: number;
     game: Game;
-    score: Score | null;
     gameTree: GameTree;
-    handleUpdateGameTree: (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>) => void;
+    gameDetails: GameDetail[];
+    score: Score | null;
+    handleToggleBoard: (cell: Cell, isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>) => void;
 }
 
 const GameComponent: React.FC<IProps> = (props) => {
 
-    const {isLoading, myPlayer, size, game, gameTree, score, handleUpdateGameTree} = props;
+    const {isLoading, myPlayer, game, gameTree, gameDetails, score, handleToggleBoard} = props;
 
     // Userの状態を設定
     let isPlayer: boolean = false;
@@ -31,6 +31,8 @@ const GameComponent: React.FC<IProps> = (props) => {
     if (myPlayer && (game.playerBlack.id === myPlayer.id)) { isMyTurn = gameTree.player === State.State_Black }
     if (game.playerBlack.id === game.playerWhite.id) { isMyTurn = true }
     if (!isPlayer) { isMyTurn = false}
+
+    const boardSize: number = game.boardSize;
 
     return (
         <>
@@ -46,9 +48,10 @@ const GameComponent: React.FC<IProps> = (props) => {
                 isLoading={isLoading}
                 isPlayer={isPlayer}
                 isMyTurn={isMyTurn}
-                size={size}
+                boardSize={boardSize}
                 gameTree={gameTree}
-                handleUpdateGameTree={handleUpdateGameTree}
+                gameDetails={gameDetails}
+                handleToggleBoard={handleToggleBoard}
             />
         </>
     );

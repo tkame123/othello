@@ -20,7 +20,7 @@ export interface IPlayRoomUseCase {
 
     createPlayRoom(owner: User) : Promise<void>;
 
-    createGameOnPlayRoom(id: string, playerBlack: User, playerWhite: User): Promise<PlayRoom>;
+    createGameOnPlayRoom(id: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<PlayRoom>;
 
 }
 
@@ -85,7 +85,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         });
     };
 
-    public createGameOnPlayRoom(id: string, playerBlack: User, playerWhite: User): Promise<PlayRoom> {
+    public createGameOnPlayRoom(id: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<PlayRoom> {
         return new Promise<PlayRoom>((resolve, reject) => {
             firebase.firestore().collection(gameRef).add({
                 playerBlack: {
@@ -96,6 +96,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
                     id: playerWhite.id,
                     email: playerWhite.email,
                 },
+                boardSize: boardSize,
                 gameStatus: GameStatus.GameStatus_Playing,
                 updatedAt: new Date(),
                 createdAt: new Date(),

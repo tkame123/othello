@@ -1,7 +1,4 @@
 import {createId} from "../../util/id";
-import {config} from "../../util/config";
-
-const size: number = config().board.size;
 
 export enum State {
     State_Unknown = 0,
@@ -14,14 +11,14 @@ export type TBoardState = {[point: string]: State}
 
 export class Board {
 
-    private static initBoard = (N: number = size): TBoardState => {
+    private static initBoard = (boardSize: number): TBoardState => {
         let res: TBoardState = {};
-        const x2 = N >> 1;
-        const y2 = N >> 1;
+        const x2 = boardSize >> 1;
+        const y2 = boardSize >> 1;
 
         // 初期盤状態作成
-        for (let x = 0; x < N; x++ ) {
-            for (let y = 0; y < N; y++) {
+        for (let x = 0; x < boardSize; x++ ) {
+            for (let y = 0; y < boardSize; y++) {
                 res[[x, y].toString()] = State.State_Empty;
             }
         }
@@ -33,20 +30,22 @@ export class Board {
         return res;
     };
 
-    public static New(): Board {
+    public static New(boardSize: number): Board {
         return new Board(
             createId(),
-            Board.initBoard(),
+            Board.initBoard(boardSize),
+            boardSize,
             new Date(),
             new Date(),
         );
     }
 
-    public static From(boardState: TBoardState): Board {
+    public static From(boardState: TBoardState, boardSize: number): Board {
         const newBoardState: TBoardState = JSON.parse(JSON.stringify(boardState));
         return new Board(
             createId(),
             newBoardState,
+            boardSize,
             new Date(),
             new Date(),
         );
@@ -54,6 +53,7 @@ export class Board {
 
     constructor(public readonly id: string,
                 public readonly boardState: TBoardState,
+                public readonly boardSize: number,
                 public readonly updatedAt: Date,
                 public readonly createdAt: Date,
                 ) {}

@@ -10,16 +10,12 @@ import {
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
 import {AuthState} from "../store/auth_state";
-import {IRequestInitGameActionItem, IRequestUpdateGameActionItem} from "../action/game_action_item";
 import {Game} from "../../domain/model/game";
-import {config} from "../../util/config";
 import GameComponent from "../component/game/game";
 import Progress from "../component/common/progress";
-import {Cell, GameTree} from "../../domain/model/game_detail";
+import {Cell, GameDetail, GameTree, Move} from "../../domain/model/game_detail";
 import {User} from "../../domain/model/user";
 import {Score} from "../../domain/model/score";
-
-const size: number = config().board.size;
 
 interface IProps extends RouteComponentProps<{id: string}>{
     state: GameState;
@@ -42,8 +38,7 @@ export class GameContainer extends React.Component <IProps, IState> {
 
     public componentDidMount() {
         const id: string = this.props.match.params.id;
-        const req: IRequestInitGameActionItem = {id};
-        this.props.dispatcher.initGame(req);
+        this.props.dispatcher.initGame({id});
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
@@ -61,6 +56,7 @@ export class GameContainer extends React.Component <IProps, IState> {
 
         const game: Game | null = state.game;
         const gameTree: GameTree | null = state.gameTree;
+        const gameDetails: GameDetail[] = state.gameDetails;
         const score: Score | null = state.score;
 
         const myPlayer: User | null = authState.user;
@@ -72,23 +68,29 @@ export class GameContainer extends React.Component <IProps, IState> {
             <GameComponent
                 isLoading={isLoading}
                 myPlayer={myPlayer}
-                size={size}
                 game={game}
                 gameTree={gameTree}
+                gameDetails={gameDetails}
                 score={score}
-                handleUpdateGameTree={this.handleUpdateGameTree}
+                handleToggleBoard={this.handleToggleBoard}
             />
         )
 
     };
 
-    private handleUpdateGameTree = (gameTreePromise: GameTree, cell: Cell) => (event: React.MouseEvent<HTMLButtonElement>): void => {
+    private handleToggleBoard = (cell: Cell , isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>): void => {
         event.preventDefault();
-        if (!this.props.state.gameTree) { throw new Error("")}
+        if (!this.props.state.gameTree) { throw new Error("") }
         if (!this.props.state.game) { throw new Error("")}
+        if (!isPlayer || !isMyTurn ) { throw new Error("")}
+        const moves: Move[] = this.props.state.gameTree.moves;
+        const finded: Move | undefined = moves.find((item: Move): boolean => {
+            if (item.cell === null) { return false }
+            return  (item.cell.x === cell.x) && (item.cell.y === cell.y);
+        });
+        if (!finded) { return }
         const nextTurn: number = this.props.state.gameTree.turn + 1;
-        const req: IRequestUpdateGameActionItem = { game: this.props.state.game, cell: cell, nextTurn: nextTurn };
-        this.props.dispatcher.updateGame(req);
+        this.props.dispatcher.updateGame({ game: this.props.state.game, cell: cell, nextTurn: nextTurn });
     };
 
 }

@@ -11,6 +11,7 @@ export type TParamsGameFrom  = {
     playerBlack: User,
     playerWhite: User,
     gameStatus: GameStatus,
+    boardSize: number,
     updatedAt: Date;
     createdAt: Date;
 }
@@ -23,6 +24,7 @@ export class Game {
             from.playerBlack,
             from.playerWhite,
             from.gameStatus,
+            from.boardSize,
             from.updatedAt,
             from.createdAt,
         );
@@ -32,6 +34,7 @@ export class Game {
                 public readonly playerBlack: User,
                 public readonly playerWhite: User,
                 public readonly gameStatus: GameStatus,
+                public readonly boardSize: number,
                 public readonly updatedAt: Date,
                 public readonly createdAt: Date,
                 ) {}

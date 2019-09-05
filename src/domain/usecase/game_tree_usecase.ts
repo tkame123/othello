@@ -1,18 +1,11 @@
 import {Board, State} from "../model/board";
-import {config} from "../../util/config";
 import {Cell, GameTree, Move, Player} from "../model/game_detail";
-import {Score, TParamsScoreFrom} from "../model/score";
-import {Game} from "../model/game";
-
-const size: number = config().board.size;
 
 export interface IGameTreeUseCase {
 
     makeGameTree(board: Board, player: Player, wasPassed: boolean, turn: number) : GameTree;
 
     nextGameTree(promise: any): GameTree;
-
-    finishGame(game: Game, board: Board) : Score;
 
     listPossibleMoves(board: Board, player: Player, wasPassed: boolean, nest :number): Move[];
 
@@ -39,32 +32,6 @@ class GameTreeUseCase implements IGameTreeUseCase {
             }
             return result;
         };
-    };
-
-    public finishGame = (game: Game, board: Board): Score => {
-        let blackScore: number = 0;
-        let whiteScore: number = 0;
-
-        [...Array(size)].forEach((item, y) => {
-            [...Array(size)].forEach((item, x) => {
-                const disk: State = board.boardState[[x, y].toString()];
-                if (disk === State.State_White) {
-                    whiteScore++
-                }
-                if (disk === State.State_Black) {
-                    blackScore++
-                }
-            })
-        });
-        const params: TParamsScoreFrom = {
-            gameId: game.id,
-            blackPlayer: {userId: game.playerBlack.id, value: blackScore},
-            whitePlayer: {userId: game.playerWhite.id, value: whiteScore},
-            updatedAt: new Date(),
-            createdAt: new Date(),
-        };
-        const score: Score = Score.From(params);
-        return score
     };
 
     public makeGameTree = (board: Board, player: Player, wasPassed: boolean, turn: number): GameTree => {
@@ -107,8 +74,8 @@ class GameTreeUseCase implements IGameTreeUseCase {
     public listAttackingMoves = (board: Board, player: Player, turn: number): Move[] =>{
         let moves: Move[] = [];
 
-        [...Array(size)].forEach((item, y) => {
-            [...Array(size)].forEach((item, x) => {
+        [...Array(board.boardSize)].forEach((item, y) => {
+            [...Array(board.boardSize)].forEach((item, x) => {
                 const cell: Cell = {x: x, y: y};
                 const vulnerableCells: Cell[] = this.listVulnerableCells(board, cell, player);
                 if (this.canAttack(vulnerableCells)) {
@@ -139,7 +106,7 @@ class GameTreeUseCase implements IGameTreeUseCase {
     };
 
     private makeAttackedBoard = (board: Board, cell: Cell, player: Player): Board =>{
-        let newBoard: Board = Board.From(board.boardState);
+        let newBoard: Board = Board.From(board.boardState, board.boardSize);
         let vulnerableCells: Cell[] = this.listVulnerableCells(board, cell, player);
         // 石の置換えの実施
         newBoard.boardState[[(cell.x), (cell.y)].toString()] = player;
