@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import {config} from "../../util/config";
-import {Cell, GameDetail, TParamsGameDetailFrom} from "../model/game_detail";
+import {Cell, GameDetail} from "../model/game_detail";
 import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
 const version: string = config().ver;
@@ -29,14 +29,8 @@ class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
             ref.collection("move").orderBy("turn").get().then((snapshot: firebase.firestore.QuerySnapshot) => {
                 let gameDetails: GameDetail[] = [];
                 snapshot.forEach((doc: firebase.firestore.DocumentData) => {
-                    const params: TParamsGameDetailFrom = {
-                        id: doc.id,
-                        turn: doc.get("turn"),
-                        cell: {x: doc.get("cell.x"), y: doc.get("cell.y")},
-                        updatedAt: doc.get("updatedAt").toDate(),
-                        createdAt: doc.get("createdAt").toDate(),
-                    };
-                    gameDetails.push(GameDetail.From(params));
+                    const gameDetail :GameDetail = this.getGameDetailFromFS(doc);
+                    gameDetails.push(gameDetail);
                 });
                 this.gameDetails = gameDetails;
                 resolve(gameDetails);
@@ -51,15 +45,7 @@ class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
         ref.collection("move").onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
             docs.docChanges().forEach((change: firebase.firestore.DocumentChange) => {
                 if ( change.type === 'added' ) {
-                    const params: TParamsGameDetailFrom = {
-                        id: change.doc.id,
-                        turn: change.doc.get("turn"),
-                        cell: {x: change.doc.get("cell.x"), y: change.doc.get("cell.y")},
-                        updatedAt: change.doc.get("updatedAt").toDate(),
-                        createdAt: change.doc.get("createdAt").toDate(),
-                    };
-                    const gameDetail: GameDetail = GameDetail.From(params);
-
+                    const gameDetail :GameDetail = this.getGameDetailFromFS(change.doc);
                     const finded: GameDetail | undefined = this.gameDetails.find((item: GameDetail): boolean => {
                         return item.id === gameDetail.id;
                     });
@@ -88,6 +74,16 @@ class AdminGameDetailUseCase implements IAdminGameDetailUseCase {
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
             })
+        });
+    };
+
+    private getGameDetailFromFS = (doc: firebase.firestore.DocumentData): GameDetail =>{
+        return GameDetail.From({
+            id: doc.id,
+            turn: doc.get("turn"),
+            cell: {x: doc.get("cell.x"), y: doc.get("cell.y")},
+            updatedAt: doc.get("updatedAt").toDate(),
+            createdAt: doc.get("createdAt").toDate(),
         });
     };
 

@@ -1,4 +1,4 @@
-import {PlayRoom, TParamsPlayRoomFrom} from "../model/play_room";import firebase from 'firebase/app';
+import {PlayRoom} from "../model/play_room";import firebase from 'firebase/app';
 import 'firebase/firestore';
 import {config} from "../../util/config";
 
@@ -30,14 +30,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         firebase.firestore().collection(playRoomsRef).onSnapshot((querySnapshot) => {
             let playRooms: PlayRoom[] = [];
             querySnapshot.forEach((doc) => {
-                const params: TParamsPlayRoomFrom ={
-                    id: doc.id,
-                    owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
-                    gameId: doc.get("gameId"),
-                    updatedAt: doc.get("updatedAt").toDate(),
-                    createdAt: doc.get("createdAt").toDate(),
-                };
-                const playRoom: PlayRoom = PlayRoom.From(params);
+                const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
                 playRooms.push(playRoom);
             });
 
@@ -51,15 +44,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         return new Promise<PlayRoom | null>((resolve, reject) => {
             firebase.firestore().collection(playRoomsRef).doc(id).get().then((doc) => {
                 if (!doc.exists) { resolve(null)}
-
-                const params: TParamsPlayRoomFrom ={
-                    id: doc.id,
-                    owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
-                    gameId: doc.get("gameId"),
-                    updatedAt: doc.get("updatedAt").toDate(),
-                    createdAt: doc.get("createdAt").toDate(),
-                };
-                const playRoom: PlayRoom = PlayRoom.From(params);
+                const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
                 resolve(playRoom);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
@@ -72,14 +57,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
             firebase.firestore().collection(playRoomsRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let playRooms: PlayRoom[] = [];
                 docs.forEach((doc) => {
-                    const params: TParamsPlayRoomFrom ={
-                        id: doc.id,
-                        owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
-                        gameId: doc.get("gameId"),
-                        updatedAt: doc.get("updatedAt").toDate(),
-                        createdAt: doc.get("createdAt").toDate(),
-                    };
-                    const playRoom: PlayRoom = PlayRoom.From(params);
+                    const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
                     playRooms.push(playRoom);
                 });
                 resolve(playRooms);
@@ -130,20 +108,24 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
             }).then(() => {
                 return firebase.firestore().collection(playRoomsRef).doc(id).get()
             }).then((doc: firebase.firestore.DocumentSnapshot) =>{
-                const params: TParamsPlayRoomFrom ={
-                    id: doc.id,
-                    owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
-                    gameId: doc.get("gameId"),
-                    updatedAt: doc.get("updatedAt").toDate(),
-                    createdAt: doc.get("createdAt").toDate(),
-                };
-                const playRoom: PlayRoom = PlayRoom.From(params);
+                const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
                 resolve(playRoom);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
             })
         });
     };
+
+    private getPlayRoomFromFS = (doc: firebase.firestore.DocumentData): PlayRoom =>{
+        return PlayRoom.From({
+            id: doc.id,
+            owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
+            gameId: doc.get("gameId"),
+            updatedAt: doc.get("updatedAt").toDate(),
+            createdAt: doc.get("createdAt").toDate(),
+        });
+    };
+
 }
 
 export const createAdminPlayRoomUseCase = (): IAdminPlayRoomUseCase => {

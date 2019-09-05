@@ -3,7 +3,7 @@ import 'firebase/firestore';
 import {config} from "../../util/config";
 
 import {User} from "../model/user";
-import {Game, TParamsGameFrom} from "../model/game";
+import {Game} from "../model/game";
 import {Score} from "../model/score";
 import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
@@ -29,15 +29,7 @@ class AdminGameUseCase implements IAdminGameUseCase {
         firebase.firestore().collection(gameRef).onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
             let games: Game[] = [];
             docs.forEach((doc) => {
-                const params: TParamsGameFrom ={
-                    id: doc.id,
-                    playerBlack: User.From(doc.get("playerBlack.userId"), doc.get("playerBlack.email")),
-                    playerWhite: User.From(doc.get("playerWhite.userId"), doc.get("playerWhite.email")),
-                    gameStatus: doc.get("gameStatus"),
-                    updatedAt: doc.get("updatedAt").toDate(),
-                    createdAt: doc.get("createdAt").toDate(),
-                };
-                const game: Game = Game.From(params);
+                const game: Game = this.getGameFromFS(doc);
                 games.push(game);
             });
 
@@ -51,16 +43,7 @@ class AdminGameUseCase implements IAdminGameUseCase {
         return new Promise<Game | null>((resolve, reject) => {
             firebase.firestore().collection(gameRef).doc(id).get().then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
-
-                const params: TParamsGameFrom ={
-                    id: doc.id,
-                    playerBlack: User.From(doc.get("playerBlack.userId"), doc.get("playerBlack.email")),
-                    playerWhite: User.From(doc.get("playerWhite.userId"), doc.get("playerWhite.email")),
-                    gameStatus: doc.get("gameStatus"),
-                    updatedAt: doc.get("updatedAt").toDate(),
-                    createdAt: doc.get("createdAt").toDate(),
-                };
-                const game: Game = Game.From(params);
+                const game: Game = this.getGameFromFS(doc);
                 resolve(game);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
@@ -73,15 +56,7 @@ class AdminGameUseCase implements IAdminGameUseCase {
             firebase.firestore().collection(gameRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let games: Game[] = [];
                 docs.forEach((doc) => {
-                    const params: TParamsGameFrom ={
-                        id: doc.id,
-                        playerBlack: User.From(doc.get("playerBlack.userId"), doc.get("playerBlack.email")),
-                        playerWhite: User.From(doc.get("playerWhite.userId"), doc.get("playerWhite.email")),
-                        gameStatus: doc.get("gameStatus"),
-                        updatedAt: doc.get("updatedAt").toDate(),
-                        createdAt: doc.get("createdAt").toDate(),
-                    };
-                    const game: Game = Game.From(params);
+                    const game: Game = this.getGameFromFS(doc);
                     games.push(game);
                 });
                 resolve(games);
@@ -106,6 +81,17 @@ class AdminGameUseCase implements IAdminGameUseCase {
             })
         });
 
+    };
+
+    private getGameFromFS = (doc: firebase.firestore.DocumentData): Game =>{
+        return Game.From({
+            id: doc.id,
+            playerBlack: User.From(doc.get("playerBlack.userId"), doc.get("playerBlack.email")),
+            playerWhite: User.From(doc.get("playerWhite.userId"), doc.get("playerWhite.email")),
+            gameStatus: doc.get("gameStatus"),
+            updatedAt: doc.get("updatedAt").toDate(),
+            createdAt: doc.get("createdAt").toDate(),
+        });
     };
 
 }
