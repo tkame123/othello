@@ -5,6 +5,7 @@ import {Score} from "../../domain/model/score";
 export interface IListenerOnGameDetailDiffActionItem {
     gameTree: GameTree,
     gameDetail: GameDetail,
+    score: Score,
 }
 
 export interface IRequestInitGameActionItem {
@@ -14,13 +15,13 @@ export interface ICallbackInitGameActionItem {
     game: Game,
     gameTree: GameTree,
     gameDetails: GameDetail[],
+    score: Score,
 }
 
 export interface IRequestUpdateGameActionItem {
     game: Game,
     cell: Cell,
     nextTurn: number,
-
 }
 export interface ICallbackUpdateGameActionItem {
 }

@@ -30,7 +30,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                     game: state.game,
                     gameTree: _action.item ? _action.item.gameTree : null,
                     gameDetails: gameDetails,
-                    score: state.score,
+                    score: _action.item ? _action.item.score : null,
                     isLoading: false,
                 });
             } else {
@@ -60,7 +60,7 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
                     game: _action.item ? _action.item.game : null,
                     gameTree: _action.item ? _action.item.gameTree : null,
                     gameDetails: _action.item ? _action.item.gameDetails : [],
-                    score: state.score,
+                    score: _action.item ? _action.item.score : null,
                     isLoading: false,
                 });
             } else {

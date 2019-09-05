@@ -3,8 +3,11 @@ import {PlayRoom} from "../../../domain/model/play_room";
 
 import PlayRoomsControllerComponent from "./play_room_controller";
 import PlayRoomsListComponent from "./play_rooms_list";
+import Progress from "../common/progress";
+import EmptyData from "../common/empty";
 
 interface IProps {
+    isInit: boolean;
     isLoading: boolean;
     playRooms: PlayRoom[];
     handleCreatePlayRooms: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -12,8 +15,9 @@ interface IProps {
 
 const PlayRoomsComponent: React.FC<IProps> = (props) => {
 
-    const {isLoading} = props;
-    const {playRooms, handleCreatePlayRooms} = props;
+    const {isInit, isLoading, playRooms, handleCreatePlayRooms} = props;
+
+    if (isInit) { return <Progress/>}
 
     return (
         <>
@@ -22,9 +26,13 @@ const PlayRoomsComponent: React.FC<IProps> = (props) => {
                 handleCreatePlayRooms={handleCreatePlayRooms}
             />
 
-            <PlayRoomsListComponent
-                playRooms={playRooms}
-            />
+            { !isLoading && playRooms.length === 0 && <EmptyData/> }
+            { !isLoading && playRooms.length !== 0 && (
+                <PlayRoomsListComponent
+                    playRooms={playRooms}
+                />)
+            }
+
         </>
     );
 

@@ -15,7 +15,6 @@ import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
 import {PlayRoomState} from "../store/play_room_state";
 import PlayRoomComponent from "../component/play_room/play_room";
-import Progress from "../component/common/progress";
 import {PlayRoom} from "../../domain/model/play_room";
 import {User} from "../../domain/model/user";
 
@@ -58,14 +57,11 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         const {isInit} = this.state;
 
         const isLoading: boolean = state.isLoading;
-
         const playRoom: PlayRoom | null = state.playRoom;
-
-        if (isInit) { return <Progress/>}
-        if (!playRoom) { return <div>初期化失敗</div>}
 
         return (
             <PlayRoomComponent
+                isInit={isInit}
                 isLoading={isLoading}
                 playRoom={playRoom}
                 handleCreateNewGame={this.handleCreateNewGame}

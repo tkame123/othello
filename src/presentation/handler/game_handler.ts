@@ -19,7 +19,7 @@ import {
 import {createGameGreeUseCase, IGameTreeUseCase} from "../../domain/usecase/game_tree_usecase";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {createGameDetailUseCase, IGameDetailUseCase} from "../../domain/usecase/game_detail_usecase";
-import {Game, GameStatus} from "../../domain/model/game";
+import {Game} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 import {Cell, GameDetail, GameTree, Move, Player} from "../../domain/model/game_detail";
 import {eventChannel} from "@redux-saga/core";
@@ -55,7 +55,6 @@ function* onGameDetailDiff() {
             // 現状のStateを取得し更新用のデータを作成する
 
             const cell: Cell = gameDetail.cell;
-
             const selector = (state: AppState) => state.gameReducer;
             const _state: GameState = yield select(selector);
             const _game: Game | null = _state.game;
@@ -65,18 +64,22 @@ function* onGameDetailDiff() {
             if (_gameTree === null) { throw new Error("")}
 
             const _moves: Move[] = _gameTree.moves;
-
-            // eslint-disable-next-line array-callback-return
             const result: Move[] = _moves.filter((value) => {
                 if (value.cell !== null ) {
                     return (value.cell.x === cell.x && value.cell.y === cell.y);
                 }
+                return []
             });
             const gameTree = nextGameTree(result[0].gameTreePromise);
-            const res: IListenerOnGameDetailDiffActionItem = {gameTree, gameDetail};
+            const game: Game = _game;
+
+            yield call(setScore, game, gameTree.board);
+            const score: Score = yield call(getScore, game.id);
+            console.log(score);
+
+            const res: IListenerOnGameDetailDiffActionItem = {gameTree, gameDetail, score};
             yield put(actionCreator.listenerOnGameDetailDiffAction(true, res));
 
-            const game: Game = _game;
 
             // 終了判定 && 終了処理
             let isFinished: boolean = false;
@@ -109,11 +112,11 @@ function* handleInitGameInGame() {
                 gameDetails.forEach((item: GameDetail) => {
                     const cell: Cell =  item.cell;
                     const moves: Move[] = gameTree.moves;
-                    // eslint-disable-next-line array-callback-return
                     const result: Move[] = moves.filter((value) => {
                         if (value.cell !== null ) {
                             return (value.cell.x === cell.x && value.cell.y === cell.y);
                         }
+                        return []
                     });
                     gameTree = nextGameTree(result[0].gameTreePromise);
                 })
@@ -122,7 +125,10 @@ function* handleInitGameInGame() {
             // 同期処理の起動
             yield fork(onGameDetailDiff);
 
-            const res: ICallbackInitGameActionItem = {game, gameTree, gameDetails};
+            yield call(setScore, game, gameTree.board);
+            const score: Score = yield call(getScore, game.id);
+            console.log(score);
+            const res: ICallbackInitGameActionItem = {game, gameTree, gameDetails, score};
             yield put(actionCreator.callbackInitGameAction(true, res));
 
             // 終了判定 && 終了処理
@@ -148,8 +154,6 @@ function* handleUpdateGameInGame() {
             const id: string = action.item.game.id;
             const cell: Cell = action.item.cell;
             const turn: number = action.item.nextTurn;
-
-            // Online情報の同期
             yield call(addGameDetail, id, turn, cell);
             const res: ICallbackUpdateGameActionItem = {};
             yield put(actionCreator.callbackUpdateGameAction(true, res));
@@ -165,19 +169,11 @@ function* handleFinishGameInGame() {
     while (true) {
         try {
             const action: IRequestFinishGameAction = yield take(GameActionType.REQUEST_FINISH_GAME);
-            //ToDo: Online同期
-            const game: Game = Game.From({
-                id: action.item.game.id,
-                playerBlack: action.item.game.playerBlack,
-                playerWhite: action.item.game.playerWhite,
-                gameStatus: GameStatus.GameStatus_End,
-                boardSize: action.item.game.boardSize,
-                updatedAt: action.item.game.updatedAt,
-                createdAt: action.item.game.createdAt,
-            });
             const gameTree: GameTree = action.item.gameTree;
-            const score: Score = finishGame(game, gameTree.board);
-            yield call(addScore, score);
+            yield call(updateGameStatusEnd, action.item.game.id);
+            const game: Game = yield call(getGame, action.item.game.id);
+            yield call(setScore, game, gameTree.board);
+            const score: Score = yield call(getScore, game.id);
             const res: ICallbackFinishGameActionItem = { game, score};
             yield put(actionCreator.callbackFinishGameAction(true, res));
         } catch (error) {
@@ -191,12 +187,16 @@ const getGame = (id: string): Promise<Game | null> => {
     return gameUsecase.getGame(id);
 };
 
-const addScore = (score: Score): Promise<void> => {
-    return gameUsecase.addScore(score);
+const getScore = (gameId: string): Promise<Score | null> => {
+    return gameUsecase.getScore(gameId);
 };
 
-const finishGame = (game: Game, board: Board): Score => {
-    return gameUsecase.finishGame(game, board);
+const setScore = (game: Game, board: Board): Promise<void> => {
+    return gameUsecase.setScore(game, board);
+};
+
+const updateGameStatusEnd = (id: string): Promise<void> => {
+    return gameUsecase.updateGameStatusEnd(id);
 };
 
 const connectGameDetail = (id:string): Promise<GameDetail[]> => {

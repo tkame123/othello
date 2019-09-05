@@ -11,7 +11,6 @@ import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
 import {GamesState} from "../store/games_state";
 import GamesComponent from "../component/games/games";
-import Progress from "../component/common/progress";
 import {Game} from "../../domain/model/game";
 
 interface IProps extends RouteComponentProps<{}>{
@@ -51,11 +50,9 @@ export class GamesContainer extends React.Component <IProps, IState> {
 
         const games: Game[] = state.games;
 
-        if (isInit) { return <Progress/>}
-        if (!games) { return <div>初期化失敗</div>}
-
         return (
             <GamesComponent
+                isInit={isInit}
                 isLoading={isLoading}
                 games={games}
             />

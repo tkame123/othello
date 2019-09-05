@@ -27,7 +27,7 @@ style:
     surface: "#FFFFFF"
     error: "#B00020"
     onPrimary: "#FFFFFF"
-    onsecondary: "#000000"
+    onSecondary: "#000000"
     onBackground: "#000000"
     onsurface: "#000000"
     onError: "#FFFFFF"

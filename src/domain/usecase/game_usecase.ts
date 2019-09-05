@@ -3,7 +3,7 @@ import 'firebase/firestore';
 import {config} from "../../util/config";
 
 import {User} from "../model/user";
-import {Game} from "../model/game";
+import {Game, GameStatus} from "../model/game";
 import {Score} from "../model/score";
 import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 import {Board, State} from "../model/board";
@@ -20,9 +20,11 @@ export interface IGameUseCase {
 
     getGames(): Promise<Game[]>;
 
-    addScore(score: Score) :Promise<void>;
+    getScore(gameId: string): Promise<Score | null>;
 
-    finishGame(game: Game, board: Board) : Score;
+    setScore(game: Game, board: Board) :Promise<void>;
+
+    updateGameStatusEnd(id: string) :Promise<void>;
 
 }
 
@@ -44,7 +46,8 @@ class GameUseCase implements IGameUseCase {
 
     public getGame = (id: string): Promise<Game | null> => {
         return new Promise<Game | null>((resolve, reject) => {
-            firebase.firestore().collection(gameRef).doc(id).get().then((doc: firebase.firestore.DocumentSnapshot) => {
+            firebase.firestore().collection(gameRef).doc(id).get()
+            .then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
                 const game: Game = this.getGameFromFS(doc);
                 resolve(game);
@@ -56,7 +59,8 @@ class GameUseCase implements IGameUseCase {
 
     public getGames = (): Promise<Game[]> => {
         return new Promise<Game[]>((resolve, reject) => {
-            firebase.firestore().collection(gameRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
+            firebase.firestore().collection(gameRef).get()
+            .then((docs: firebase.firestore.QuerySnapshot) => {
                 let games: Game[] = [];
                 docs.forEach((doc) => {
                     const game: Game = this.getGameFromFS(doc);
@@ -69,12 +73,26 @@ class GameUseCase implements IGameUseCase {
         });
     };
 
-    public addScore = (score: Score): Promise<void> => {
+    public getScore = (gameId: string): Promise<Score | null> => {
+        return new Promise<Score | null>((resolve, reject) => {
+            firebase.firestore().collection(scoreRef).doc(gameId).get()
+            .then((doc: firebase.firestore.DocumentSnapshot) => {
+                if (!doc.exists) { resolve(null)}
+                const score: Score = this.getScoreFromFS(doc);
+                resolve(score);
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
+            });
+        });
+    };
+
+    public setScore = (game: Game, board: Board): Promise<void> => {
+        const score: Score = this.calcScore(game, board);
         const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(scoreRef).doc(score.gameId);
         return new Promise<void>((resolve, reject) => {
             ref.set({
-                blackPlayer: { id: score.blackPlayer.userId, value: score.blackPlayer.value },
-                whitePlayer: { id: score.whitePlayer.userId, value: score.whitePlayer.value },
+                playerBlack: { id: score.playerBlack.id, value: score.playerBlack.value },
+                playerWhite: { id: score.playerWhite.id, value: score.playerWhite.value },
                 boardSize: score.boardSize,
                 updatedAt: score.updatedAt,
                 createdAt: score.createdAt,
@@ -87,7 +105,22 @@ class GameUseCase implements IGameUseCase {
 
     };
 
-    public finishGame = (game: Game, board: Board): Score => {
+    public updateGameStatusEnd = (id: string): Promise<void> => {
+        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameRef).doc(id);
+        return new Promise<void>((resolve, reject) => {
+            ref.update({
+                gameStatus: GameStatus.GameStatus_End,
+                updatedAt: new Date(),
+            }).then(() =>{
+                resolve();
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
+            })
+        });
+
+    };
+
+    private calcScore = (game: Game, board: Board): Score => {
         let blackScore: number = 0;
         let whiteScore: number = 0;
 
@@ -104,8 +137,8 @@ class GameUseCase implements IGameUseCase {
         });
         const score: Score = Score.From({
             gameId: game.id,
-            blackPlayer: {userId: game.playerBlack.id, value: blackScore},
-            whitePlayer: {userId: game.playerWhite.id, value: whiteScore},
+            playerBlack: {id: game.playerBlack.id, value: blackScore},
+            playerWhite: {id: game.playerWhite.id, value: whiteScore},
             boardSize: game.boardSize,
             updatedAt: new Date(),
             createdAt: new Date(),
@@ -119,6 +152,17 @@ class GameUseCase implements IGameUseCase {
             playerBlack: User.From(doc.get("playerBlack.id"), doc.get("playerBlack.email")),
             playerWhite: User.From(doc.get("playerWhite.id"), doc.get("playerWhite.email")),
             gameStatus: doc.get("gameStatus"),
+            boardSize: doc.get("boardSize"),
+            updatedAt: doc.get("updatedAt").toDate(),
+            createdAt: doc.get("createdAt").toDate(),
+        });
+    };
+
+    private getScoreFromFS = (doc: firebase.firestore.DocumentData): Score =>{
+        return Score.From({
+            gameId: doc.id,
+            playerBlack: {id: doc.get("playerBlack.id"), value: doc.get("playerBlack.value")},
+            playerWhite: {id: doc.get("playerWhite.id"), value: doc.get("playerWhite.value")},
             boardSize: doc.get("boardSize"),
             updatedAt: doc.get("updatedAt").toDate(),
             createdAt: doc.get("createdAt").toDate(),

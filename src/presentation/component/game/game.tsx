@@ -7,12 +7,14 @@ import GameBoardComponent from "./game_board";
 import {Cell, GameDetail, GameTree} from "../../../domain/model/game_detail";
 import {User} from "../../../domain/model/user";
 import {Score} from "../../../domain/model/score";
+import Progress from "../common/progress";
 
 interface IProps {
+    isInit: boolean;
     isLoading: boolean;
     myPlayer: User | null;
-    game: Game;
-    gameTree: GameTree;
+    game: Game | null;
+    gameTree: GameTree | null;
     gameDetails: GameDetail[];
     score: Score | null;
     handleToggleBoard: (cell: Cell, isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>) => void;
@@ -20,7 +22,10 @@ interface IProps {
 
 const GameComponent: React.FC<IProps> = (props) => {
 
-    const {isLoading, myPlayer, game, gameTree, gameDetails, score, handleToggleBoard} = props;
+    const {isInit, myPlayer, game, gameTree, gameDetails, score, handleToggleBoard} = props;
+
+    if (isInit) { return <Progress/>}
+    if (!game || !gameTree) { return <Progress/>}
 
     // Userの状態を設定
     let isPlayer: boolean = false;
@@ -37,15 +42,14 @@ const GameComponent: React.FC<IProps> = (props) => {
     return (
         <>
             <GameControllerComponent
-                isLoading={isLoading}
                 isPlayer={isPlayer}
                 isMyTurn={isMyTurn}
                 game={game}
+                gameTree={gameTree}
                 score={score}
             />
 
             <GameBoardComponent
-                isLoading={isLoading}
                 isPlayer={isPlayer}
                 isMyTurn={isMyTurn}
                 boardSize={boardSize}

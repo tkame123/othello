@@ -4,7 +4,6 @@ import {Board, State} from "../../../domain/model/board";
 import {Cell, GameDetail, GameTree} from "../../../domain/model/game_detail";
 
 interface IProps {
-    isLoading: boolean;
     isPlayer: boolean;
     isMyTurn: boolean;
     boardSize: number;
@@ -23,20 +22,11 @@ const GameBoardComponent: React.FC<IProps> = (props) => {
         <>
             <BoardTable>
                 <tbody>
-                <tr>
-                    <Header/>
-                    {
-                        [...Array(boardSize)].map((item, x) => {
-                            return <Header key={x}>{x}</Header>
-                        })
-                    }
-                </tr>
 
                 {
                     [...Array(boardSize)].map((item, y) =>{
                         return (
                             <tr key={y}>
-                                <Header>{y}</Header>
                                 {
                                     [...Array(boardSize)].map((item, x) => {
                                         const cell: Cell = {x: x, y: y};
@@ -74,12 +64,6 @@ export default GameBoardComponent;
 const BoardTable = styled.table`
   margin-left: auto;
   margin-right: auto;
-`;
-
-const Header = styled.th`
-  margin: 0;
-  padding: 0.125em 0.25em;
-  line-height: 100%;
 `;
 
 const BoardCell = styled.td`

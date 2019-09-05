@@ -8,14 +8,12 @@ import {
     IPlayRoomsDispatcher,
 } from "../dispatcher/play_rooms_dispatcher";
 import {
-    // IRequestGetPlayRoomsActionItem,
     IRequestCreatePlayRoomActionItem,
 } from "../action/play_rooms_action_item";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
 import {PlayRoomsState} from "../store/play_rooms_state";
 import PlayRoomsComponent from "../component/play_rooms/play_rooms";
-import Progress from "../component/common/progress";
 import {PlayRoom} from "../../domain/model/play_room";
 import {User} from "../../domain/model/user";
 
@@ -39,8 +37,6 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
-        // const req: IRequestGetPlayRoomsActionItem = {};
-        // this.props.dispatcher.getPlayRooms(req);
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
@@ -58,11 +54,10 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
 
         const playRooms: PlayRoom[] = state.playRooms;
 
-        if (isInit) { return <Progress/>}
-        if (!playRooms) { return <div>初期化失敗</div>}
 
         return (
             <PlayRoomsComponent
+                isInit={isInit}
                 isLoading={isLoading}
                 playRooms={playRooms}
                 handleCreatePlayRooms={this.handleCreatePlayRooms}

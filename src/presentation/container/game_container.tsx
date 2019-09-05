@@ -12,7 +12,6 @@ import {GameState} from "../store/game_state";
 import {AuthState} from "../store/auth_state";
 import {Game} from "../../domain/model/game";
 import GameComponent from "../component/game/game";
-import Progress from "../component/common/progress";
 import {Cell, GameDetail, GameTree, Move} from "../../domain/model/game_detail";
 import {User} from "../../domain/model/user";
 import {Score} from "../../domain/model/score";
@@ -58,14 +57,11 @@ export class GameContainer extends React.Component <IProps, IState> {
         const gameTree: GameTree | null = state.gameTree;
         const gameDetails: GameDetail[] = state.gameDetails;
         const score: Score | null = state.score;
-
         const myPlayer: User | null = authState.user;
-
-        if (isInit) { return <Progress/>}
-        if (!game || !gameTree) { return <div>初期化失敗</div>}
 
         return (
             <GameComponent
+                isInit={isInit}
                 isLoading={isLoading}
                 myPlayer={myPlayer}
                 game={game}

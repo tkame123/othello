@@ -12,8 +12,6 @@ const PlayRoomsListComponent: React.FC<IProps> = (props) => {
 
     const {playRooms} = props;
 
-    if (!playRooms.length) {return <div>無い</div>}
-
     return (
         <PlayRoomListUl>
 
