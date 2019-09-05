@@ -3,8 +3,7 @@ import {User} from "./user";
 export enum GameStatus {
     GameStatus_Unknown = 0,
     GameStatus_Playing = 1,
-    GameStatus_isPassingMove = 2,
-    GameStatus_End = 3,
+    GameStatus_End = 2,
 }
 
 export type TParamsGameFrom  = {

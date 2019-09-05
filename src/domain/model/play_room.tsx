@@ -1,9 +1,10 @@
 import {User} from "./user";
+import {Game} from "./game";
 
 export type TParamsPlayRoomFrom  = {
     id: string,
     owner: User,
-    gameId: string | null,
+    game: Game | null,
     updatedAt: Date;
     createdAt: Date;
 }
@@ -14,7 +15,7 @@ export class PlayRoom {
         return new PlayRoom(
             from.id,
             from.owner,
-            from.gameId,
+            from.game,
             from.updatedAt,
             from.createdAt,
         );
@@ -22,7 +23,7 @@ export class PlayRoom {
 
     constructor(public readonly id: string,
                 public readonly owner: User,
-                public readonly gameId: string | null,
+                public readonly game: Game | null,
                 public readonly updatedAt: Date,
                 public readonly createdAt: Date) {}
 }

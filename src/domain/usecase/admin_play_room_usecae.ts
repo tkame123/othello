@@ -3,7 +3,7 @@ import 'firebase/firestore';
 import {config} from "../../util/config";
 
 import {User} from "../model/user";
-import {GameStatus} from "../model/game";
+import {Game, GameStatus} from "../model/game";
 import {handleErrorFirebaseFirestore} from "./error_handler_firebase";
 
 const version: string = config().ver;
@@ -27,7 +27,7 @@ export interface IAdminPlayRoomUseCase {
 class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
 
     public onPlayRooms(callback: (playRooms: PlayRoom[]) => void): void {
-        firebase.firestore().collection(playRoomsRef).onSnapshot((querySnapshot) => {
+        firebase.firestore().collection(playRoomsRef).where("game", "==", null).onSnapshot((querySnapshot) => {
             let playRooms: PlayRoom[] = [];
             querySnapshot.forEach((doc) => {
                 const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
@@ -54,7 +54,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
 
     public getPlayRooms = (): Promise<PlayRoom[]> => {
         return new Promise<PlayRoom[]>((resolve, reject) => {
-            firebase.firestore().collection(playRoomsRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
+            firebase.firestore().collection(playRoomsRef).where("game", "==", null).get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let playRooms: PlayRoom[] = [];
                 docs.forEach((doc) => {
                     const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
@@ -74,7 +74,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                     id: owner.id,
                     email: owner.email,
                 },
-                gameId: null,
+                game: null,
                 updatedAt: new Date(),
                 createdAt: new Date(),
             }).then(() => {
@@ -100,9 +100,17 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
                 updatedAt: new Date(),
                 createdAt: new Date(),
             }).then((ref: firebase.firestore.DocumentReference) => {
-                const gameId: string = ref.id;
+                return firebase.firestore().collection(gameRef).doc(ref.id).get();
+            }).then((doc: firebase.firestore.DocumentData) => {
                 return firebase.firestore().collection(playRoomsRef).doc(id).update({
-                    gameId: gameId,
+                    game: {
+                        id: doc.id,
+                        playerBlack: { id: doc.get("playerBlack.id"), email: doc.get("playerBlack.email")},
+                        playerWhite: { id: doc.get("playerWhite.id"), email: doc.get("playerWhite.email")},
+                        gameStatus: doc.get("gameStatus"),
+                        updatedAt: doc.get("updatedAt"),
+                        createdAt: doc.get("createdAt"),
+                    },
                     updatedAt: new Date(),
                 })
             }).then(() => {
@@ -120,7 +128,16 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         return PlayRoom.From({
             id: doc.id,
             owner: User.From(doc.get("owner.id"), doc.get("owner.email")),
-            gameId: doc.get("gameId"),
+            game: doc.get("game")
+                    ? Game.From({
+                        id: doc.get("game.id"),
+                        playerBlack: User.From(doc.get("game.playerBlack.id"), doc.get("game.playerBlack.email")),
+                        playerWhite: User.From(doc.get("game.playerWhite.id"), doc.get("game.playerWhite.email")),
+                        gameStatus: doc.get("game.gameStatus"),
+                        updatedAt: doc.get("game.updatedAt").toDate(),
+                        createdAt: doc.get("game.createdAt").toDate(),
+                        })
+                    : null,
             updatedAt: doc.get("updatedAt").toDate(),
             createdAt: doc.get("createdAt").toDate(),
         });

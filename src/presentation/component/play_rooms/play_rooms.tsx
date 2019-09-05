@@ -23,7 +23,6 @@ const PlayRoomsComponent: React.FC<IProps> = (props) => {
             />
 
             <PlayRoomsListComponent
-                isLoading={isLoading}
                 playRooms={playRooms}
             />
         </>
