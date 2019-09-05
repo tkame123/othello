@@ -13,7 +13,7 @@ import {
 } from "../action/auth_action_item";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
-import NavbarComponent from "../component/navbar/navbar";
+import HeaderComponent from "../component/header/header";
 import {User} from "../../domain/model/user";
 
 interface IProps extends RouteComponentProps<{}>{
@@ -23,6 +23,7 @@ interface IProps extends RouteComponentProps<{}>{
 
 interface IState {
     isInit: boolean,
+    isOpenDrawnMenu: boolean,
 }
 
 export class NavbarContainer extends React.Component <IProps, IState> {
@@ -31,6 +32,7 @@ export class NavbarContainer extends React.Component <IProps, IState> {
         super(props);
         this.state = {
             isInit: false,
+            isOpenDrawnMenu: false,
         };
     };
 
@@ -42,19 +44,26 @@ export class NavbarContainer extends React.Component <IProps, IState> {
 
         const user: User | null = state.user;
         const isLoading: boolean = state.isLoading;
-
+        const isOpenDrawnMenu: boolean = this.state.isOpenDrawnMenu;
 
         return (
-            <NavbarComponent
+            <HeaderComponent
                 isLoading={isLoading}
+                isOpenDrawnMenu={isOpenDrawnMenu}
                 children={children}
                 user={user}
+                handleDrawMenuToggle={this.handleDrawMenuToggle}
                 handleLoginOnGoogle={this.handleLoginOnGoogle}
                 handleLogout={this.handleLogout}
             />
         )
 
     };
+
+    private handleDrawMenuToggle = (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>): void => {
+        this.setState({isOpenDrawnMenu: !this.state.isOpenDrawnMenu});
+    };
+
 
     private handleLoginOnGoogle = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();

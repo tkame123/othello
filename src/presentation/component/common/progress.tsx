@@ -2,9 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components'
 import {config} from "../../../util/config"
 
-const generalColor: string = config().style.color.general;
-const zIndex: number = config().style.zindex.progress;
-
 interface IProps
     extends React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLDivElement>,
@@ -27,12 +24,12 @@ const Wrapper = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: ${zIndex};
+    z-index: ${config().style.zindex.progress};
     display: flex;
     justify-content: center;
     align-items: center;
     transition: opacity 1s, visibility 1s;
-    background-color: rgba(255, 255, 255, 0.93);
+    background-color: rgba(255, 255, 255, 0.5);
     opacity: 1;
 `;
 
@@ -40,7 +37,7 @@ const Indicator = styled.div`
     width: 30px; /*ローディングアイコンの横サイズ*/
     height: 30px; /*ローディングアイコンの縦サイズ*/
     border-radius: 50%; /*CSS3で円を書く*/
-    border: 4px solid ${generalColor}; /*円に○の枠をつける*/
+    border: 4px solid ${config().style.color.primary}; /*円に○の枠をつける*/
     border-right-color: transparent; /*円の右にC状の空きをつける*/
     animation: spin 1s linear infinite; /*1秒毎にくるくる回転するアニメーション*/
     @keyframes spin {

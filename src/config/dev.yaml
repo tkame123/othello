@@ -16,7 +16,22 @@ board:
   size: 4
 style:
   color:
-    general: "#d50080"
+    border: "#eee"
+    primary: "#3F51B5"
+    primaryDark: "#303F9F"
+    primaryLight: "#9FA8DA"
+    secondary: "#80DEEA"
+    secondaryDark: "#26C6DA"
+    secondaryLight: "#E0F7FA"
+    background: "#FFFFFF"
+    surface: "#FFFFFF"
+    error: "#B00020"
+    onPrimary: "#FFFFFF"
+    onsecondary: "#000000"
+    onBackground: "#000000"
+    onsurface: "#000000"
+    onError: "#FFFFFF"
   zindex:
-    nav: 500
-    progress: 999
+    defaultModal: 30
+    nav: 20
+    progress: 10
