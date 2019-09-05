@@ -70,8 +70,8 @@ class AdminGameUseCase implements IAdminGameUseCase {
         const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(scoreRef).doc(score.gameId);
         return new Promise<void>((resolve, reject) => {
             ref.set({
-                blackPlayer: { userId: score.blackPlayer.userId, value: score.blackPlayer.value },
-                whitePlayer: { userId: score.whitePlayer.userId, value: score.whitePlayer.value },
+                blackPlayer: { id: score.blackPlayer.userId, value: score.blackPlayer.value },
+                whitePlayer: { id: score.whitePlayer.userId, value: score.whitePlayer.value },
                 updatedAt: score.updatedAt,
                 createdAt: score.createdAt,
             }).then(() =>{
@@ -86,8 +86,8 @@ class AdminGameUseCase implements IAdminGameUseCase {
     private getGameFromFS = (doc: firebase.firestore.DocumentData): Game =>{
         return Game.From({
             id: doc.id,
-            playerBlack: User.From(doc.get("playerBlack.userId"), doc.get("playerBlack.email")),
-            playerWhite: User.From(doc.get("playerWhite.userId"), doc.get("playerWhite.email")),
+            playerBlack: User.From(doc.get("playerBlack.id"), doc.get("playerBlack.email")),
+            playerWhite: User.From(doc.get("playerWhite.id"), doc.get("playerWhite.email")),
             gameStatus: doc.get("gameStatus"),
             updatedAt: doc.get("updatedAt").toDate(),
             createdAt: doc.get("createdAt").toDate(),

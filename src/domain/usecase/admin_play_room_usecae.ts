@@ -71,7 +71,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         return new Promise<void>((resolve, reject) => {
             firebase.firestore().collection(playRoomsRef).add({
                 owner: {
-                    userId: owner.id,
+                    id: owner.id,
                     email: owner.email,
                 },
                 gameId: null,
@@ -89,11 +89,11 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
         return new Promise<PlayRoom>((resolve, reject) => {
             firebase.firestore().collection(gameRef).add({
                 playerBlack: {
-                    userId: playerBlack.id,
+                    id: playerBlack.id,
                     email: playerBlack.email,
                 },
                 playerWhite: {
-                    userId: playerWhite.id,
+                    id: playerWhite.id,
                     email: playerWhite.email,
                 },
                 gameStatus: GameStatus.GameStatus_Playing,
@@ -119,7 +119,7 @@ class AdminPlayRoomUseCase implements IAdminPlayRoomUseCase {
     private getPlayRoomFromFS = (doc: firebase.firestore.DocumentData): PlayRoom =>{
         return PlayRoom.From({
             id: doc.id,
-            owner: User.From(doc.get("owner.userId"), doc.get("owner.email")),
+            owner: User.From(doc.get("owner.id"), doc.get("owner.email")),
             gameId: doc.get("gameId"),
             updatedAt: doc.get("updatedAt").toDate(),
             createdAt: doc.get("createdAt").toDate(),
