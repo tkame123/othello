@@ -29,3 +29,9 @@ export interface IRequestCreatePlayRoomActionItem {
 }
 export interface ICallbackCreatePlayRoomActionItem {
 }
+
+export interface IRequestDeletePlayRoomActionItem {
+    playRooms: PlayRoom[],
+}
+export interface ICallbackDeletePlayRoomActionItem {
+}

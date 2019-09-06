@@ -3,6 +3,7 @@ import {PlayRoom} from "../../../domain/model/play_room";
 
 import PlayRoomInfoComponent from "./play_room_info";
 import Progress from "../common/progress";
+import PlayRoomControllerComponent from "./play_room_controller";
 
 interface IProps {
     isInit: boolean;
@@ -20,10 +21,13 @@ const PlayRoomComponent: React.FC<IProps> = (props) => {
 
     return (
         <>
+            <PlayRoomControllerComponent
+                playRoom={playRoom}
+                handleCreateNewGame={handleCreateNewGame}
+            />
 
             <PlayRoomInfoComponent
                 playRoom={playRoom}
-                handleCreateNewGame={handleCreateNewGame}
             />
         </>
     );

@@ -126,6 +126,29 @@ const playRoomsReducer: Reducer<PlayRoomsState, PlayRoomsAction> = (state = init
             }
         }
 
+        case PlayRoomsActionType.REQUEST_DELETE_PLAY_ROOMS: {
+            return Object.assign({}, state, {
+                playRooms: state.playRooms,
+                games: state.games,
+                isLoading: true,
+            });
+        }
+        case PlayRoomsActionType.CALLBACK_DELETE_PLAY_ROOMS: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRooms: state.playRooms,
+                    games: state.games,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRooms: state.playRooms,
+                    games: state.games,
+                    isLoading: false,
+                });
+            }
+        }
+
         default:
             return state;
     }

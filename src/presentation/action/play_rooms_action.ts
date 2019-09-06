@@ -6,10 +6,12 @@ import{
     IRequestFinalPlayRoomsActionItem,
     IRequestGetPlayRoomsActionItem,
     IRequestCreatePlayRoomActionItem,
+    IRequestDeletePlayRoomActionItem,
     ICallbackInitPlayRoomsActionItem,
     ICallbackFinalPlayRoomsActionItem,
     ICallbackGetPlayRoomsActionItem,
     ICallbackCreatePlayRoomActionItem,
+    ICallbackDeletePlayRoomActionItem,
 } from "./play_rooms_action_item";
 
 export enum PlayRoomsActionType {
@@ -26,6 +28,9 @@ export enum PlayRoomsActionType {
 
     REQUEST_CREATE_PLAY_ROOM = "PLAY_ROOMS_REQUEST_CREATE_PLAY_ROOM",
     CALLBACK_CREATE_PLAY_ROOM = "PLAY_ROOMS_CALLBACK_CREATE_PLAY_ROOM",
+
+    REQUEST_DELETE_PLAY_ROOMS = "PLAY_ROOMS_REQUEST_DELETE_PLAY_ROOMS",
+    CALLBACK_DELETE_PLAY_ROOMS = "PLAY_ROOMS_CALLBACK_DELETE_PLAY_ROOMS",
 
 }
 
@@ -75,6 +80,16 @@ export interface ICallbackCreatePlayRoomAction extends Action {
     item?: ICallbackCreatePlayRoomActionItem;
 }
 
+export interface IRequestDeletePlayRoomAction extends Action {
+    type: PlayRoomsActionType.REQUEST_DELETE_PLAY_ROOMS;
+    item: IRequestDeletePlayRoomActionItem;
+}
+export interface ICallbackDeletePlayRoomAction extends Action {
+    type: PlayRoomsActionType.CALLBACK_DELETE_PLAY_ROOMS;
+    isSuccess: boolean;
+    item?: ICallbackDeletePlayRoomActionItem;
+}
+
 export type PlayRoomsAction =
     IListenerOnPlayRoomsAction |
     IRequestInitPlayRoomsAction |
@@ -84,7 +99,9 @@ export type PlayRoomsAction =
     IRequestGetPlayRoomsAction |
     ICallbackGetPlayRoomsAction |
     IRequestCreatePlayRoomAction |
-    ICallbackCreatePlayRoomAction ;
+    ICallbackCreatePlayRoomAction |
+    IRequestDeletePlayRoomAction |
+    ICallbackDeletePlayRoomAction;
 
 export interface IPlayRoomsActionCreator {
 
@@ -124,6 +141,14 @@ export interface IPlayRoomsActionCreator {
         isSuccess: boolean,
         item?: ICallbackCreatePlayRoomActionItem,
     ): ICallbackCreatePlayRoomAction;
+
+    requestDeletePlayRoomAction(
+        item: IRequestDeletePlayRoomActionItem,
+    ): IRequestDeletePlayRoomAction;
+    callbackDeletePlayRoomAction(
+        isSuccess: boolean,
+        item?: ICallbackDeletePlayRoomActionItem,
+    ): ICallbackDeletePlayRoomAction;
 
 }
 
@@ -211,6 +236,25 @@ class ActionCreator implements IPlayRoomsActionCreator {
     ): ICallbackCreatePlayRoomAction => {
         return {
             type: PlayRoomsActionType.CALLBACK_CREATE_PLAY_ROOM,
+            isSuccess,
+            item,
+        };
+    };
+
+    public requestDeletePlayRoomAction = (
+        item: IRequestDeletePlayRoomActionItem,
+    ): IRequestDeletePlayRoomAction => {
+        return {
+            type: PlayRoomsActionType.REQUEST_DELETE_PLAY_ROOMS,
+            item,
+        };
+    };
+    public callbackDeletePlayRoomAction = (
+        isSuccess: boolean,
+        item?: ICallbackDeletePlayRoomActionItem,
+    ): ICallbackDeletePlayRoomAction => {
+        return {
+            type: PlayRoomsActionType.CALLBACK_DELETE_PLAY_ROOMS,
             isSuccess,
             item,
         };

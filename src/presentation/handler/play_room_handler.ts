@@ -1,4 +1,5 @@
 import {call, put, take, fork} from "redux-saga/effects";
+import {push} from "connected-react-router";
 
 import {
     createPlayroomActionCreator,
@@ -44,6 +45,8 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
                 ? yield call(getGame, playRoom.gameId)
                 : null;
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, {playRoom, game}));
+            yield put(push(`/game/${playRoom.gameId}`));
+
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(false));

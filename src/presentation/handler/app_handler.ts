@@ -5,7 +5,7 @@ import {handleAddInAppNotificationMessage, handleHiddenInAppNotificationMessage}
 import {handleInitGamesInGames, handleFinalGamesInGames, handleGetGamesInGames} from "./games_handler";
 import {handleInitGameInGame, handleFinalGameInGame, handleUpdateGameInGame, handleFinishGameInGame} from "./game_handler";
 import {handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom} from "./play_room_handler";
-import {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms} from "./play_rooms_handler";
+import {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms, handleDeletePlayRoomsInPlayRooms} from "./play_rooms_handler";
 
 function* rootHandler() {
 
@@ -34,6 +34,7 @@ function* rootHandler() {
     yield fork(handleFinalPlayRoomsInPlayRooms);
     yield fork(handleGetPlayRoomsInPlayRooms);
     yield fork(handleCreatePlayRoomsInPlayRooms);
+    yield fork(handleDeletePlayRoomsInPlayRooms);
 }
 
 export default rootHandler;

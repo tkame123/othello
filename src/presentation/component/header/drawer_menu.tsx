@@ -27,7 +27,7 @@ const DrawerMenuComponent: React.FC<IProps> = (props) => {
             <Title>Othello</Title>
             <MenuUl>
                 <MenuLi><MenuLink to={"/playrooms"} onClick={handleDrawMenuToggle}>PlayRooms</MenuLink></MenuLi>
-                <MenuLi><MenuLink to={"/games"} onClick={handleDrawMenuToggle}>Games</MenuLink></MenuLi>
+                {/*<MenuLi><MenuLink to={"/games"} onClick={handleDrawMenuToggle}>Games</MenuLink></MenuLi>*/}
                 <MenuLi/>
                 <MenuLi>
                     {user && <p>{user.email}</p>}

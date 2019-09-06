@@ -34,7 +34,7 @@ const NotificationBarComponent: React.FC<IProps> = (props) => {
                             <CloseButton className="fas fa-times" onClick={handleOnCloseNotification(id)}/>
                         </Inner>)
                 } else {
-                    return
+                    return []
                 }
 
             })}

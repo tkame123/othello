@@ -6,6 +6,7 @@ import {
     IRequestFinalPlayRoomsActionItem,
     IRequestGetPlayRoomsActionItem,
     IRequestCreatePlayRoomActionItem,
+    IRequestDeletePlayRoomActionItem,
 } from "../action/play_rooms_action_item"
 
 export interface IPlayRoomsDispatcher {
@@ -17,6 +18,8 @@ export interface IPlayRoomsDispatcher {
     getPlayRooms(item: IRequestGetPlayRoomsActionItem): void;
 
     createPlayRoom(item: IRequestCreatePlayRoomActionItem): void;
+
+    deletePlayRoom(item: IRequestDeletePlayRoomActionItem): void;
 
 }
 
@@ -36,6 +39,9 @@ class Dispatcher implements IPlayRoomsDispatcher {
 
     public createPlayRoom = (item: IRequestCreatePlayRoomActionItem,): void => {
         this.dispatch(this.actionCreator.requestCreatePlayRoomAction(item));};
+
+    public deletePlayRoom = (item: IRequestDeletePlayRoomActionItem,): void => {
+        this.dispatch(this.actionCreator.requestDeletePlayRoomAction(item));};
 
 }
 

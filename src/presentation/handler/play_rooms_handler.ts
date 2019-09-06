@@ -6,6 +6,7 @@ import {
     PlayRoomsActionType,
     IPlayRoomsActionCreator,
     IRequestCreatePlayRoomAction,
+    IRequestDeletePlayRoomAction,
 } from "../action/play_rooms_action";
 
 import {PlayRoom} from "../../domain/model/play_room";
@@ -117,6 +118,21 @@ function* handleCreatePlayRoomsInPlayRooms() {
     }
 }
 
+function* handleDeletePlayRoomsInPlayRooms() {
+    while (true) {
+        try {
+            const action: IRequestDeletePlayRoomAction = yield take(PlayRoomsActionType.REQUEST_DELETE_PLAY_ROOMS);
+            for (const playRoom of action.item.playRooms) {
+                yield call(deletePlayRooms, playRoom.id);
+            }
+            yield put(actionCreator.callbackDeletePlayRoomAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackDeletePlayRoomAction(false));
+        }
+    }
+}
+
 const getPlayRooms = (): Promise<PlayRoom[]> => {
     return playRoomsUseCase.getPlayRooms();
 };
@@ -125,8 +141,12 @@ const createPlayRoom = (owner: User): Promise<void> => {
     return playRoomsUseCase.createPlayRoom(owner);
 };
 
+const deletePlayRooms = (id: string): Promise<void> => {
+    return playRoomsUseCase.deletePlayRoom(id);
+};
+
 const getGame = (id: string): Promise<Game | null> => {
     return gameUseCase.getGame(id);
 };
 
-export {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms}
+export {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms, handleDeletePlayRoomsInPlayRooms}

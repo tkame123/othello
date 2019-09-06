@@ -24,6 +24,7 @@ export interface IPlayRoomUseCase {
 
     createGameOnPlayRoom(id: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<PlayRoom>;
 
+    deletePlayRoom(id: string): Promise<void>;
 }
 
 class PlayRoomUseCase implements IPlayRoomUseCase {
@@ -119,6 +120,17 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
             }).then((doc: firebase.firestore.DocumentSnapshot) =>{
                 const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
                 resolve(playRoom);
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
+            })
+        });
+    };
+
+    public deletePlayRoom = (id: string): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            firebase.firestore().collection(playRoomsRef).doc(id).delete()
+            .then(() => {
+                resolve();
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
             })

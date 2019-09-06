@@ -29,8 +29,8 @@ const GameControllerComponent: React.FC<IProps> = (props) => {
 
             {isFinished && <StatusContents>This game is finished!</StatusContents>}
             {!isFinished && !isPlayer && <StatusContents>You are guest!</StatusContents>}
-            {!isFinished && isPlayer && isMyTurn && <StatusContents>My Turn</StatusContents>}
-            {!isFinished && isPlayer && !isMyTurn && <StatusContents>Your Turn</StatusContents>}
+            {!isFinished && isPlayer && isMyTurn && <StatusContents>Your Turn</StatusContents>}
+            {!isFinished && isPlayer && !isMyTurn && <StatusContents>Opponent Turn</StatusContents>}
 
             <Container>
                 <PlayerBox>

@@ -20,7 +20,7 @@ const ButtonStyled = styled.button`
         border-style: none;
         background-color: ${config().style.color.secondary};
         text-Align: center;
-        color: ${config().style.color.onsecondary};
+        color: ${config().style.color.onSecondary};
         cursor: pointer;
         &:hover {
           background: ${config().style.color.secondaryDark};
