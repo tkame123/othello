@@ -26,7 +26,7 @@ interface IState {
     isOpenDrawnMenu: boolean,
 }
 
-export class NavbarContainer extends React.Component <IProps, IState> {
+export class AuthContainer extends React.Component <IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
@@ -35,6 +35,14 @@ export class NavbarContainer extends React.Component <IProps, IState> {
             isOpenDrawnMenu: false,
         };
     };
+
+    public componentDidMount() {
+        this.props.dispatcher.initAuthUser({});
+    }
+
+    public componentWillUnmount(): void {
+        this.props.dispatcher.finalAuthUser({});
+    }
 
     public render(): JSX.Element {
 
@@ -92,4 +100,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     };
 };
 
-export default (withRouter(connect(mapStateToProps, mapDispatchToProps)(NavbarContainer)));
+export default (withRouter(connect(mapStateToProps, mapDispatchToProps)(AuthContainer)));

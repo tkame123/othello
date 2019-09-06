@@ -5,6 +5,16 @@ export interface IListenerOnAuthUserActionItem {
     authState: boolean,
 }
 
+export interface IRequestInitAuthUserActionItem {
+}
+export interface ICallbackInitAuthUserActionItem {
+}
+
+export interface IRequestFinalAuthUserActionItem {
+}
+export interface ICallbackFinalAuthUserActionItem {
+}
+
 export interface IRequestGetAuthUserActionItem {
 }
 export interface ICallbackGetAuthUserActionItem {

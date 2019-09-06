@@ -7,6 +7,8 @@ export interface IAuthUseCase {
 
     onAuth(callback: (user: User | null) => void): void;
 
+    closeAuth(): void;
+
     loginOnGoogle() : Promise<void>;
 
     logout(): Promise<void>;
@@ -16,6 +18,8 @@ export interface IAuthUseCase {
 }
 
 class AuthUseCase implements IAuthUseCase {
+
+    private unsubscribeAuth: any;
 
     public onAuth(callback: (user: User | null) => void): void {
         firebase.auth().onAuthStateChanged((firebaseUser: firebase.User | null) => {
@@ -27,6 +31,10 @@ class AuthUseCase implements IAuthUseCase {
         }, (error: any) => {
             throw handleErrorFirebaseAuth(error);
         })
+    }
+
+    public closeAuth(): void {
+        this.unsubscribeAuth();
     }
 
     public loginOnGoogle = (): Promise<void> => {

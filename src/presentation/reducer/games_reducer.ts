@@ -30,6 +30,46 @@ const playRoomsReducer: Reducer<GamesState, GamesAction> = (state = initialState
             }
         }
 
+        case GamesActionType.REQUEST_INIT_GAMES: {
+            return Object.assign({}, state, {
+                games: state.games,
+                isLoading: true,
+            });
+        }
+        case GamesActionType.CALLBACK_INIT_GAMES: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    games: state.games,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    games: state.games,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case GamesActionType.REQUEST_FINAL_GAMES: {
+            return Object.assign({}, state, {
+                games: state.games,
+                isLoading: true,
+            });
+        }
+        case GamesActionType.CALLBACK_FINAL_GAMES: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    games: [],
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    games: state.games,
+                    isLoading: false,
+                });
+            }
+        }
+
         case GamesActionType.REQUEST_GET_GAMES: {
             return Object.assign({}, state, {
                 games: state.games,

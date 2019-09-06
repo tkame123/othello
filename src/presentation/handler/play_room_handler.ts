@@ -7,10 +7,6 @@ import {
     IRequestGetPlayRoomAction,
     IRequestCreateGameOnPlayRoomAction,
 } from "../action/play_room_action";
-import {
-    ICallbackGetPlayRoomActionItem,
-    ICallbackCreateGameOnPlayRoomActionItem,
-} from "../action/play_room_action_item";
 
 import {PlayRoom} from "../../domain/model/play_room";
 import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
@@ -31,8 +27,7 @@ function* handleGetPlayRoomInPlayRoom() {
             const game: Game | null = playRoom.gameId
                 ? yield call(getGame, playRoom.gameId)
                 : null;
-            const res: ICallbackGetPlayRoomActionItem = {playRoom, game};
-            yield put(actionCreator.callbackGetPlayRoomAction(true, res));
+            yield put(actionCreator.callbackGetPlayRoomAction(true, {playRoom, game}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetPlayRoomAction(false));
@@ -48,8 +43,7 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
             const game: Game | null = playRoom.gameId
                 ? yield call(getGame, playRoom.gameId)
                 : null;
-            const res: ICallbackCreateGameOnPlayRoomActionItem = {playRoom, game};
-            yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, res));
+            yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, {playRoom, game}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(false));

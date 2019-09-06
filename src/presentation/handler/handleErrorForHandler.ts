@@ -7,7 +7,6 @@ import {
 } from "../action/app_notification_message_action";
 
 import {AppError, ErrorType} from "../../domain/model/app_error";
-import {IRequestAddActionItem} from "../action/app_notification_message_action_item";
 import {AppNotificationType} from "../../domain/model/app_notification_message";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
@@ -47,11 +46,7 @@ export function* handleErrorForHandler(error: AppError | any) {
     if (!NotificationWhiteList.includes(error_type)) {
         const type = isWarn ? AppNotificationType.WARN : AppNotificationType.ERROR;
         const message = error.message || error.toString();
-        const req: IRequestAddActionItem = {
-            type: type,
-            message: message
-        };
-        yield put(actionCreatorForNotification.requestAddAction(req));
+        yield put(actionCreatorForNotification.requestAddAction({type, message}));
     }
 
 }

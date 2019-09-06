@@ -1,15 +1,11 @@
-import {put, take, call, fork} from "redux-saga/effects";
-import {eventChannel} from 'redux-saga'
+import {put, take, call, fork, cancel} from "redux-saga/effects";
+import {eventChannel, Task} from 'redux-saga'
 
 import {
     createGamesActionCreator,
     GamesActionType,
     IGamesActionCreator,
 } from "../action/games_action";
-import {
-    IListenerOnGamesActionItem,
-    ICallbackGetGamesActionItem,
-} from "../action/games_action_item";
 
 import {Game} from "../../domain/model/game";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
@@ -18,13 +14,17 @@ import {handleErrorForHandler} from "./handleErrorForHandler";
 const gameUseCase: IGameUseCase = createGameUseCase();
 const actionCreator: IGamesActionCreator = createGamesActionCreator();
 
+let gamesChannelTask: Task;
+
 const gamessChannel = () => {
     const channel = eventChannel(emit => {
         gameUseCase.onGames((games: Game[]) =>{
             emit({games})
         });
 
-        const unsubscribe = () => {};
+        const unsubscribe = () => {
+            gameUseCase.closeGames();
+        };
 
         return unsubscribe
     });
@@ -36,8 +36,7 @@ function* onGames() {
     while (true) {
         try {
             const { games } = yield take(channel);
-            const res: IListenerOnGamesActionItem = {games};
-            yield put(actionCreator.listenerOnGamesAction(true, res));
+            yield put(actionCreator.listenerOnGamesAction(true, {games}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.listenerOnGamesAction(false));
@@ -45,13 +44,38 @@ function* onGames() {
     }
 }
 
-function* handleGamesInGames() {
+function* handleInitGamesInGames() {
+    while (true) {
+        try {
+            yield take(GamesActionType.REQUEST_INIT_GAMES);
+            gamesChannelTask = yield fork(onGames);
+            yield put(actionCreator.callbackInitGamesAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackInitGamesAction(false));
+        }
+    }
+}
+
+function* handleFinalGamesInGames() {
+    while (true) {
+        try {
+            yield take(GamesActionType.REQUEST_FINAL_GAMES);
+            yield cancel(gamesChannelTask);
+            yield put(actionCreator.callbackFinalGamesAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackFinalGamesAction(false));
+        }
+    }
+}
+
+function* handleGetGamesInGames() {
     while (true) {
         try {
             yield take(GamesActionType.REQUEST_GET_GAMES);
             const games: Game[] = yield call(getGames);
-            const res: ICallbackGetGamesActionItem = {games};
-            yield put(actionCreator.callbackGetGamesAction(true, res));
+            yield put(actionCreator.callbackGetGamesAction(true, {games}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetGamesAction(false));
@@ -59,9 +83,8 @@ function* handleGamesInGames() {
     }
 }
 
-
 const getGames = (): Promise<Game[]> => {
     return gameUseCase.getGames();
 };
 
-export {onGames, handleGamesInGames}
+export {handleInitGamesInGames, handleFinalGamesInGames, handleGetGamesInGames}

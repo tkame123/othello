@@ -33,6 +33,52 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
             }
         }
 
+        case AuthActionType.REQUEST_INIT_AUTH_USER_AUTH: {
+            return Object.assign({}, state, {
+                user: state.user,
+                authState: state.authState,
+                isLoading: true,
+            });
+        }
+        case AuthActionType.CALLBACK_INIT_AUTH_USER_ROOMS: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    user: state.user,
+                    authState: state.authState,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    user: state.user,
+                    authState: state.authState,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case AuthActionType.REQUEST_FINAL_AUTH_USER_AUTH: {
+            return Object.assign({}, state, {
+                user: state.user,
+                authState: state.authState,
+                isLoading: true,
+            });
+        }
+        case AuthActionType.CALLBACK_FINAL_AUTH_USER: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    user: null,
+                    authState: null,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    user: state.user,
+                    authState: state.authState,
+                    isLoading: false,
+                });
+            }
+        }
+
         case AuthActionType.REQUEST_GET_AUTH_USER_AUTH: {
             return Object.assign({}, state, {
                 user: state.user,
@@ -40,7 +86,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
                 isLoading: true,
             });
         }
-        case AuthActionType.CALLBACK_GET_AUTH_USER_ROOMS: {
+        case AuthActionType.CALLBACK_GET_AUTH_USER_AUTH: {
             const _action = action as ICallbackGetAuthUserAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
@@ -64,7 +110,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
                 isLoading: true,
             });
         }
-        case AuthActionType.CALLBACK_LOGIN_GOOGLE_ROOMS: {
+        case AuthActionType.CALLBACK_LOGIN_GOOGLE_AUTH: {
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: state.user,
@@ -87,7 +133,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
                 isLoading: true,
             });
         }
-        case AuthActionType.CALLBACK_LOGOUT_ROOMS: {
+        case AuthActionType.CALLBACK_LOGOUT_AUTH: {
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: state.user,

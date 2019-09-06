@@ -33,12 +33,11 @@ export class GamesContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
+        this.props.dispatcher.initGames({});
     }
 
-    public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
-        // init処理の終了
-        const isInitFinished: boolean = this.state.isInit && !this.props.state.isLoading && prevProps.state.isLoading;
-        if (isInitFinished) { return this.setState({isInit: false}) }
+    public componentWillUnmount(): void {
+        this.props.dispatcher.finalGames({});
     }
 
     public render(): JSX.Element {

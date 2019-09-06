@@ -37,6 +37,11 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
+        this.props.dispatcher.initPlayRooms({});
+    }
+
+    public componentWillUnmount(): void {
+        this.props.dispatcher.finalPlayRooms({});
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
@@ -51,7 +56,6 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
         const {isInit} = this.state;
 
         const isLoading: boolean = state.isLoading;
-
         const playRooms: PlayRoom[] = state.playRooms;
 
 

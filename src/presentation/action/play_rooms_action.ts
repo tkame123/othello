@@ -2,14 +2,24 @@ import {Action} from "redux";
 
 import{
     IListenerOnPlayRoomsActionItem,
+    IRequestInitPlayRoomsActionItem,
+    IRequestFinalPlayRoomsActionItem,
     IRequestGetPlayRoomsActionItem,
     IRequestCreatePlayRoomActionItem,
+    ICallbackInitPlayRoomsActionItem,
+    ICallbackFinalPlayRoomsActionItem,
     ICallbackGetPlayRoomsActionItem,
     ICallbackCreatePlayRoomActionItem,
 } from "./play_rooms_action_item";
 
 export enum PlayRoomsActionType {
     LISTENER_ON_PLAYROOMS = "PLAY_ROOMS_LISTENER_ON_PLAY_ROOMS",
+
+    REQUEST_INIT_PLAY_ROOMS = "PLAY_ROOMS_REQUEST_INIT_PLAY_ROOMS",
+    CALLBACK_INIT_PLAY_ROOMS = "PLAY_ROOMS_CALLBACK_INIT_PLAY_ROOMS",
+
+    REQUEST_FINAL_PLAY_ROOMS = "PLAY_ROOMS_REQUEST_FINAL_PLAY_ROOMS",
+    CALLBACK_FINAL_PLAY_ROOMS = "PLAY_ROOMS_CALLBACK_FINAL_PLAY_ROOMS",
 
     REQUEST_GET_PLAY_ROOMS = "PLAY_ROOMS_REQUEST_GET_PLAY_ROOMS",
     CALLBACK_GET_PLAY_ROOMS = "PLAY_ROOMS_CALLBACK_GET_PLAY_ROOMS",
@@ -23,6 +33,26 @@ export interface IListenerOnPlayRoomsAction extends Action {
     type: PlayRoomsActionType.LISTENER_ON_PLAYROOMS;
     isSuccess: boolean;
     item?: IListenerOnPlayRoomsActionItem;
+}
+
+export interface IRequestInitPlayRoomsAction extends Action {
+    type: PlayRoomsActionType.REQUEST_INIT_PLAY_ROOMS;
+    item: IRequestInitPlayRoomsActionItem;
+}
+export interface ICallbackInitPlayRoomsAction extends Action {
+    type: PlayRoomsActionType.CALLBACK_INIT_PLAY_ROOMS;
+    isSuccess: boolean;
+    item?: ICallbackInitPlayRoomsActionItem;
+}
+
+export interface IRequestFinalPlayRoomsAction extends Action {
+    type: PlayRoomsActionType.REQUEST_FINAL_PLAY_ROOMS;
+    item: IRequestFinalPlayRoomsActionItem;
+}
+export interface ICallbackFinalPlayRoomsAction extends Action {
+    type: PlayRoomsActionType.CALLBACK_FINAL_PLAY_ROOMS;
+    isSuccess: boolean;
+    item?: ICallbackFinalPlayRoomsActionItem;
 }
 
 export interface IRequestGetPlayRoomsAction extends Action {
@@ -47,6 +77,10 @@ export interface ICallbackCreatePlayRoomAction extends Action {
 
 export type PlayRoomsAction =
     IListenerOnPlayRoomsAction |
+    IRequestInitPlayRoomsAction |
+    ICallbackInitPlayRoomsAction |
+    IRequestFinalPlayRoomsAction |
+    ICallbackFinalPlayRoomsAction |
     IRequestGetPlayRoomsAction |
     ICallbackGetPlayRoomsAction |
     IRequestCreatePlayRoomAction |
@@ -58,6 +92,22 @@ export interface IPlayRoomsActionCreator {
         isSuccess: boolean,
         item?: IListenerOnPlayRoomsActionItem,
     ): IListenerOnPlayRoomsAction;
+
+    requestInitPlayRoomsAction(
+        item: IRequestInitPlayRoomsActionItem,
+    ): IRequestInitPlayRoomsAction;
+    callbackInitPlayRoomsAction(
+        isSuccess: boolean,
+        item?: ICallbackInitPlayRoomsActionItem,
+    ): ICallbackInitPlayRoomsAction;
+
+    requestFinalPlayRoomsAction(
+        item: IRequestFinalPlayRoomsActionItem,
+    ): IRequestFinalPlayRoomsAction;
+    callbackFinalPlayRoomsAction(
+        isSuccess: boolean,
+        item?: ICallbackFinalPlayRoomsActionItem,
+    ): ICallbackFinalPlayRoomsAction;
 
     requestGetPlayRoomsAction(
         item: IRequestGetPlayRoomsActionItem,
@@ -85,6 +135,44 @@ class ActionCreator implements IPlayRoomsActionCreator {
     ): IListenerOnPlayRoomsAction => {
         return {
             type: PlayRoomsActionType.LISTENER_ON_PLAYROOMS,
+            isSuccess,
+            item,
+        };
+    };
+
+    public requestInitPlayRoomsAction = (
+        item: IRequestInitPlayRoomsActionItem,
+    ): IRequestInitPlayRoomsAction => {
+        return {
+            type: PlayRoomsActionType.REQUEST_INIT_PLAY_ROOMS,
+            item,
+        };
+    };
+    public callbackInitPlayRoomsAction = (
+        isSuccess: boolean,
+        item?: ICallbackInitPlayRoomsActionItem,
+    ): ICallbackInitPlayRoomsAction => {
+        return {
+            type: PlayRoomsActionType.CALLBACK_INIT_PLAY_ROOMS,
+            isSuccess,
+            item,
+        };
+    };
+
+    public requestFinalPlayRoomsAction = (
+        item: IRequestFinalPlayRoomsActionItem,
+    ): IRequestFinalPlayRoomsAction => {
+        return {
+            type: PlayRoomsActionType.REQUEST_FINAL_PLAY_ROOMS,
+            item,
+        };
+    };
+    public callbackFinalPlayRoomsAction = (
+        isSuccess: boolean,
+        item?: ICallbackFinalPlayRoomsActionItem,
+    ): ICallbackFinalPlayRoomsAction => {
+        return {
+            type: PlayRoomsActionType.CALLBACK_FINAL_PLAY_ROOMS,
             isSuccess,
             item,
         };

@@ -7,6 +7,16 @@ export interface IListenerOnPlayRoomsActionItem {
     games: Game[],
 }
 
+export interface IRequestInitPlayRoomsActionItem {
+}
+export interface ICallbackInitPlayRoomsActionItem {
+}
+
+export interface IRequestFinalPlayRoomsActionItem {
+}
+export interface ICallbackFinalPlayRoomsActionItem {
+}
+
 export interface IRequestGetPlayRoomsActionItem {
 }
 export interface ICallbackGetPlayRoomsActionItem {

@@ -16,6 +16,8 @@ export interface IGameUseCase {
 
     onGames(callback: (games: Game[]) => void): void;
 
+    closeGames(): void;
+
     getGame(id: string): Promise<Game | null>;
 
     getGames(): Promise<Game[]>;
@@ -30,8 +32,10 @@ export interface IGameUseCase {
 
 class GameUseCase implements IGameUseCase {
 
+    private unsubscribeGames: any;
+
     public onGames(callback: (games: Game[]) => void): void {
-        firebase.firestore().collection(gameRef).onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
+        this.unsubscribeGames = firebase.firestore().collection(gameRef).onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
             let games: Game[] = [];
             docs.forEach((doc) => {
                 const game: Game = this.getGameFromFS(doc);
@@ -43,6 +47,10 @@ class GameUseCase implements IGameUseCase {
             throw handleErrorFirebaseFirestore(error);
         })
     };
+
+    public closeGames(): void {
+        this.unsubscribeGames();
+    }
 
     public getGame = (id: string): Promise<Game | null> => {
         return new Promise<Game | null>((resolve, reject) => {

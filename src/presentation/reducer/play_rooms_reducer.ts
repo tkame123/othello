@@ -33,6 +33,52 @@ const playRoomsReducer: Reducer<PlayRoomsState, PlayRoomsAction> = (state = init
             }
         }
 
+        case PlayRoomsActionType.REQUEST_INIT_PLAY_ROOMS: {
+            return Object.assign({}, state, {
+                playRooms: state.playRooms,
+                games: state.games,
+                isLoading: true,
+            });
+        }
+        case PlayRoomsActionType.CALLBACK_INIT_PLAY_ROOMS: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRooms: state.playRooms,
+                    games: state.games,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRooms: state.playRooms,
+                    games: state.games,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case PlayRoomsActionType.REQUEST_FINAL_PLAY_ROOMS: {
+            return Object.assign({}, state, {
+                playRooms: state.playRooms,
+                games: state.games,
+                isLoading: true,
+            });
+        }
+        case PlayRoomsActionType.CALLBACK_FINAL_PLAY_ROOMS: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRooms: [],
+                    games: [],
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRooms: state.playRooms,
+                    games: state.games,
+                    isLoading: false,
+                });
+            }
+        }
+
         case PlayRoomsActionType.REQUEST_GET_PLAY_ROOMS: {
             return Object.assign({}, state, {
                 playRooms: state.playRooms,

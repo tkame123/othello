@@ -13,12 +13,15 @@ export interface IGameDetailUseCase {
 
     onGameDetailDiff(callback: (gameDetail: GameDetail) => void): void;
 
+    closeGameDetail(): void;
+
     addGameDetail(id: string, turn: number, cell: Cell) : Promise<void>;
 
 }
 
 class GameDetailUseCase implements IGameDetailUseCase {
 
+    private unsubscribeGameDetail: any;
     private gameId: string = "";
     private gameDetails: GameDetail[] = [];
 
@@ -42,7 +45,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
 
     public onGameDetailDiff(callback: (gameDetail: GameDetail) => void): void {
         const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(this.gameId);
-        ref.collection("move").onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
+        this.unsubscribeGameDetail = ref.collection("move").onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
             docs.docChanges().forEach((change: firebase.firestore.DocumentChange) => {
                 if ( change.type === 'added' ) {
                     const gameDetail :GameDetail = this.getGameDetailFromFS(change.doc);
@@ -59,6 +62,10 @@ class GameDetailUseCase implements IGameDetailUseCase {
                 }
             });
         })
+    }
+
+    public closeGameDetail(): void {
+        this.unsubscribeGameDetail();
     }
 
     public addGameDetail = (id: string, turn: number, cell: Cell): Promise<void> =>{

@@ -8,13 +8,6 @@ import {
     IRequestFinishGameAction,
     IRequestUpdateGameAction,
 } from "../action/game_action";
-import {
-    IListenerOnGameDetailDiffActionItem,
-    IRequestFinishGameActionItem,
-    ICallbackInitGameActionItem,
-    ICallbackUpdateGameActionItem,
-    ICallbackFinishGameActionItem,
-} from "../action/game_action_item";
 
 import {createGameGreeUseCase, IGameTreeUseCase} from "../../domain/usecase/game_tree_usecase";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
@@ -75,10 +68,8 @@ function* onGameDetailDiff() {
 
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
-            console.log(score);
 
-            const res: IListenerOnGameDetailDiffActionItem = {gameTree, gameDetail, score};
-            yield put(actionCreator.listenerOnGameDetailDiffAction(true, res));
+            yield put(actionCreator.listenerOnGameDetailDiffAction(true, {gameTree, gameDetail, score}));
 
 
             // 終了判定 && 終了処理
@@ -86,8 +77,7 @@ function* onGameDetailDiff() {
             if (gameTree.moves === []) { isFinished = true }
             if (gameTree.moves.length === 1 && gameTree.moves[0].cell === null) { isFinished = true }
             if (isFinished) {
-                const req: IRequestFinishGameActionItem = { game, gameTree };
-                yield put(actionCreator.requestFinishGameAction(req));
+                yield put(actionCreator.requestFinishGameAction({ game, gameTree }));
             }
 
         } catch (error) {
@@ -127,17 +117,14 @@ function* handleInitGameInGame() {
 
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
-            console.log(score);
-            const res: ICallbackInitGameActionItem = {game, gameTree, gameDetails, score};
-            yield put(actionCreator.callbackInitGameAction(true, res));
+            yield put(actionCreator.callbackInitGameAction(true, {game, gameTree, gameDetails, score}));
 
             // 終了判定 && 終了処理
             let isFinished: boolean = false;
             if (gameTree.moves === []) { isFinished = true }
             if (gameTree.moves.length === 1 && gameTree.moves[0].cell === null) { isFinished = true }
             if (isFinished) {
-                const req: IRequestFinishGameActionItem = { game, gameTree };
-                yield put(actionCreator.requestFinishGameAction(req));
+                yield put(actionCreator.requestFinishGameAction({ game, gameTree }));
             }
 
         } catch (error) {
@@ -155,8 +142,7 @@ function* handleUpdateGameInGame() {
             const cell: Cell = action.item.cell;
             const turn: number = action.item.nextTurn;
             yield call(addGameDetail, id, turn, cell);
-            const res: ICallbackUpdateGameActionItem = {};
-            yield put(actionCreator.callbackUpdateGameAction(true, res));
+            yield put(actionCreator.callbackUpdateGameAction(true, {}));
 
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -174,8 +160,7 @@ function* handleFinishGameInGame() {
             const game: Game = yield call(getGame, action.item.game.id);
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
-            const res: ICallbackFinishGameActionItem = { game, score};
-            yield put(actionCreator.callbackFinishGameAction(true, res));
+            yield put(actionCreator.callbackFinishGameAction(true, { game, score}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackFinishGameAction(false));

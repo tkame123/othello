@@ -1,17 +1,11 @@
-import {put, take, call, fork} from "redux-saga/effects";
-import {eventChannel} from 'redux-saga'
+import {put, take, call, fork, cancel, cancelled} from "redux-saga/effects";
+import {eventChannel, Task} from 'redux-saga'
 
 import {
     createAuthActionCreator,
     AuthActionType,
     IAuthActionCreator,
 } from "../action/auth_action";
-import {
-    IListenerOnAuthUserActionItem,
-    ICallbackGetAuthUserActionItem,
-    ICallbackLoginOnGoogleActionItem,
-    ICallbackLogoutActionItem,
-} from "../action/auth_action_item";
 import {User} from "../../domain/model/user";
 import {createAuthUseCase, IAuthUseCase} from "../../domain/usecase/auth_usecase";
 import {handleErrorForHandler} from "./handleErrorForHandler";
@@ -19,13 +13,17 @@ import {handleErrorForHandler} from "./handleErrorForHandler";
 const authUsecase: IAuthUseCase = createAuthUseCase();
 const actionCreator: IAuthActionCreator = createAuthActionCreator();
 
+let authChannelTask: Task;
+
 const authChannel = () => {
     const channel = eventChannel(emit => {
         authUsecase.onAuth((user: User | null) =>{
             emit({user})
         });
 
-        const unsubscribe = () => {};
+        const unsubscribe = () => {
+            authUsecase.closeAuth();
+        };
 
         return unsubscribe
     });
@@ -38,11 +36,40 @@ function* onAuth() {
         try {
             const { user } = yield take(channel);
             const authState: boolean = !!user;
-            const res: IListenerOnAuthUserActionItem = {user, authState};
-            yield put(actionCreator.listenerOnAuthUserAction(true, res));
+            yield put(actionCreator.listenerOnAuthUserAction(true, {user, authState}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetAuthUserAction(false));
+        } finally {
+            if (yield cancelled()) {
+                channel.close();
+            }
+        }
+    }
+}
+
+function* handleInitAuthUserInAuth() {
+    while (true) {
+        try {
+            yield take(AuthActionType.REQUEST_INIT_AUTH_USER_AUTH);
+            authChannelTask = yield fork(onAuth);
+            yield put(actionCreator.callbackInitAuthUserAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackInitAuthUserAction(false));
+        }
+    }
+}
+
+function* handleFinalAuthUserInAuth() {
+    while (true) {
+        try {
+            yield take(AuthActionType.REQUEST_FINAL_AUTH_USER_AUTH);
+            yield cancel(authChannelTask);
+            yield put(actionCreator.callbackFinalAuthUserAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackFinalAuthUserAction(false));
         }
     }
 }
@@ -53,8 +80,7 @@ function* handleGetAuthUserInAuth() {
             yield take(AuthActionType.REQUEST_GET_AUTH_USER_AUTH);
             const user: User | null = yield call(getAuthUser);
             const authState: boolean = !!user;
-            const res: ICallbackGetAuthUserActionItem = {user, authState};
-            yield put(actionCreator.callbackGetAuthUserAction(true, res));
+            yield put(actionCreator.callbackGetAuthUserAction(true, {user, authState}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetAuthUserAction(false));
@@ -67,8 +93,7 @@ function* handleLoginOnGoogleInAuth() {
         try {
             yield take(AuthActionType.REQUEST_LOGIN_GOOGLE_AUTH);
             yield call(loginOnGoogle);
-            const res: ICallbackLoginOnGoogleActionItem = {};
-            yield put(actionCreator.callbackLoginOnGoogleAction(true, res));
+            yield put(actionCreator.callbackLoginOnGoogleAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackLoginOnGoogleAction(false));
@@ -81,8 +106,7 @@ function* handleLogoutInAuth() {
         try {
             yield take(AuthActionType.REQUEST_LOGOUT_AUTH);
             yield call(logout);
-            const res: ICallbackLogoutActionItem = {};
-            yield put(actionCreator.callbackLogoutAction(true, res));
+            yield put(actionCreator.callbackLogoutAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackLogoutAction(false));
@@ -102,4 +126,4 @@ const logout = (): Promise<void> => {
     return authUsecase.logout();
 };
 
-export {onAuth, handleGetAuthUserInAuth, handleLoginOnGoogleInAuth, handleLogoutInAuth}
+export {handleInitAuthUserInAuth, handleFinalAuthUserInAuth, handleGetAuthUserInAuth, handleLoginOnGoogleInAuth, handleLogoutInAuth}

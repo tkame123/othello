@@ -9,11 +9,6 @@ import {
     IRequestAddAction,
     IRequestHiddenAction,
 } from "../action/app_notification_message_action";
-import {
-    IRequestHiddenActionItem,
-    ICallbackAddActionItem,
-    ICallbackHiddenActionItem,
-} from "../action/app_notification_message_action_item";
 import {AppState} from "../store/app_state";
 import {AppNotificationMessageState} from "../store/app_notification_message_state";
 import {config} from "../../util/config";
@@ -34,13 +29,11 @@ function* execAddNotificationMessage(action: IRequestAddAction) {
             createdAt: new Date(),
         };
         const item: AppNotificationMessage = AppNotificationMessage.from(params);
-        const res: ICallbackAddActionItem = { appNotificationMessage: item };
-        yield put(actionCreator.callbackAddAction(true, res));
+        yield put(actionCreator.callbackAddAction(true, { appNotificationMessage: item }));
 
         // HiddenActionを遅延発行
         yield call(delay, config().appNotificationMessages.delayTimeAppNotificationMessage);
-        const notificationReq: IRequestHiddenActionItem = { id: item.id };
-        yield put(actionCreator.requestHiddenAction(notificationReq));
+        yield put(actionCreator.requestHiddenAction({ id: item.id }));
 
     } catch (error) {
         yield put(actionCreator.callbackAddAction(false));
@@ -66,8 +59,7 @@ function* execHiddenNotificationMessage(action: IRequestHiddenAction) {
                     return item;
                 }
             });
-        const res: ICallbackHiddenActionItem = { appNotificationMessages: items };
-        yield put(actionCreator.callbackHiddenAction(true, res));
+        yield put(actionCreator.callbackHiddenAction(true, { appNotificationMessages: items }));
     } catch (error) {
         yield put(actionCreator.callbackHiddenAction(false));
     }
