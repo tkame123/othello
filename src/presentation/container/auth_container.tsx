@@ -36,20 +36,9 @@ export class AuthContainer extends React.Component <IProps, IState> {
         };
     };
 
-    public componentDidMount() {
-        this.props.dispatcher.initAuthUser({});
-    }
-
-    public componentWillUnmount(): void {
-        this.props.dispatcher.finalAuthUser({});
-    }
-
     public render(): JSX.Element {
 
         const {state} = this.props;
-
-        const children: React.ReactNode = this.props.children;
-
         const user: User | null = state.user;
         const isLoading: boolean = state.isLoading;
         const isOpenDrawnMenu: boolean = this.state.isOpenDrawnMenu;
@@ -58,7 +47,6 @@ export class AuthContainer extends React.Component <IProps, IState> {
             <HeaderComponent
                 isLoading={isLoading}
                 isOpenDrawnMenu={isOpenDrawnMenu}
-                children={children}
                 user={user}
                 handleDrawMenuToggle={this.handleDrawMenuToggle}
                 handleLoginOnGoogle={this.handleLoginOnGoogle}

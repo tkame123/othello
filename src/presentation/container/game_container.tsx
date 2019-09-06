@@ -15,11 +15,18 @@ import GameComponent from "../component/game/game";
 import {Cell, GameDetail, GameTree, Move} from "../../domain/model/game_detail";
 import {User} from "../../domain/model/user";
 import {Score} from "../../domain/model/score";
+import {
+    createAppNotificationMessageDispatcher,
+    IAppNotificationMessageDispatcher
+} from "../dispatcher/app_notification_message_dispatcher";
+import {createAppNotificationMessageActionCreator} from "../action/app_notification_message_action";
+import {AppNotificationType} from "../../domain/model/app_notification_message";
 
 interface IProps extends RouteComponentProps<{id: string}>{
     state: GameState;
     authState: AuthState;
     dispatcher: IGameDispatcher;
+    noticeDispatcher: IAppNotificationMessageDispatcher;
 }
 
 interface IState {
@@ -80,9 +87,11 @@ export class GameContainer extends React.Component <IProps, IState> {
 
     private handleToggleBoard = (cell: Cell , isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>): void => {
         event.preventDefault();
-        if (!this.props.state.gameTree) { throw new Error("") }
-        if (!this.props.state.game) { throw new Error("")}
-        if (!isPlayer || !isMyTurn ) { throw new Error("")}
+        if (!this.props.state.gameTree || !this.props.state.game) {
+            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need LogIn!!" });
+            return
+        }
+        if (!isPlayer || !isMyTurn ) { return }
         const moves: Move[] = this.props.state.gameTree.moves;
         const finded: Move | undefined = moves.find((item: Move): boolean => {
             if (item.cell === null) { return false }
@@ -106,6 +115,7 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
         dispatcher: createGameDispatcher(dispatch, createGameActionCreator()),
+        noticeDispatcher: createAppNotificationMessageDispatcher(dispatch, createAppNotificationMessageActionCreator()),
     };
 };
 

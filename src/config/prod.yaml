@@ -11,7 +11,7 @@ sentry:
   sentryDsn: "https://6b6b01f85cfa408da6a4cfa053e0984b@sentry.io/1550122"
 appNotificationMessages:
   maxNotificationMessages: 10
-  delayMessageSeconds: 5
+  delayMessageMilliiSeconds: 5000
 board:
   size: 8
 style:
@@ -34,4 +34,5 @@ style:
   zindex:
     defaultModal: 30
     nav: 20
+    notification: 15
     progress: 10

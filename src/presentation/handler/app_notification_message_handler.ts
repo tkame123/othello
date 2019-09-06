@@ -1,4 +1,4 @@
-import {put, select, takeEvery, call, delay} from "redux-saga/effects";
+import {put, select, takeEvery, delay} from "redux-saga/effects";
 
 import {AppNotificationMessage, TParamsAppNotificationMessageFrom} from "../../domain/model/app_notification_message";
 
@@ -32,7 +32,7 @@ function* execAddNotificationMessage(action: IRequestAddAction) {
         yield put(actionCreator.callbackAddAction(true, { appNotificationMessage: item }));
 
         // HiddenActionを遅延発行
-        yield call(delay, config().appNotificationMessages.delayTimeAppNotificationMessage);
+        yield delay(config().appNotificationMessages.delayMessageMilliiSeconds);
         yield put(actionCreator.requestHiddenAction({ id: item.id }));
 
     } catch (error) {

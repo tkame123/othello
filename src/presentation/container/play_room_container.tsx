@@ -19,11 +19,18 @@ import {PlayRoom} from "../../domain/model/play_room";
 import {User} from "../../domain/model/user";
 
 import {config} from "../../util/config";
+import {
+    createAppNotificationMessageDispatcher,
+    IAppNotificationMessageDispatcher
+} from "../dispatcher/app_notification_message_dispatcher";
+import {createAppNotificationMessageActionCreator} from "../action/app_notification_message_action";
+import {AppNotificationType} from "../../domain/model/app_notification_message";
 
 interface IProps extends RouteComponentProps<{id: string}>{
     state: PlayRoomState;
     authState: AuthState;
     dispatcher: IPlayRoomDispatcher;
+    noticeDispatcher: IAppNotificationMessageDispatcher;
 }
 
 interface IState {
@@ -67,8 +74,10 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
     private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
         // PlayRoomのオーナが先手（黒）の固定ルールにて実装
-        if (!this.props.state.playRoom) { throw new Error("")}
-        if (!this.props.authState.user) { throw new Error("")}
+        if (!this.props.state.playRoom || !this.props.authState.user) {
+            this.props.noticeDispatcher.add({ type: AppNotificationType.ERROR, message: "Unexpected error" });
+            return
+        }
         const id: string = this.props.match.params.id;
         const playerBlack: User = this.props.state.playRoom.owner;
         const playerWhite: User = this.props.authState.user;
@@ -90,6 +99,7 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
         dispatcher: createPlayRoomDispatcher(dispatch, createPlayroomActionCreator()),
+        noticeDispatcher: createAppNotificationMessageDispatcher(dispatch, createAppNotificationMessageActionCreator()),
     };
 };
 

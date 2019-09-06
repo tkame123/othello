@@ -12,7 +12,7 @@ import firebase from 'firebase/app';
 
 import Routing from "./routing";
 import ErrorBoundary from "./error_boundary";
-import AuthContainer from "./presentation/container/auth_container"
+import HeaderContainer from "./presentation/container/header_container";
 
 const firebaseConfig = {
     apiKey: config().firebase.apiKey,
@@ -31,11 +31,11 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 ReactDOM.render(
     <Provider store={createAppStore()}>
         <ConnectedRouter history={history}>
-            <AuthContainer>
+            <HeaderContainer>
                 <ErrorBoundary>
                     <Routing/>
                 </ErrorBoundary>
-            </AuthContainer>
+            </HeaderContainer>
         </ConnectedRouter>
     </Provider>
     ,

@@ -2,21 +2,13 @@ import React from 'react';
 import styled from 'styled-components'
 import {config} from "../../../util/config";
 
-import {User} from "../../../domain/model/user";
-
-import DrawerMenuComponent from "./drawer_menu";;
-
 interface IProps {
-    isOpenDrawnMenu: boolean;
-    user: User | null;
     handleDrawMenuToggle: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
-    handleLoginOnGoogle: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    handleLogout: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const NavbarMenuComponent: React.FC<IProps> = (props) => {
 
-    const {isOpenDrawnMenu, user, handleDrawMenuToggle, handleLoginOnGoogle, handleLogout} = props;
+    const {handleDrawMenuToggle} = props;
 
     return (
         <Nav>
@@ -25,13 +17,6 @@ const NavbarMenuComponent: React.FC<IProps> = (props) => {
                 <DrawMenu className="fas fa-bars fa-fw" onClick={handleDrawMenuToggle} />
             </Inner>
 
-            <DrawerMenuComponent
-                user={user}
-                isOpenDrawnMenu={isOpenDrawnMenu}
-                handleDrawMenuToggle={handleDrawMenuToggle}
-                handleLoginOnGoogle={handleLoginOnGoogle}
-                handleLogout={handleLogout}
-            />
         </Nav>
     );
 

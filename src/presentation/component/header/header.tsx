@@ -2,11 +2,11 @@ import React from 'react';
 import {User} from "../../../domain/model/user";
 
 import NavbarMenuComponent from "./navbar_menu";
+import DrawerMenuComponent from "./drawer_menu";
 
 interface IProps {
     isLoading: boolean;
     isOpenDrawnMenu: boolean;
-    children: any;
     user: User | null;
     handleDrawMenuToggle: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
     handleLoginOnGoogle: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -16,20 +16,21 @@ interface IProps {
 
 const HeaderComponent: React.FC<IProps> = (props) => {
 
-    const {isOpenDrawnMenu, user, children, handleDrawMenuToggle, handleLoginOnGoogle, handleLogout} = props;
+    const {isOpenDrawnMenu, user, handleDrawMenuToggle, handleLoginOnGoogle, handleLogout} = props;
 
     return (
         <>
             <NavbarMenuComponent
-                isOpenDrawnMenu={isOpenDrawnMenu}
+                handleDrawMenuToggle={handleDrawMenuToggle}
+            />
+
+            <DrawerMenuComponent
                 user={user}
+                isOpenDrawnMenu={isOpenDrawnMenu}
                 handleDrawMenuToggle={handleDrawMenuToggle}
                 handleLoginOnGoogle={handleLoginOnGoogle}
                 handleLogout={handleLogout}
             />
-
-            {children}
-
         </>
     );
 
