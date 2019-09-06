@@ -1,4 +1,4 @@
-import {call, put, take, fork, select} from "redux-saga/effects";
+import {call, put, take, fork, select, cancelled, cancel} from "redux-saga/effects";
 
 import {
     createGameActionCreator,
@@ -15,7 +15,7 @@ import {createGameDetailUseCase, IGameDetailUseCase} from "../../domain/usecase/
 import {Game} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 import {Cell, GameDetail, GameTree, Move, Player} from "../../domain/model/game_detail";
-import {eventChannel} from "@redux-saga/core";
+import {eventChannel, Task} from "@redux-saga/core";
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
 import {Score} from "../../domain/model/score";
@@ -27,13 +27,17 @@ const gameTreeUsecase: IGameTreeUseCase = createGameGreeUseCase();
 
 const actionCreator: IGameActionCreator = createGameActionCreator();
 
+let gameDetailChannelTask: Task;
+
 const gameDetailChannel = () => {
     const channel = eventChannel(emit => {
         gameDetailUsecase.onGameDetailDiff((gameDetail: GameDetail) =>{
             emit({gameDetail})
         });
 
-        const unsubscribe = () => {};
+        const unsubscribe = () => {
+            gameDetailUsecase.offGameDetail();
+        };
 
         return unsubscribe
     });
@@ -83,6 +87,10 @@ function* onGameDetailDiff() {
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.listenerOnGameDetailDiffAction(false));
+        } finally {
+            if (yield cancelled()) {
+                channel.close();
+            }
         }
     }
 }
@@ -113,7 +121,7 @@ function* handleInitGameInGame() {
             }
 
             // 同期処理の起動
-            yield fork(onGameDetailDiff);
+            gameDetailChannelTask = yield fork(onGameDetailDiff);
 
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
@@ -130,6 +138,20 @@ function* handleInitGameInGame() {
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackInitGameAction(false));
+        }
+    }
+}
+
+function* handleFinalGameInGame() {
+    while (true) {
+        try {
+            yield take(GameActionType.REQUEST_FINAL_GAME);
+            yield cancel(gameDetailChannelTask);
+            yield put(actionCreator.callbackFinalGameAction(true, {}));
+
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackFinalGameAction(false));
         }
     }
 }
@@ -201,4 +223,4 @@ const nextGameTree = (promise: any):GameTree => {
 };
 
 
-export {handleInitGameInGame, handleUpdateGameInGame, handleFinishGameInGame}
+export {handleInitGameInGame, handleFinalGameInGame, handleUpdateGameInGame, handleFinishGameInGame}

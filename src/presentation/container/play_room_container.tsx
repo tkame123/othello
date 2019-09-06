@@ -45,12 +45,6 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         this.props.dispatcher.getPlayRoom(req);
     }
 
-    public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
-        // init処理の終了
-        const isInitFinished: boolean = this.state.isInit && !this.props.state.isLoading && prevProps.state.isLoading;
-        if (isInitFinished) { return this.setState({isInit: false}) }
-    }
-
     public render(): JSX.Element {
 
         const {state} = this.props;

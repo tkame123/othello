@@ -40,6 +40,10 @@ export class GameContainer extends React.Component <IProps, IState> {
         this.props.dispatcher.initGame({id});
     }
 
+    public componentWillUnmount(): void {
+        this.props.dispatcher.finalGame({});
+    }
+
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
         // init処理の終了
         const isInitFinished: boolean = this.state.isInit && !this.props.state.isLoading && prevProps.state.isLoading;

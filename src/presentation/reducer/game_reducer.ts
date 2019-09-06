@@ -74,6 +74,35 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
             }
         }
 
+        case GameActionType.REQUEST_FINAL_GAME: {
+            return Object.assign({}, state, {
+                game: state.game,
+                gameTree: state.gameTree,
+                gameDetails: state.gameDetails,
+                score: state.score,
+                isLoading: true,
+            });
+        }
+        case GameActionType.CALLBACK_FINAL_GAME: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    game: null,
+                    gameTree: null,
+                    gameDetails: [],
+                    score: null,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    game: state.game,
+                    gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
+                    score: state.score,
+                    isLoading: false,
+                });
+            }
+        }
+
         case GameActionType.REQUEST_UPDATE_GAME: {
             return Object.assign({}, state, {
                 game: state.game,

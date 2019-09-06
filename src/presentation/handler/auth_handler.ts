@@ -22,7 +22,7 @@ const authChannel = () => {
         });
 
         const unsubscribe = () => {
-            authUsecase.closeAuth();
+            authUsecase.offAuth();
         };
 
         return unsubscribe

@@ -7,7 +7,7 @@ export interface IAuthUseCase {
 
     onAuth(callback: (user: User | null) => void): void;
 
-    closeAuth(): void;
+    offAuth(): void;
 
     loginOnGoogle() : Promise<void>;
 
@@ -33,7 +33,7 @@ class AuthUseCase implements IAuthUseCase {
         })
     }
 
-    public closeAuth(): void {
+    public offAuth(): void {
         this.unsubscribeAuth();
     }
 

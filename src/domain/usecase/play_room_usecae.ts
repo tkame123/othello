@@ -14,7 +14,7 @@ export interface IPlayRoomUseCase {
 
     onPlayRooms(callback: (playRooms: PlayRoom[]) => void): void;
 
-    closePlayrooms(): void;
+    offPlayrooms(): void;
 
     getPlayRoom(id: string): Promise<PlayRoom | null>;
 
@@ -31,7 +31,8 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
     private unsubscribePlayRooms: any;
 
     public onPlayRooms(callback: (playRooms: PlayRoom[]) => void): void {
-        this.unsubscribePlayRooms =  firebase.firestore().collection(playRoomsRef).onSnapshot((querySnapshot) => {
+        this.unsubscribePlayRooms = firebase.firestore().collection(playRoomsRef)
+            .orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
             let playRooms: PlayRoom[] = [];
             querySnapshot.forEach((doc) => {
                 const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
@@ -44,7 +45,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         });
     };
 
-    public closePlayrooms(): void {
+    public offPlayrooms(): void {
         this.unsubscribePlayRooms();
     }
 
@@ -62,7 +63,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
 
     public getPlayRooms = (): Promise<PlayRoom[]> => {
         return new Promise<PlayRoom[]>((resolve, reject) => {
-            firebase.firestore().collection(playRoomsRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
+            firebase.firestore().collection(playRoomsRef).orderBy("createdAt", "desc").get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let playRooms: PlayRoom[] = [];
                 docs.forEach((doc) => {
                     const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);

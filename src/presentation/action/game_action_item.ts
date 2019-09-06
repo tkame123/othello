@@ -18,6 +18,11 @@ export interface ICallbackInitGameActionItem {
     score: Score,
 }
 
+export interface IRequestFinalGameActionItem {
+}
+export interface ICallbackFinalGameActionItem {
+}
+
 export interface IRequestUpdateGameActionItem {
     game: Game,
     cell: Cell,

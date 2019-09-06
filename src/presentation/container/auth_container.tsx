@@ -72,7 +72,6 @@ export class AuthContainer extends React.Component <IProps, IState> {
         this.setState({isOpenDrawnMenu: !this.state.isOpenDrawnMenu});
     };
 
-
     private handleLoginOnGoogle = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
         const req: IRequestLoginOnGoogleActionItem = {};

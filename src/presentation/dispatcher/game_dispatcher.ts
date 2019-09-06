@@ -3,12 +3,16 @@ import {IGameActionCreator} from "../action/game_action";
 
 import {
     IRequestInitGameActionItem,
+    IRequestFinalGameActionItem,
     IRequestUpdateGameActionItem,
     IRequestFinishGameActionItem,
 } from "../action/game_action_item"
 
 export interface IGameDispatcher {
+
     initGame(item: IRequestInitGameActionItem): void;
+
+    finalGame(item: IRequestFinalGameActionItem): void;
 
     updateGame(item: IRequestUpdateGameActionItem): void;
 
@@ -23,6 +27,9 @@ class Dispatcher implements IGameDispatcher {
 
     public initGame = (item: IRequestInitGameActionItem,): void => {
         this.dispatch(this.actionCreator.requestInitGameAction(item));};
+
+    public finalGame = (item: IRequestFinalGameActionItem,): void => {
+        this.dispatch(this.actionCreator.requestFinalGameAction(item));};
 
     public updateGame = (item: IRequestUpdateGameActionItem,): void => {
         this.dispatch(this.actionCreator.requestUpdateGameAction(item));};

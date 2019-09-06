@@ -16,7 +16,7 @@ export interface IGameUseCase {
 
     onGames(callback: (games: Game[]) => void): void;
 
-    closeGames(): void;
+    offGames(): void;
 
     getGame(id: string): Promise<Game | null>;
 
@@ -48,7 +48,7 @@ class GameUseCase implements IGameUseCase {
         })
     };
 
-    public closeGames(): void {
+    public offGames(): void {
         this.unsubscribeGames();
     }
 

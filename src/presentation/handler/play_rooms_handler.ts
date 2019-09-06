@@ -28,7 +28,7 @@ const playRoomsChannel = () => {
         });
 
         const unsubscribe = () => {
-            playRoomsUseCase.closePlayrooms();
+            playRoomsUseCase.offPlayrooms();
         };
 
         return unsubscribe

@@ -13,7 +13,7 @@ export interface IGameDetailUseCase {
 
     onGameDetailDiff(callback: (gameDetail: GameDetail) => void): void;
 
-    closeGameDetail(): void;
+    offGameDetail(): void;
 
     addGameDetail(id: string, turn: number, cell: Cell) : Promise<void>;
 
@@ -64,7 +64,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
         })
     }
 
-    public closeGameDetail(): void {
+    public offGameDetail(): void {
         this.unsubscribeGameDetail();
     }
 

@@ -23,7 +23,7 @@ const gamessChannel = () => {
         });
 
         const unsubscribe = () => {
-            gameUseCase.closeGames();
+            gameUseCase.offGames();
         };
 
         return unsubscribe
