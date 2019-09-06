@@ -163,7 +163,7 @@ function* handleUpdateGameInGame() {
             const id: string = action.item.game.id;
             const cell: Cell = action.item.cell;
             const turn: number = action.item.nextTurn;
-            yield call(addGameDetail, id, turn, cell);
+            yield call(setGameDetail, id, turn, cell);
             yield put(actionCreator.callbackUpdateGameAction(true, {}));
 
         } catch (error) {
@@ -210,8 +210,8 @@ const connectGameDetail = (id:string): Promise<GameDetail[]> => {
     return gameDetailUsecase.connectGameDetail(id);
 };
 
-const addGameDetail = (id: string, turn: number, cell: Cell) : Promise<void> => {
-    return gameDetailUsecase.addGameDetail(id, turn, cell);
+const setGameDetail = (id: string, turn: number, cell: Cell) : Promise<void> => {
+    return gameDetailUsecase.setGameDetail(id, turn, cell);
 };
 
 const makeGameTree = (board: Board, player: Player, wasPassed: boolean, turn: number):GameTree => {

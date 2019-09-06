@@ -15,7 +15,7 @@ export interface IGameDetailUseCase {
 
     offGameDetail(): void;
 
-    addGameDetail(id: string, turn: number, cell: Cell) : Promise<void>;
+    setGameDetail(id: string, turn: number, cell: Cell) : Promise<void>;
 
 }
 
@@ -68,7 +68,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
         this.unsubscribeGameDetail();
     }
 
-    public addGameDetail = (id: string, turn: number, cell: Cell): Promise<void> =>{
+    public setGameDetail = (id: string, turn: number, cell: Cell): Promise<void> =>{
         const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(id).collection("move").doc();
         return new Promise<void>((resolve, reject) => {
             ref.set({
