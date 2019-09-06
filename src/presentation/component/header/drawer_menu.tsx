@@ -13,7 +13,6 @@ interface IProps {
     handleDrawMenuToggle: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
     handleLoginOnGoogle: (event: React.MouseEvent<HTMLButtonElement>) => void;
     handleLogout: (event: React.MouseEvent<HTMLButtonElement>) => void;
-
 }
 
 const DrawerMenuComponent: React.FC<IProps> = (props) => {

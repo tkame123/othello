@@ -75,7 +75,7 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         event.preventDefault();
         // PlayRoomのオーナが先手（黒）の固定ルールにて実装
         if (!this.props.state.playRoom || !this.props.authState.user) {
-            this.props.noticeDispatcher.add({ type: AppNotificationType.ERROR, message: "Unexpected error" });
+            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need LogIn!!" });
             return
         }
         const id: string = this.props.match.params.id;

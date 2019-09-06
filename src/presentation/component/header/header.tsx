@@ -21,7 +21,10 @@ const HeaderComponent: React.FC<IProps> = (props) => {
     return (
         <>
             <NavbarMenuComponent
+                user={user}
                 handleDrawMenuToggle={handleDrawMenuToggle}
+                handleLoginOnGoogle={handleLoginOnGoogle}
+                handleLogout={handleLogout}
             />
 
             <DrawerMenuComponent

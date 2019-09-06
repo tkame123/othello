@@ -1,20 +1,29 @@
 import React from 'react';
 import styled from 'styled-components'
 import {config} from "../../../util/config";
+import Button from "../common/button";
+import {User} from "../../../domain/model/user";
 
 interface IProps {
+    user: User | null;
     handleDrawMenuToggle: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
+    handleLoginOnGoogle: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    handleLogout: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const NavbarMenuComponent: React.FC<IProps> = (props) => {
 
-    const {handleDrawMenuToggle} = props;
+    const {user, handleDrawMenuToggle, handleLoginOnGoogle, handleLogout} = props;
 
     return (
         <Nav>
             <Title>Othello</Title>
             <Inner>
                 <DrawMenu className="fas fa-bars fa-fw" onClick={handleDrawMenuToggle} />
+                <AuthMenu>
+                    {user && <Button onClick={handleLogout}>Logout</Button>}
+                    {!user && <Button onClick={handleLoginOnGoogle}>Login</Button>}
+                </AuthMenu>
             </Inner>
 
         </Nav>
@@ -68,4 +77,12 @@ const DrawMenu = styled.i`
   text-align: center;
   vertical-align: middle;
   font-size: 2em;
+`;
+
+const AuthMenu = styled.div`
+  z-index: 1;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  text-align: center;
 `;
