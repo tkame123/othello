@@ -1,12 +1,12 @@
 ver: 1
 firebase:
-  apiKey: "AIzaSyA-HNBbbY0JycbfOtRykX8UTpTmX263SE0"
-  authDomain: "tkame123-othello.firebaseapp.com"
-  databaseURL: "https://tkame123-othello.firebaseio.com"
-  projectId: "tkame123-othello"
-  storageBucket: "tkame123-othello.appspot.com"
-  messagingSenderId: "650086036833"
-  appId: "1:650086036833:web:100a41fb2683c527"
+  apiKey: "AIzaSyD0ZowaJDI5_g8_xF1ZaABXXKz0wLYjJGs"
+  authDomain: "tkame123-othello-dev.firebaseapp.com"
+  databaseURL: "https://tkame123-othello-dev.firebaseio.com"
+  projectId: "tkame123-othello-dev"
+  storageBucket: "tkame123-othello-dev.appspot.com"
+  messagingSenderId: "81835539134"
+  appId: "1:81835539134:web:2b6cd6bed683396fc07cef"
 sentry:
   sentryDsn: "https://6b6b01f85cfa408da6a4cfa053e0984b@sentry.io/1550122"
 appNotificationMessages:
