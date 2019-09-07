@@ -7,18 +7,17 @@ import {
     createAuthDispatcher,
     IAuthDispatcher,
 } from "../dispatcher/auth_dispatcher";
-import {
-    IRequestLoginOnGoogleActionItem,
-    IRequestLogoutActionItem,
-} from "../action/auth_action_item";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
 import HeaderComponent from "../component/header/header";
 import {User} from "../../domain/model/user";
+import {createVisitorsDispatcher, IVisitorsDispatcher} from "../dispatcher/visitors_dispatcher";
+import {createVisitorsActionCreator} from "../action/visitors_action";
 
 interface IProps extends RouteComponentProps<{}>{
     state: AuthState;
     dispatcher: IAuthDispatcher;
+    visitorsDispatcher: IVisitorsDispatcher;
 }
 
 interface IState {
@@ -62,14 +61,14 @@ export class AuthContainer extends React.Component <IProps, IState> {
 
     private handleLoginOnGoogle = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        const req: IRequestLoginOnGoogleActionItem = {};
-        this.props.dispatcher.loginOnGoogle(req);
+        this.props.dispatcher.loginOnGoogle({});
     };
 
     private handleLogout = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        const req: IRequestLogoutActionItem = {};
-        this.props.dispatcher.logout(req);
+        if (this.props.state.user) {
+            this.props.dispatcher.logout({});
+        }
     };
 
 }
@@ -84,6 +83,7 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
         dispatcher: createAuthDispatcher(dispatch, createAuthActionCreator()),
+        visitorsDispatcher: createVisitorsDispatcher(dispatch, createVisitorsActionCreator()),
     };
 };
 

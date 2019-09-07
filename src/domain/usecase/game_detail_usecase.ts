@@ -32,7 +32,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
             ref.collection("move").orderBy("turn").get().then((snapshot: firebase.firestore.QuerySnapshot) => {
                 let gameDetails: GameDetail[] = [];
                 snapshot.forEach((doc: firebase.firestore.DocumentData) => {
-                    const gameDetail :GameDetail = this.getGameDetailFromFS(doc);
+                    const gameDetail :GameDetail = this.helperGetGameDetail(doc);
                     gameDetails.push(gameDetail);
                 });
                 this.gameDetails = gameDetails;
@@ -48,7 +48,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
         this.unsubscribeGameDetail = ref.collection("move").onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
             docs.docChanges().forEach((change: firebase.firestore.DocumentChange) => {
                 if ( change.type === 'added' ) {
-                    const gameDetail :GameDetail = this.getGameDetailFromFS(change.doc);
+                    const gameDetail :GameDetail = this.helperGetGameDetail(change.doc);
                     const finded: GameDetail | undefined = this.gameDetails.find((item: GameDetail): boolean => {
                         return item.id === gameDetail.id;
                     });
@@ -84,7 +84,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
         });
     };
 
-    private getGameDetailFromFS = (doc: firebase.firestore.DocumentData): GameDetail =>{
+    private helperGetGameDetail = (doc: firebase.firestore.DocumentData): GameDetail =>{
         return GameDetail.From({
             id: doc.id,
             turn: doc.get("turn"),

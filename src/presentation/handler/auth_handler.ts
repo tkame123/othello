@@ -1,4 +1,4 @@
-import {put, take, call, fork, cancel, cancelled} from "redux-saga/effects";
+import {put, take, call, fork, cancel, cancelled, select} from "redux-saga/effects";
 import {eventChannel, Task} from 'redux-saga'
 
 import {
@@ -9,9 +9,13 @@ import {
 import {User} from "../../domain/model/user";
 import {createAuthUseCase, IAuthUseCase} from "../../domain/usecase/auth_usecase";
 import {handleErrorForHandler} from "./handleErrorForHandler";
+import {createVisitorsActionCreator, IVisitorsActionCreator} from "../action/visitors_action";
+import {AppState} from "../store/app_state";
+import {AuthState} from "../store/auth_state";
 
 const authUsecase: IAuthUseCase = createAuthUseCase();
 const actionCreator: IAuthActionCreator = createAuthActionCreator();
+const actionCreatorVisitor: IVisitorsActionCreator = createVisitorsActionCreator();
 
 let authChannelTask: Task;
 
@@ -36,6 +40,9 @@ function* onAuth() {
         try {
             const { user } = yield take(channel);
             const authState: boolean = !!user;
+            if (user) {
+                yield put(actionCreatorVisitor.requestUpdateVisitorAction({userId: user.id, playRoomId: null}));
+            }
             yield put(actionCreator.listenerOnAuthUserAction(true, {user, authState}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -105,6 +112,11 @@ function* handleLogoutInAuth() {
     while (true) {
         try {
             yield take(AuthActionType.REQUEST_LOGOUT_AUTH);
+            const selector = (state: AppState) => state.authReducer;
+            const _state: AuthState = yield select(selector);
+            if (_state.user) {
+                yield put(actionCreatorVisitor.requestDeleteVisitorAction({userId: _state.user.id}));
+            }
             yield call(logout);
             yield put(actionCreator.callbackLogoutAction(true, {}));
         } catch (error) {

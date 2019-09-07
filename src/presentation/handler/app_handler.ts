@@ -6,6 +6,7 @@ import {handleInitGamesInGames, handleFinalGamesInGames, handleGetGamesInGames} 
 import {handleInitGameInGame, handleFinalGameInGame, handleUpdateGameInGame, handleFinishGameInGame} from "./game_handler";
 import {handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom} from "./play_room_handler";
 import {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms, handleDeletePlayRoomsInPlayRooms} from "./play_rooms_handler";
+import {handleInitVisitorsInVisitors, handleFinalVisitorsInVisitors, handleUpdateVisitorInVisitors, handleDeleteVisitorInVisitors} from "./visitors_handler";
 
 function* rootHandler() {
 
@@ -35,6 +36,12 @@ function* rootHandler() {
     yield fork(handleGetPlayRoomsInPlayRooms);
     yield fork(handleCreatePlayRoomsInPlayRooms);
     yield fork(handleDeletePlayRoomsInPlayRooms);
+
+    yield fork(handleInitVisitorsInVisitors);
+    yield fork(handleFinalVisitorsInVisitors);
+    yield fork(handleUpdateVisitorInVisitors);
+    yield fork(handleDeleteVisitorInVisitors);
+
 }
 
 export default rootHandler;

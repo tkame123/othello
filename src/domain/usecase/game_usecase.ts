@@ -38,7 +38,7 @@ class GameUseCase implements IGameUseCase {
         this.unsubscribeGames = firebase.firestore().collection(gameRef).onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
             let games: Game[] = [];
             docs.forEach((doc) => {
-                const game: Game = this.getGameFromFS(doc);
+                const game: Game = this.helperGetGame(doc);
                 games.push(game);
             });
 
@@ -57,7 +57,7 @@ class GameUseCase implements IGameUseCase {
             firebase.firestore().collection(gameRef).doc(id).get()
             .then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
-                const game: Game = this.getGameFromFS(doc);
+                const game: Game = this.helperGetGame(doc);
                 resolve(game);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
@@ -71,7 +71,7 @@ class GameUseCase implements IGameUseCase {
             .then((docs: firebase.firestore.QuerySnapshot) => {
                 let games: Game[] = [];
                 docs.forEach((doc) => {
-                    const game: Game = this.getGameFromFS(doc);
+                    const game: Game = this.helperGetGame(doc);
                     games.push(game);
                 });
                 resolve(games);
@@ -86,7 +86,7 @@ class GameUseCase implements IGameUseCase {
             firebase.firestore().collection(scoreRef).doc(gameId).get()
             .then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
-                const score: Score = this.getScoreFromFS(doc);
+                const score: Score = this.helperGetScore(doc);
                 resolve(score);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
@@ -154,7 +154,7 @@ class GameUseCase implements IGameUseCase {
         return score
     };
 
-    private getGameFromFS = (doc: firebase.firestore.DocumentData): Game =>{
+    private helperGetGame = (doc: firebase.firestore.DocumentData): Game =>{
         return Game.From({
             id: doc.id,
             playerBlack: User.From(doc.get("playerBlack.id"), doc.get("playerBlack.email")),
@@ -166,7 +166,7 @@ class GameUseCase implements IGameUseCase {
         });
     };
 
-    private getScoreFromFS = (doc: firebase.firestore.DocumentData): Score =>{
+    private helperGetScore = (doc: firebase.firestore.DocumentData): Score =>{
         return Score.From({
             gameId: doc.id,
             playerBlack: {id: doc.get("playerBlack.id"), value: doc.get("playerBlack.value")},

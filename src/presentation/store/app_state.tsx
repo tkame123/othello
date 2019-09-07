@@ -4,6 +4,7 @@ import {GameState} from "./game_state";
 import {GamesState} from "./games_state";
 import {PlayRoomState} from "./play_room_state";
 import {PlayRoomsState} from "./play_rooms_state";
+import {VisitorsState} from "./visitors_state";
 
 export type AppState = {
     authReducer: AuthState,
@@ -13,4 +14,6 @@ export type AppState = {
     gamesReducer: GamesState,
     playRoomReducer: PlayRoomState,
     playRoomsReducer: PlayRoomsState,
+    visitorsReducer: VisitorsState,
+
 };

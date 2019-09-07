@@ -36,7 +36,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
             .orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
             let playRooms: PlayRoom[] = [];
             querySnapshot.forEach((doc) => {
-                const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
+                const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
                 playRooms.push(playRoom);
             });
 
@@ -54,7 +54,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         return new Promise<PlayRoom | null>((resolve, reject) => {
             firebase.firestore().collection(playRoomsRef).doc(id).get().then((doc) => {
                 if (!doc.exists) { resolve(null)}
-                const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
+                const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
                 resolve(playRoom);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
@@ -67,7 +67,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
             firebase.firestore().collection(playRoomsRef).orderBy("createdAt", "desc").get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let playRooms: PlayRoom[] = [];
                 docs.forEach((doc) => {
-                    const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
+                    const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
                     playRooms.push(playRoom);
                 });
                 resolve(playRooms);
@@ -118,7 +118,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
             }).then(() => {
                 return firebase.firestore().collection(playRoomsRef).doc(id).get()
             }).then((doc: firebase.firestore.DocumentSnapshot) =>{
-                const playRoom: PlayRoom = this.getPlayRoomFromFS(doc);
+                const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
                 resolve(playRoom);
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
@@ -137,7 +137,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         });
     };
 
-    private getPlayRoomFromFS = (doc: firebase.firestore.DocumentData): PlayRoom =>{
+    private helperGetPlayRoom = (doc: firebase.firestore.DocumentData): PlayRoom =>{
         return PlayRoom.From({
             id: doc.id,
             owner: User.From(doc.get("owner.id"), doc.get("owner.email")),

@@ -7,12 +7,18 @@ import {
     createAuthDispatcher,
     IAuthDispatcher,
 } from "../dispatcher/auth_dispatcher";
+import {createVisitorsActionCreator} from "../action/visitors_action"
+import {
+    createVisitorsDispatcher,
+    IVisitorsDispatcher,
+} from "../dispatcher/visitors_dispatcher";
 import {AppState} from "../store/app_state";
 import AuthContainer from "./auth_container";
 import AppNotificationContainer from "./app_notification";
 
 interface IProps extends RouteComponentProps<{}>{
-    dispatcher: IAuthDispatcher;
+    authDispatcher: IAuthDispatcher;
+    visitorsDispatcher: IVisitorsDispatcher;
 }
 
 interface IState {
@@ -29,11 +35,13 @@ export class HeaderContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
-        this.props.dispatcher.initAuthUser({});
+        this.props.authDispatcher.initAuthUser({});
+        this.props.visitorsDispatcher.initVisitor({});
     }
 
     public componentWillUnmount(): void {
-        this.props.dispatcher.finalAuthUser({});
+        this.props.authDispatcher.finalAuthUser({});
+        this.props.visitorsDispatcher.finalVisitors({});
     }
 
     public render(): JSX.Element {
@@ -59,7 +67,8 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
-        dispatcher: createAuthDispatcher(dispatch, createAuthActionCreator()),
+        authDispatcher: createAuthDispatcher(dispatch, createAuthActionCreator()),
+        visitorsDispatcher: createVisitorsDispatcher(dispatch, createVisitorsActionCreator()),
     };
 };
 

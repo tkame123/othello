@@ -8,6 +8,7 @@ import gameReducer from "./game_reducer";
 import gamesReducer from "./games_reducer";
 import playRoomReducer from "./play_room_reducer";
 import playRoomsReducer from "./play_rooms_reducer";
+import visitorsReducer from "./visitors_reducer";
 
 const appReducer: Reducer<any> = (history: History) => combineReducers<any>({
     authReducer,
@@ -16,6 +17,7 @@ const appReducer: Reducer<any> = (history: History) => combineReducers<any>({
     gamesReducer,
     playRoomReducer,
     playRoomsReducer,
+    visitorsReducer,
     router: connectRouter(history),
 });
 
