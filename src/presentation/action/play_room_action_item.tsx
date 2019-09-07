@@ -11,7 +11,7 @@ export interface ICallbackGetPlayRoomActionItem {
 }
 
 export interface IRequestCreateGameOnPlayRoomActionItem {
-    id: string;
+    playRoomId: string;
     boardSize: number,
     playerBlack: User,
     playerWhite: User,

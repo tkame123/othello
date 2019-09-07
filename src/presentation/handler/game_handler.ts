@@ -12,7 +12,7 @@ import {
 import {createGameGreeUseCase, IGameTreeUseCase} from "../../domain/usecase/game_tree_usecase";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
 import {createGameDetailUseCase, IGameDetailUseCase} from "../../domain/usecase/game_detail_usecase";
-import {Game} from "../../domain/model/game";
+import {Game, GameStatus} from "../../domain/model/game";
 import {Board, State} from "../../domain/model/board";
 import {Cell, GameDetail, GameTree, Move, Player} from "../../domain/model/game_detail";
 import {eventChannel, Task} from "@redux-saga/core";
@@ -178,7 +178,7 @@ function* handleFinishGameInGame() {
         try {
             const action: IRequestFinishGameAction = yield take(GameActionType.REQUEST_FINISH_GAME);
             const gameTree: GameTree = action.item.gameTree;
-            yield call(updateGameStatusEnd, action.item.game.id);
+            yield call(updateGame, action.item.game.id, GameStatus.GameStatus_End);
             const game: Game = yield call(getGame, action.item.game.id);
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
@@ -202,8 +202,8 @@ const setScore = (game: Game, board: Board): Promise<void> => {
     return gameUsecase.setScore(game, board);
 };
 
-const updateGameStatusEnd = (id: string): Promise<void> => {
-    return gameUsecase.updateGameStatusEnd(id);
+const updateGame = (id: string, gameStatus: GameStatus): Promise<void> => {
+    return gameUsecase.updateGame(id, gameStatus);
 };
 
 const connectGameDetail = (id:string): Promise<GameDetail[]> => {

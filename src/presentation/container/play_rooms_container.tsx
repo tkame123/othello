@@ -48,31 +48,18 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
 
     public render(): JSX.Element {
 
-        const {state, authState} = this.props;
+        const {state} = this.props;
         const {isInit} = this.state;
 
         const isLoading: boolean = state.isLoading;
         const playRooms: PlayRoom[] = state.playRooms;
 
-        const myPlayRooms: PlayRoom[] =[];
-        const opponentPlayRooms: PlayRoom[] =[];
-
-        playRooms.forEach((item: PlayRoom) =>{
-            if (authState.user && (authState.user.id === item.owner.id)) {
-                myPlayRooms.push(item);
-            } else {
-                opponentPlayRooms.push(item);
-            }
-        });
-
         return (
             <PlayRoomsComponent
                 isInit={isInit}
                 isLoading={isLoading}
-                myPlayRooms={myPlayRooms}
-                opponentPlayRooms={opponentPlayRooms}
+                playRooms={playRooms}
                 handleCreatePlayRooms={this.handleCreatePlayRooms}
-                handleDeletePlayRooms={this.handleDeletePlayRooms}
             />
         )
 
@@ -89,14 +76,14 @@ export class PlayRoomsContainer extends React.Component <IProps, IState> {
         this.props.dispatcher.createPlayRoom(req);
     };
 
-    private handleDeletePlayRooms = (playRooms: PlayRoom[]) => (event: React.MouseEvent<HTMLButtonElement>): void => {
-        event.preventDefault();
-        if (playRooms.length === 0) {
-            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "No Targets" });
-            return
-        }
-        this.props.dispatcher.deletePlayRoom({playRooms});
-    }
+    // private handleDeletePlayRooms = (playRooms: PlayRoom[]) => (event: React.MouseEvent<HTMLButtonElement>): void => {
+    //     event.preventDefault();
+    //     if (playRooms.length === 0) {
+    //         this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "No Targets" });
+    //         return
+    //     }
+    //     this.props.dispatcher.deletePlayRoom({playRooms});
+    // }
 
 }
 

@@ -5,19 +5,14 @@ import {
     createPlayroomsActionCreator,
     PlayRoomsActionType,
     IPlayRoomsActionCreator,
-    IRequestCreatePlayRoomAction,
     IRequestDeletePlayRoomAction,
 } from "../action/play_rooms_action";
 
 import {PlayRoom} from "../../domain/model/play_room";
 import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
-import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
-import {User} from "../../domain/model/user";
 import {handleErrorForHandler} from "./handleErrorForHandler";
-import {Game} from "../../domain/model/game";
 
 const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
-const gameUseCase: IGameUseCase = createGameUseCase();
 const actionCreator: IPlayRoomsActionCreator = createPlayroomsActionCreator();
 
 let playRoomsChannelTask: Task;
@@ -42,13 +37,7 @@ function* onPlayRooms() {
     while (true) {
         try {
             const { playRooms } = yield take(channel);
-            let games: Game[] = [];
-            for (const playRoom of playRooms) {
-                if (playRoom.gameId) {
-                    games.push(yield call(getGame, playRoom.gameId));
-                }
-            }
-            yield put(actionCreator.listenerOnPlayRoomsAction(true, {playRooms, games}));
+            yield put(actionCreator.listenerOnPlayRoomsAction(true, {playRooms}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.listenerOnPlayRoomsAction(false));
@@ -91,13 +80,7 @@ function* handleGetPlayRoomsInPlayRooms() {
         try {
             yield take(PlayRoomsActionType.REQUEST_GET_PLAY_ROOMS);
             const playRooms: PlayRoom[] = yield call(getPlayRooms);
-            let games: Game[] = [];
-            for (const playRoom of playRooms) {
-                if (playRoom.gameId) {
-                    games.push(yield call(getGame, playRoom.gameId));
-                }
-            }
-            yield put(actionCreator.callbackGetPlayRoomsAction(true, {playRooms, games}));
+            yield put(actionCreator.callbackGetPlayRoomsAction(true, {playRooms}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackGetPlayRoomsAction(false));
@@ -108,8 +91,8 @@ function* handleGetPlayRoomsInPlayRooms() {
 function* handleCreatePlayRoomsInPlayRooms() {
     while (true) {
         try {
-            const action: IRequestCreatePlayRoomAction = yield take(PlayRoomsActionType.REQUEST_CREATE_PLAY_ROOM);
-            yield call(createPlayRoom, action.item.owner);
+            yield take(PlayRoomsActionType.REQUEST_CREATE_PLAY_ROOM);
+            yield call(createPlayRoom);
             yield put(actionCreator.callbackCreatePlayRoomAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -137,16 +120,12 @@ const getPlayRooms = (): Promise<PlayRoom[]> => {
     return playRoomsUseCase.getPlayRooms();
 };
 
-const createPlayRoom = (owner: User): Promise<void> => {
-    return playRoomsUseCase.createPlayRoom(owner);
+const createPlayRoom = (): Promise<void> => {
+    return playRoomsUseCase.createPlayRoom();
 };
 
 const deletePlayRooms = (id: string): Promise<void> => {
     return playRoomsUseCase.deletePlayRoom(id);
-};
-
-const getGame = (id: string): Promise<Game | null> => {
-    return gameUseCase.getGame(id);
 };
 
 export {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms, handleDeletePlayRoomsInPlayRooms}

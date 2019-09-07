@@ -3,14 +3,16 @@ import {PlayRoom} from "../../../domain/model/play_room";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import {config} from "../../../util/config";
+import {Visitor} from "../../../domain/model/visitor";
 
 interface IProps {
     playRoom: PlayRoom;
+    visitors: Visitor[];
 }
 
 const PlayRoomInfoComponent: React.FC<IProps> = (props) => {
 
-    const {playRoom} = props;
+    const {playRoom, visitors} = props;
     const gameId: string | null = playRoom.gameId;
 
     return (
@@ -20,11 +22,12 @@ const PlayRoomInfoComponent: React.FC<IProps> = (props) => {
 
             <PlayRoomCard>
                 {`createdAt: ${playRoom.createdAt.toLocaleTimeString()} ${playRoom.createdAt.toLocaleDateString()}`} <br/>
-                {`owner: ${playRoom.owner.email}`} <br/><br/>
                 {gameId && "You can Play Game, Click this"}
                 {gameId && <PlayRoomLink to={`/game/${gameId}`} />}
                 <br/><br/>
-                Some features will be added in the future...
+                Now visitors: {visitors.length}
+                <br/><br/>
+
             </PlayRoomCard>
 
         </Wrapper>

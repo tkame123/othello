@@ -10,6 +10,7 @@ import {Board, State} from "../model/board";
 
 const version: string = config().ver;
 const gameRef: string = `version/${version}/game`;
+const playRoomRef: string = `version/${version}/playroom`;
 const scoreRef: string = `version/${version}/score`;
 
 export interface IGameUseCase {
@@ -18,21 +19,28 @@ export interface IGameUseCase {
 
     offGames(): void;
 
+    onGame(id: string, callback: (game: Game | null) => void): void;
+
+    offGame(): void;
+
     getGame(id: string): Promise<Game | null>;
 
     getGames(): Promise<Game[]>;
 
     getScore(gameId: string): Promise<Score | null>;
 
-    setScore(game: Game, board: Board) :Promise<void>;
+    setScore(game: Game, board: Board): Promise<void>;
 
-    updateGameStatusEnd(id: string) :Promise<void>;
+    createGameWithUpdatePlayRoom(playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void>;
+
+    updateGame(id: string, gameStatus: GameStatus): Promise<void>;
 
 }
 
 class GameUseCase implements IGameUseCase {
 
     private unsubscribeGames: any;
+    private unsubscribeGame: any;
 
     public onGames(callback: (games: Game[]) => void): void {
         this.unsubscribeGames = firebase.firestore().collection(gameRef).onSnapshot((docs: firebase.firestore.QuerySnapshot) => {
@@ -50,6 +58,20 @@ class GameUseCase implements IGameUseCase {
 
     public offGames(): void {
         this.unsubscribeGames();
+    }
+
+    public onGame(id: string, callback: (game: Game | null) => void): void {
+        this.unsubscribeGame = firebase.firestore().collection(gameRef).doc(id).onSnapshot((doc: firebase.firestore.DocumentSnapshot) => {
+            if (!doc.exists) {callback(null)}
+            const game: Game = this.helperGetGame(doc);
+            callback(game)
+        }, (error: any) => {
+            throw handleErrorFirebaseFirestore(error);
+        })
+    };
+
+    public offGame(): void {
+        this.unsubscribeGame();
     }
 
     public getGame = (id: string): Promise<Game | null> => {
@@ -110,11 +132,47 @@ class GameUseCase implements IGameUseCase {
 
     };
 
-    public updateGameStatusEnd = (id: string): Promise<void> => {
+    public createGameWithUpdatePlayRoom = (playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            firebase.firestore().collection(gameRef).add({
+                playerBlack: {
+                    id: playerBlack.id,
+                    email: playerBlack.email,
+                },
+                playerWhite: {
+                    id: playerWhite.id,
+                    email: playerWhite.email,
+                },
+                boardSize: boardSize,
+                gameStatus: GameStatus.GameStatus_Playing,
+                updatedAt: new Date(),
+                createdAt: new Date(),
+            }).then((ref: firebase.firestore.DocumentReference) => {
+                return firebase.firestore().collection(playRoomRef).doc(playRoomId).update({
+                    gameId: ref.id,
+                    playerBlack: {
+                        id: playerBlack.id,
+                        email: playerBlack.email,
+                    },
+                    playerWhite: {
+                        id: playerWhite.id,
+                        email: playerWhite.email,
+                    },
+                    updatedAt: new Date(),
+                })
+            }).then(() => {
+                resolve();
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
+            })
+        });
+    };
+
+    public updateGame = (id: string, gameStatus: GameStatus): Promise<void> => {
         const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameRef).doc(id);
         return new Promise<void>((resolve, reject) => {
             ref.update({
-                gameStatus: GameStatus.GameStatus_End,
+                gameStatus: gameStatus,
                 updatedAt: new Date(),
             }).then(() =>{
                 resolve();
@@ -122,7 +180,6 @@ class GameUseCase implements IGameUseCase {
                 reject(handleErrorFirebaseFirestore(error));
             })
         });
-
     };
 
     private calcScore = (game: Game, board: Board): Score => {

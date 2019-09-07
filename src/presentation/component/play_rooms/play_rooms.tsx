@@ -9,15 +9,13 @@ import EmptyData from "../common/empty";
 interface IProps {
     isInit: boolean;
     isLoading: boolean;
-    myPlayRooms: PlayRoom[];
-    opponentPlayRooms: PlayRoom[];
+    playRooms: PlayRoom[];
     handleCreatePlayRooms: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    handleDeletePlayRooms: (playRooms: PlayRoom[]) => (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const PlayRoomsComponent: React.FC<IProps> = (props) => {
 
-    const {isInit, isLoading, myPlayRooms, opponentPlayRooms, handleCreatePlayRooms, handleDeletePlayRooms} = props;
+    const {isInit, isLoading, playRooms, handleCreatePlayRooms} = props;
 
     if (isInit) { return <Progress/>}
 
@@ -25,16 +23,13 @@ const PlayRoomsComponent: React.FC<IProps> = (props) => {
     return (
         <>
             <PlayRoomsControllerComponent
-                myPlayRooms={myPlayRooms}
                 handleCreatePlayRooms={handleCreatePlayRooms}
-                handleDeletePlayRooms={handleDeletePlayRooms}
             />
 
-            { !isLoading && (myPlayRooms.length === 0 && opponentPlayRooms.length === 0) && <EmptyData/> }
-            { !isLoading && (myPlayRooms.length !== 0 || opponentPlayRooms.length !== 0) && (
+            { !isLoading && playRooms.length === 0 && <EmptyData/> }
+            { !isLoading && playRooms.length > 0 && (
                 <PlayRoomsListComponent
-                    myPlayRooms={myPlayRooms}
-                    opponentPlayRooms={opponentPlayRooms}
+                    playRooms={playRooms}
                 />)
             }
 

@@ -7,12 +7,9 @@ import {
     createPlayRoomDispatcher,
     IPlayRoomDispatcher,
 } from "../dispatcher/play_room_dispatcher";
-import {
-    IRequestGetPlayRoomActionItem,
-    IRequestCreateGameOnPlayRoomActionItem,
-} from "../action/play_room_action_item";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";
+import {VisitorsState} from "../store/visitors_state";
 import {PlayRoomState} from "../store/play_room_state";
 import PlayRoomComponent from "../component/play_room/play_room";
 import {PlayRoom} from "../../domain/model/play_room";
@@ -25,11 +22,16 @@ import {
 } from "../dispatcher/app_notification_message_dispatcher";
 import {createAppNotificationMessageActionCreator} from "../action/app_notification_message_action";
 import {AppNotificationType} from "../../domain/model/app_notification_message";
+import {createVisitorsDispatcher, IVisitorsDispatcher} from "../dispatcher/visitors_dispatcher";
+import {createVisitorsActionCreator} from "../action/visitors_action";
+import {Visitor} from "../../domain/model/visitor";
 
 interface IProps extends RouteComponentProps<{id: string}>{
     state: PlayRoomState;
     authState: AuthState;
+    visitorsState: VisitorsState;
     dispatcher: IPlayRoomDispatcher;
+    visitorsDispatcher: IVisitorsDispatcher;
     noticeDispatcher: IAppNotificationMessageDispatcher;
 }
 
@@ -48,23 +50,33 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
     public componentDidMount() {
         const id: string = this.props.match.params.id;
-        const req: IRequestGetPlayRoomActionItem = {id};
-        this.props.dispatcher.getPlayRoom(req);
+        this.props.dispatcher.getPlayRoom({id: id});
+        if (this.props.authState.user) {
+            this.props.visitorsDispatcher.updateVisitor({userId: this.props.authState.user.id, playRoomId: id})
+        }
+    }
+
+    public componentWillUnmount(): void {
+        if (this.props.authState.user) {
+            this.props.visitorsDispatcher.updateVisitor({userId: this.props.authState.user.id, playRoomId: null})
+        }
     }
 
     public render(): JSX.Element {
 
-        const {state} = this.props;
+        const {state, visitorsState} = this.props;
         const {isInit} = this.state;
 
         const isLoading: boolean = state.isLoading;
         const playRoom: PlayRoom | null = state.playRoom;
+        const visitors: Visitor[] = visitorsState.visitors;
 
         return (
             <PlayRoomComponent
                 isInit={isInit}
                 isLoading={isLoading}
                 playRoom={playRoom}
+                visitors={visitors}
                 handleCreateNewGame={this.handleCreateNewGame}
             />
         )
@@ -78,12 +90,12 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
             this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need LogIn!!" });
             return
         }
-        const id: string = this.props.match.params.id;
-        const playerBlack: User = this.props.state.playRoom.owner;
+        // ToDo: 仮にていったん認証ユーザでつくる
+        const playRoomId: string = this.props.match.params.id;
+        const playerBlack: User = this.props.authState.user;
         const playerWhite: User = this.props.authState.user;
         const boardSize: number = config().board.size;
-        const req: IRequestCreateGameOnPlayRoomActionItem = { id, boardSize, playerBlack, playerWhite }
-        this.props.dispatcher.createGameOnPlayRoom(req);
+        this.props.dispatcher.createGameOnPlayRoom({ playRoomId, boardSize, playerBlack, playerWhite });
     };
 
 }
@@ -93,12 +105,14 @@ const mapStateToProps = (state: AppState) => {
     return {
         state: state.playRoomReducer,
         authState: state.authReducer,
+        visitorsState: state.visitorsReducer,
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
         dispatcher: createPlayRoomDispatcher(dispatch, createPlayroomActionCreator()),
+        visitorsDispatcher: createVisitorsDispatcher(dispatch, createVisitorsActionCreator()),
         noticeDispatcher: createAppNotificationMessageDispatcher(dispatch, createAppNotificationMessageActionCreator()),
     };
 };

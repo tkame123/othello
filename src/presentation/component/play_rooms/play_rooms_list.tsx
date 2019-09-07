@@ -5,40 +5,27 @@ import {Link} from "react-router-dom";
 import {config} from "../../../util/config";
 
 interface IProps {
-    myPlayRooms: PlayRoom[];
-    opponentPlayRooms: PlayRoom[];
+    playRooms: PlayRoom[];
 }
 
 const PlayRoomsListComponent: React.FC<IProps> = (props) => {
 
-    const {myPlayRooms, opponentPlayRooms} = props;
+    const {playRooms} = props;
 
     return (
         <Wrapper>
 
-            <Title>MyRoom</Title>
+            <Title>PlayRooms</Title>
             <PlayRoomListUl>
-                {myPlayRooms.map((item: PlayRoom, index: number) => {
+                {playRooms.map((item: PlayRoom, index: number) => {
                     return (
                         <PlayRoomListLi key={index} >
                             <PlayRoomCard>
                                 {item.gameId !== null && "Playing" } <br/>
+                                {`No: ${index}`} <br/>
                                 {`createdAt: ${item.createdAt.toLocaleTimeString()} ${item.createdAt.toLocaleDateString()}`} <br/>
-                                {`owner: ${item.owner.email}`} <br/>
-                                <PlayRoomLink key={index}  to={`/playroom/${item.id}`}/>
-                            </PlayRoomCard>
-                        </PlayRoomListLi>)
-                })}
-            </PlayRoomListUl>
-
-            <Title>PlayRooms</Title>
-            <PlayRoomListUl>
-                {opponentPlayRooms.map((item: PlayRoom, index: number) => {
-                    return (
-                        <PlayRoomListLi key={index} >
-                            <PlayRoomCard>
-                                {`createdAt: ${item.createdAt.toLocaleTimeString()} ${item.createdAt.toLocaleDateString()}`} <br/>
-                                {`owner: ${item.owner.email}`} <br/>
+                                {`Black: ${item.playerBlack ? item.playerBlack.email : "empty"}`} <br/>
+                                {`White: ${item.playerWhite ? item.playerWhite.email : "empty"}`} <br/>
                                 <PlayRoomLink key={index}  to={`/playroom/${item.id}`}/>
                             </PlayRoomCard>
                         </PlayRoomListLi>)
