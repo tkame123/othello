@@ -58,7 +58,7 @@ const visitorsReducer: Reducer<VisitorsState, VisitorsAction> = (state = initial
         case VisitorsActionType.CALLBACK_FINAL_VISITORS: {
             if (action.isSuccess) {
                 return Object.assign({}, state, {
-                    visitors: state.visitors,
+                    visitors: [],
                     isLoading: false,
                 });
             } else {

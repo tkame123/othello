@@ -54,8 +54,7 @@ class GameUseCase implements IGameUseCase {
 
     public getGame = (id: string): Promise<Game | null> => {
         return new Promise<Game | null>((resolve, reject) => {
-            firebase.firestore().collection(gameRef).doc(id).get()
-            .then((doc: firebase.firestore.DocumentSnapshot) => {
+            firebase.firestore().collection(gameRef).doc(id).get().then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
                 const game: Game = this.helperGetGame(doc);
                 resolve(game);
@@ -67,8 +66,7 @@ class GameUseCase implements IGameUseCase {
 
     public getGames = (): Promise<Game[]> => {
         return new Promise<Game[]>((resolve, reject) => {
-            firebase.firestore().collection(gameRef).get()
-            .then((docs: firebase.firestore.QuerySnapshot) => {
+            firebase.firestore().collection(gameRef).get().then((docs: firebase.firestore.QuerySnapshot) => {
                 let games: Game[] = [];
                 docs.forEach((doc) => {
                     const game: Game = this.helperGetGame(doc);
@@ -83,8 +81,7 @@ class GameUseCase implements IGameUseCase {
 
     public getScore = (gameId: string): Promise<Score | null> => {
         return new Promise<Score | null>((resolve, reject) => {
-            firebase.firestore().collection(scoreRef).doc(gameId).get()
-            .then((doc: firebase.firestore.DocumentSnapshot) => {
+            firebase.firestore().collection(scoreRef).doc(gameId).get().then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
                 const score: Score = this.helperGetScore(doc);
                 resolve(score);

@@ -29,8 +29,7 @@ class VisitorUseCase implements IVisitorUseCase {
     private unsubscribeVisitors: any;
 
     public onVisitors(callback: (visitors: Visitor[]) => void): void {
-        this.unsubscribeVisitors = firebase.firestore().collection(visitorsRef)
-            .orderBy("updatedAt", "desc").onSnapshot((querySnapshot) => {
+        this.unsubscribeVisitors = firebase.firestore().collection(visitorsRef).orderBy("updatedAt", "desc").onSnapshot((querySnapshot) => {
                 let visitors: Visitor[] = [];
                 querySnapshot.forEach((doc) => {
                     const visitor: Visitor = this.helperGetVisitor(doc);
@@ -49,8 +48,7 @@ class VisitorUseCase implements IVisitorUseCase {
 
     public getVisitor = (id: string): Promise<Visitor | null> => {
         return new Promise<Visitor | null>((resolve, reject) => {
-            firebase.firestore().collection(visitorsRef).doc(id).get()
-                .then((doc: firebase.firestore.DocumentSnapshot) => {
+            firebase.firestore().collection(visitorsRef).doc(id).get().then((doc: firebase.firestore.DocumentSnapshot) => {
                     if (!doc.exists) { resolve(null)}
                     const visitor: Visitor = this.helperGetVisitor(doc);
                     resolve(visitor);
@@ -89,11 +87,13 @@ class VisitorUseCase implements IVisitorUseCase {
 
     public deleteVisitor = (userId: string): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            firebase.firestore().collection(visitorsRef).doc(userId).delete()
-                .then(() => {
+            console.log("zzzz");
+            firebase.firestore().collection(visitorsRef).doc(userId).delete().then(() => {
+                    console.log("ccc");
                     resolve();
                 }).catch((error: any) => {
-                reject(handleErrorFirebaseFirestore(error));
+                    console.log(error);
+                    reject(handleErrorFirebaseFirestore(error));
             })
         });
     };

@@ -32,8 +32,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
     private unsubscribePlayRooms: any;
 
     public onPlayRooms(callback: (playRooms: PlayRoom[]) => void): void {
-        this.unsubscribePlayRooms = firebase.firestore().collection(playRoomsRef)
-            .orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
+        this.unsubscribePlayRooms = firebase.firestore().collection(playRoomsRef).orderBy("createdAt", "desc").onSnapshot((querySnapshot) => {
             let playRooms: PlayRoom[] = [];
             querySnapshot.forEach((doc) => {
                 const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
@@ -128,8 +127,7 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
 
     public deletePlayRoom = (id: string): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            firebase.firestore().collection(playRoomsRef).doc(id).delete()
-            .then(() => {
+            firebase.firestore().collection(playRoomsRef).doc(id).delete().then(() => {
                 resolve();
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));

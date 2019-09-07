@@ -40,8 +40,12 @@ function* onAuth() {
         try {
             const { user } = yield take(channel);
             const authState: boolean = !!user;
+            const selector = (state: AppState) => state.authReducer;
+            const _state: AuthState = yield select(selector);
             if (user) {
                 yield put(actionCreatorVisitor.requestUpdateVisitorAction({userId: user.id, playRoomId: null}));
+            } else if (_state.user ){
+                yield put(actionCreatorVisitor.requestDeleteVisitorAction({userId: _state.user.id}));
             }
             yield put(actionCreator.listenerOnAuthUserAction(true, {user, authState}));
         } catch (error) {
@@ -112,11 +116,6 @@ function* handleLogoutInAuth() {
     while (true) {
         try {
             yield take(AuthActionType.REQUEST_LOGOUT_AUTH);
-            const selector = (state: AppState) => state.authReducer;
-            const _state: AuthState = yield select(selector);
-            if (_state.user) {
-                yield put(actionCreatorVisitor.requestDeleteVisitorAction({userId: _state.user.id}));
-            }
             yield call(logout);
             yield put(actionCreator.callbackLogoutAction(true, {}));
         } catch (error) {
