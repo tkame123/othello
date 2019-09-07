@@ -15,7 +15,7 @@ import{
 } from "./play_rooms_action_item";
 
 export enum PlayRoomsActionType {
-    LISTENER_ON_PLAYROOMS = "PLAY_ROOMS_LISTENER_ON_PLAY_ROOMS",
+    LISTENER_ON_PLAY_ROOMS = "PLAY_ROOMS_LISTENER_ON_PLAY_ROOMS",
 
     REQUEST_INIT_PLAY_ROOMS = "PLAY_ROOMS_REQUEST_INIT_PLAY_ROOMS",
     CALLBACK_INIT_PLAY_ROOMS = "PLAY_ROOMS_CALLBACK_INIT_PLAY_ROOMS",
@@ -35,7 +35,7 @@ export enum PlayRoomsActionType {
 }
 
 export interface IListenerOnPlayRoomsAction extends Action {
-    type: PlayRoomsActionType.LISTENER_ON_PLAYROOMS;
+    type: PlayRoomsActionType.LISTENER_ON_PLAY_ROOMS;
     isSuccess: boolean;
     item?: IListenerOnPlayRoomsActionItem;
 }
@@ -159,7 +159,7 @@ class ActionCreator implements IPlayRoomsActionCreator {
         item?: IListenerOnPlayRoomsActionItem,
     ): IListenerOnPlayRoomsAction => {
         return {
-            type: PlayRoomsActionType.LISTENER_ON_PLAYROOMS,
+            type: PlayRoomsActionType.LISTENER_ON_PLAY_ROOMS,
             isSuccess,
             item,
         };

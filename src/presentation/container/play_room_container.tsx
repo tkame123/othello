@@ -50,37 +50,50 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
     public componentDidMount() {
         const id: string = this.props.match.params.id;
-        this.props.dispatcher.getPlayRoom({id: id});
-        if (this.props.authState.user) {
-            this.props.visitorsDispatcher.updateVisitor({userId: this.props.authState.user.id, playRoomId: id})
-        }
+        this.props.dispatcher.initPlayRoom({id: id});
     }
 
     public componentWillUnmount(): void {
         if (this.props.authState.user) {
             this.props.visitorsDispatcher.updateVisitor({userId: this.props.authState.user.id, playRoomId: null})
         }
+        this.props.dispatcher.finalPlayRoom({});
     }
 
     public render(): JSX.Element {
 
-        const {state, visitorsState} = this.props;
+        const {state, authState, visitorsState} = this.props;
         const {isInit} = this.state;
 
         const isLoading: boolean = state.isLoading;
         const playRoom: PlayRoom | null = state.playRoom;
         const visitors: Visitor[] = visitorsState.visitors;
 
+        const user: User | null = authState.user;
+
         return (
             <PlayRoomComponent
                 isInit={isInit}
                 isLoading={isLoading}
+                user={user}
                 playRoom={playRoom}
                 visitors={visitors}
+                handleUpdatePlayRoomPlayer={this.handleUpdatePlayRoomPlayer}
                 handleCreateNewGame={this.handleCreateNewGame}
             />
         )
 
+    };
+
+    private handleUpdatePlayRoomPlayer = (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLButtonElement>): void => {
+        event.preventDefault();
+        const id: string = this.props.match.params.id;
+        this.props.dispatcher.updatePlayRoomPlayer({
+            id: id,
+            gameId: null,
+            playerBlack: playerBlack,
+            playerWhite: playerWhite,
+        });
     };
 
     private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {

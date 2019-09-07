@@ -1,4 +1,4 @@
-import {call, put, take, fork} from "redux-saga/effects";
+import {call, put, take, fork, cancelled, cancel} from "redux-saga/effects";
 import {push} from "connected-react-router";
 
 import {
@@ -6,7 +6,9 @@ import {
     PlayRoomActionType,
     IPlayRoomActionCreator,
     IRequestGetPlayRoomAction,
+    IRequestInitPlayRoomAction,
     IRequestCreateGameOnPlayRoomAction,
+    IRequestUpdatePlayRoomPlayerAction,
 } from "../action/play_room_action";
 
 import {PlayRoom} from "../../domain/model/play_room";
@@ -15,10 +17,73 @@ import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase
 import {User} from "../../domain/model/user";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 import {Game} from "../../domain/model/game";
+import {Task} from "@redux-saga/types";
+import {eventChannel} from "@redux-saga/core";
 
 const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
 const gameUseCase: IGameUseCase = createGameUseCase();
 const actionCreator: IPlayRoomActionCreator = createPlayroomActionCreator();
+
+let playRoomChannelTask: Task;
+
+const playRoomChannel = (id: string) => {
+    const channel = eventChannel(emit => {
+        playRoomsUseCase.onPlayRoom(id, (playRoom: PlayRoom | null) =>{
+            emit({playRoom})
+        });
+
+        const unsubscribe = () => {
+            playRoomsUseCase.offPlayroom();
+        };
+
+        return unsubscribe
+    });
+    return channel
+};
+
+function* onPlayRoom(id: string) {
+    const channel = yield call(playRoomChannel, id);
+    while (true) {
+        try {
+            const { playRoom } = yield take(channel);
+            const game: Game | null = playRoom.gameId ? yield call(getGame, playRoom.gameId) : null;
+            yield put(actionCreator.listenerOnPlayRoomAction(true, {playRoom, game}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.listenerOnPlayRoomAction(false));
+        } finally {
+            if (yield cancelled()) {
+                channel.close();
+            }
+        }
+    }
+}
+
+function* handleInitPlayRoomInPlayRoom() {
+    while (true) {
+        try {
+            const action: IRequestInitPlayRoomAction = yield take(PlayRoomActionType.REQUEST_INIT_PLAY_ROOM);
+            playRoomChannelTask = yield fork(onPlayRoom, action.item.id);
+            yield put(actionCreator.callbackInitPlayRoomAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackInitPlayRoomAction(false));
+        }
+    }
+}
+
+function* handleFinalPlayRoomInPlayRoom() {
+    while (true) {
+        try {
+            yield take(PlayRoomActionType.REQUEST_FINAL_PLAY_ROOM);
+            yield cancel(playRoomChannelTask);
+            yield put(actionCreator.callbackFinalPlayRoomAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackFinalPlayRoomAction(false));
+        }
+    }
+}
 
 function* handleGetPlayRoomInPlayRoom() {
     while (true) {
@@ -42,15 +107,25 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
             const action: IRequestCreateGameOnPlayRoomAction = yield take(PlayRoomActionType.REQUEST_CREATE_GAME_ON_PLAY_ROOM);
             yield call(createGameWithUpdatePlayRoom, action.item.playRoomId, action.item.boardSize, action.item.playerBlack, action.item.playerWhite);
             const playRoom: PlayRoom = yield call(getPlayRoom, action.item.playRoomId);
-            const game: Game | null = playRoom.gameId
-                ? yield call(getGame, playRoom.gameId)
-                : null;
-            yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, {playRoom, game}));
+            yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, {}));
             yield put(push(`/game/${playRoom.gameId}`));
 
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(false));
+        }
+    }
+}
+
+function* handleUpdatePlayRoomPlayerInPlayRoom() {
+    while (true) {
+        try {
+            const action: IRequestUpdatePlayRoomPlayerAction = yield take(PlayRoomActionType.REQUEST_UPDATE_PLAY_ROOM_PLAYER);
+            yield call(updatePlayRoom, action.item.id, null, action.item.playerBlack, action.item.playerWhite);
+            yield put(actionCreator.callbackUpdatePlayRoomPlayerAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackUpdatePlayRoomPlayerAction(false));
         }
     }
 }
@@ -63,8 +138,12 @@ const getGame = (id: string): Promise<Game | null> => {
     return gameUseCase.getGame(id);
 };
 
+const updatePlayRoom = (id: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void> => {
+    return playRoomsUseCase.updatePlayRoom(id, gameId, playerBlack, playerWhite);
+};
+
 const createGameWithUpdatePlayRoom = (playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void> => {
     return gameUseCase.createGameWithUpdatePlayRoom(playRoomId, boardSize, playerBlack, playerWhite);
 };
 
-export {handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom}
+export {handleInitPlayRoomInPlayRoom, handleFinalPlayRoomInPlayRoom, handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom, handleUpdatePlayRoomPlayerInPlayRoom}

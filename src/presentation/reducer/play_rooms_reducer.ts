@@ -15,7 +15,7 @@ const initialState: PlayRoomsState = {
 const playRoomsReducer: Reducer<PlayRoomsState, PlayRoomsAction> = (state = initialState, action: PlayRoomsAction): PlayRoomsState => {
     switch (action.type) {
 
-        case PlayRoomsActionType.LISTENER_ON_PLAYROOMS: {
+        case PlayRoomsActionType.LISTENER_ON_PLAY_ROOMS: {
             const _action = action as IListenerOnPlayRoomsAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
