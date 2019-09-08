@@ -134,7 +134,10 @@ class GameUseCase implements IGameUseCase {
 
     public createGameWithUpdatePlayRoom = (playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            firebase.firestore().collection(gameRef).add({
+            const batch: firebase.firestore.WriteBatch = firebase.firestore().batch();
+            const newGameId: string = firebase.firestore().collection(gameRef).doc().id;
+
+            const gameParams = {
                 playerBlack: {
                     id: playerBlack.id,
                     email: playerBlack.email,
@@ -147,25 +150,28 @@ class GameUseCase implements IGameUseCase {
                 gameStatus: GameStatus.GameStatus_Playing,
                 updatedAt: new Date(),
                 createdAt: new Date(),
-            }).then((ref: firebase.firestore.DocumentReference) => {
-                return firebase.firestore().collection(playRoomRef).doc(playRoomId).update({
-                    gameId: ref.id,
-                    playerBlack: {
-                        id: playerBlack.id,
-                        email: playerBlack.email,
-                    },
-                    playerWhite: {
-                        id: playerWhite.id,
-                        email: playerWhite.email,
-                    },
-                    updatedAt: new Date(),
-                })
-            }).then(() => {
+            };
+            const prayRoomUpdateParams = {
+                gameId: newGameId,
+                playerBlack: {
+                    id: playerBlack.id,
+                    email: playerBlack.email,
+                },
+                playerWhite: {
+                    id: playerWhite.id,
+                    email: playerWhite.email,
+                },
+                updatedAt: new Date(),
+            };
+
+            batch.set(firebase.firestore().collection(gameRef).doc(newGameId), gameParams,{ merge: true });
+            batch.set(firebase.firestore().collection(playRoomRef).doc(playRoomId), prayRoomUpdateParams,{ merge: true });
+            batch.commit().then(() =>{
                 resolve();
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));
             })
-        });
+         });
     };
 
     public updateGame = (id: string, gameStatus: GameStatus): Promise<void> => {

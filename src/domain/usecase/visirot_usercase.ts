@@ -87,9 +87,7 @@ class VisitorUseCase implements IVisitorUseCase {
 
     public deleteVisitor = (userId: string): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            console.log("zzzz");
             firebase.firestore().collection(visitorsRef).doc(userId).delete().then(() => {
-                    console.log("ccc");
                     resolve();
                 }).catch((error: any) => {
                     console.log(error);

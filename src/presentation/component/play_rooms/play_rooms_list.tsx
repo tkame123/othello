@@ -22,7 +22,7 @@ const PlayRoomsListComponent: React.FC<IProps> = (props) => {
                         <PlayRoomListLi key={index} >
                             <PlayRoomCard>
                                 {item.gameId !== null && "Playing" } <br/>
-                                {`No: ${index}`} <br/>
+                                {`No: ${playRooms.length - index}`} <br/>
                                 {`createdAt: ${item.createdAt.toLocaleTimeString()} ${item.createdAt.toLocaleDateString()}`} <br/>
                                 {`Black: ${item.playerBlack ? item.playerBlack.email : "empty"}`} <br/>
                                 {`White: ${item.playerWhite ? item.playerWhite.email : "empty"}`} <br/>

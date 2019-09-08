@@ -98,15 +98,13 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
     private handleCreateNewGame = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        // PlayRoomのオーナが先手（黒）の固定ルールにて実装
-        if (!this.props.state.playRoom || !this.props.authState.user) {
-            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need LogIn!!" });
+        if (!(this.props.state.playRoom && this.props.state.playRoom.playerBlack && this.props.state.playRoom.playerWhite)) {
+            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need Player" });
             return
         }
-        // ToDo: 仮にていったん認証ユーザでつくる
         const playRoomId: string = this.props.match.params.id;
-        const playerBlack: User = this.props.authState.user;
-        const playerWhite: User = this.props.authState.user;
+        const playerBlack: User = this.props.state.playRoom.playerBlack;
+        const playerWhite: User = this.props.state.playRoom.playerWhite;
         const boardSize: number = config().board.size;
         this.props.dispatcher.createGameOnPlayRoom({ playRoomId, boardSize, playerBlack, playerWhite });
     };

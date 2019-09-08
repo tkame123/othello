@@ -6,9 +6,11 @@ import {connect} from "react-redux";
 import PlayRoomContainer from "./presentation/container/play_room_container";
 import PlayRoomsContainer from "./presentation/container/play_rooms_container";
 import GameContainer from "./presentation/container/game_container";
-// import GamesContainer from "./presentation/container/games_container";
+import TopContainer from "./presentation/container/top_container";
+import {AuthState} from "./presentation/store/auth_state";
 
 interface IProps extends RouteComponentProps<{}>{
+    state: AuthState;
 }
 
 interface IState {
@@ -16,21 +18,36 @@ interface IState {
 
 export class Routing extends React.Component<IProps, IState> {
 
-    // constructor(props: IProps) {
-    //     super(props);
-    // }
+    constructor(props: IProps) {
+        super(props);
+        this.state = {
+        };
+    }
 
     public render() {
 
+        const {state} = this.props;
+
+        const authState: boolean = state.authState;
+
         return (
             <React.Fragment>
-                <Switch>
-                    <Route path='/playrooms' component={PlayRoomsContainer}/>
-                    <Route path='/playroom/:id' component={PlayRoomContainer}/>
-                    {/*<Route path='/games' component={GamesContainer}/>*/}
-                    <Route path='/game/:id' component={GameContainer}/>
-                    <Redirect to="/playrooms" />
-                </Switch>
+
+                {!authState &&
+                    <Switch>
+                        <Route path='/top' component={TopContainer}/>
+                        <Redirect to="/top"/>
+                    </Switch>
+                }
+
+                {authState &&
+                    <Switch>
+                        <Route path='/playrooms' component={PlayRoomsContainer}/>
+                        <Route path='/playroom/:id' component={PlayRoomContainer}/>
+                        <Route path='/game/:id' component={GameContainer}/>
+                        <Redirect to="/playrooms"/>
+                    </Switch>
+                }
             </React.Fragment>
         )
     }
@@ -38,6 +55,7 @@ export class Routing extends React.Component<IProps, IState> {
 
 const mapStateToProps = (state: AppState) => {
     return {
+        state: state.authReducer,
     };
 };
 

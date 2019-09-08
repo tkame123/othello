@@ -26,6 +26,7 @@ class GameDetailUseCase implements IGameDetailUseCase {
     private gameDetails: GameDetail[] = [];
 
     public connectGameDetail = (id:string): Promise<GameDetail[]> => {
+
         this.gameId = id;
         const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(id);
         return new Promise<GameDetail[]>((resolve, reject) => {
