@@ -2,20 +2,26 @@ import {Action} from "redux";
 
 import{
     IListenerOnPlayRoomActionItem,
+    IListenerOnVotesPlayRoomActionItem,
     IRequestInitPlayRoomActionItem,
     IRequestFinalPlayRoomActionItem,
     IRequestGetPlayRoomActionItem,
     IRequestCreateGameOnPlayRoomActionItem,
     IRequestUpdatePlayRoomPlayerActionItem,
+    IRequestCreateVoteGameReadyActionItem,
+    IRequestDeleteVoteGameReadyActionItem,
     ICallbackInitPlayRoomActionItem,
     ICallbackFinalPlayRoomActionItem,
     ICallbackGetPlayRoomActionItem,
     ICallbackCreateGameOnPlayRoomActionItem,
     ICallbackUpdatePlayRoomPlayerActionItem,
+    ICallbackCreateVoteGameReadyActionItem,
+    ICallbackDeleteVoteGameReadyActionItem,
 } from "./play_room_action_item";
 
 export enum PlayRoomActionType {
     LISTENER_ON_PLAY_ROOM = "PLAY_ROOM_LISTENER_ON_PLAY_ROOM",
+    LISTENER_ON_VOTES_PLAY_ROOM = "PLAY_ROOM_LISTENER_ON_VOTES_PLAY_ROOM",
 
     REQUEST_INIT_PLAY_ROOM = "PLAY_ROOM_REQUEST_INIT_PLAY_ROOM",
     CALLBACK_INIT_PLAY_ROOM = "PLAY_ROOM_CALLBACK_INIT_PLAY_ROOM",
@@ -32,12 +38,24 @@ export enum PlayRoomActionType {
     REQUEST_UPDATE_PLAY_ROOM_PLAYER = "PLAY_ROOM_REQUEST_UPDATE_PLAY_ROOM_PLAYER",
     CALLBACK_UPDATE_PLAY_ROOM_PLAYER = "PLAY_ROOM_CALLBACK_UPDATE_PLAY_ROOM_PLAYER",
 
+    REQUEST_CREATE_VOTE_GAME_READY = "PLAY_ROOM_REQUEST_CREATE_VOTE_GAME_READY",
+    CALLBACK_CREATE_VOTE_GAME_READY = "PLAY_ROOM_CALLBACK_CREATE_VOTE_GAME_READY",
+
+    REQUEST_DELETE_VOTE_GAME_READY = "PLAY_ROOM_REQUEST_DELETE_VOTE_GAME_READY",
+    CALLBACK_DELETE_VOTE_GAME_READY = "PLAY_ROOM_CALLBACK_DELETE_VOTE_GAME_READY",
+
 }
 
 export interface IListenerOnPlayRoomAction extends Action {
     type: PlayRoomActionType.LISTENER_ON_PLAY_ROOM;
     isSuccess: boolean;
     item?: IListenerOnPlayRoomActionItem;
+}
+
+export interface IListenerOnVotesPlayRoomAction extends Action {
+    type: PlayRoomActionType.LISTENER_ON_VOTES_PLAY_ROOM;
+    isSuccess: boolean;
+    item?: IListenerOnVotesPlayRoomActionItem;
 }
 
 export interface IRequestInitPlayRoomAction extends Action {
@@ -90,8 +108,29 @@ export interface ICallbackUpdatePlayRoomPlayerAction extends Action {
     item?: ICallbackUpdatePlayRoomPlayerActionItem;
 }
 
+export interface IRequestCreateVoteGameReadyAction extends Action {
+    type: PlayRoomActionType.REQUEST_CREATE_VOTE_GAME_READY;
+    item: IRequestCreateVoteGameReadyActionItem;
+}
+export interface ICallbackCreateVoteGameReadyAction extends Action {
+    type: PlayRoomActionType.CALLBACK_CREATE_VOTE_GAME_READY;
+    isSuccess: boolean;
+    item?: ICallbackCreateVoteGameReadyActionItem;
+}
+
+export interface IRequestDeleteVoteGameReadyAction extends Action {
+    type: PlayRoomActionType.REQUEST_DELETE_VOTE_GAME_READY;
+    item: IRequestDeleteVoteGameReadyActionItem;
+}
+export interface ICallbackDeleteVoteGameReadyAction extends Action {
+    type: PlayRoomActionType.CALLBACK_DELETE_VOTE_GAME_READY;
+    isSuccess: boolean;
+    item?: ICallbackDeleteVoteGameReadyActionItem;
+}
+
 export type PlayRoomAction =
     IListenerOnPlayRoomAction |
+    IListenerOnVotesPlayRoomAction |
     IRequestInitPlayRoomAction |
     ICallbackInitPlayRoomAction |
     IRequestFinalPlayRoomAction |
@@ -101,7 +140,11 @@ export type PlayRoomAction =
     IRequestCreateGameOnPlayRoomAction|
     ICallbackCreateGameOnPlayRoomAction |
     IRequestUpdatePlayRoomPlayerAction |
-    ICallbackUpdatePlayRoomPlayerAction;
+    ICallbackUpdatePlayRoomPlayerAction |
+    IRequestCreateVoteGameReadyAction |
+    ICallbackCreateVoteGameReadyAction |
+    IRequestDeleteVoteGameReadyAction |
+    ICallbackDeleteVoteGameReadyAction;
 
 export interface IPlayRoomActionCreator {
 
@@ -109,6 +152,11 @@ export interface IPlayRoomActionCreator {
         isSuccess: boolean,
         item?: IListenerOnPlayRoomActionItem,
     ): IListenerOnPlayRoomAction;
+
+    listenerOnVotesPlayRoomAction(
+        isSuccess: boolean,
+        item?: IListenerOnVotesPlayRoomActionItem,
+    ): IListenerOnVotesPlayRoomAction;
 
     requestInitPlayRoomAction(
         item: IRequestInitPlayRoomActionItem,
@@ -150,6 +198,22 @@ export interface IPlayRoomActionCreator {
         item?: ICallbackUpdatePlayRoomPlayerActionItem,
     ): ICallbackUpdatePlayRoomPlayerAction;
 
+    requestCreateVoteGameReadyAction(
+        item: IRequestCreateVoteGameReadyActionItem,
+    ): IRequestCreateVoteGameReadyAction;
+    callbackCreateVoteGameReadyAction(
+        isSuccess: boolean,
+        item?: ICallbackCreateVoteGameReadyActionItem,
+    ): ICallbackCreateVoteGameReadyAction;
+
+    requestDeleteVoteGameReadyAction(
+        item: IRequestDeleteVoteGameReadyActionItem,
+    ): IRequestDeleteVoteGameReadyAction;
+    callbackDeleteVoteGameReadyAction(
+        isSuccess: boolean,
+        item?: ICallbackDeleteVoteGameReadyActionItem,
+    ): ICallbackDeleteVoteGameReadyAction;
+
 }
 
 class ActionCreator implements IPlayRoomActionCreator {
@@ -160,6 +224,17 @@ class ActionCreator implements IPlayRoomActionCreator {
     ): IListenerOnPlayRoomAction => {
         return {
             type: PlayRoomActionType.LISTENER_ON_PLAY_ROOM,
+            isSuccess,
+            item,
+        };
+    };
+
+    public listenerOnVotesPlayRoomAction = (
+        isSuccess: boolean,
+        item?: IListenerOnVotesPlayRoomActionItem,
+    ): IListenerOnVotesPlayRoomAction => {
+        return {
+            type: PlayRoomActionType.LISTENER_ON_VOTES_PLAY_ROOM,
             isSuccess,
             item,
         };
@@ -255,6 +330,44 @@ class ActionCreator implements IPlayRoomActionCreator {
     ): ICallbackUpdatePlayRoomPlayerAction => {
         return {
             type: PlayRoomActionType.CALLBACK_UPDATE_PLAY_ROOM_PLAYER,
+            isSuccess,
+            item,
+        };
+    };
+
+    public requestCreateVoteGameReadyAction = (
+        item: IRequestCreateVoteGameReadyActionItem,
+    ): IRequestCreateVoteGameReadyAction => {
+        return {
+            type: PlayRoomActionType.REQUEST_CREATE_VOTE_GAME_READY,
+            item,
+        };
+    };
+    public callbackCreateVoteGameReadyAction = (
+        isSuccess: boolean,
+        item?: ICallbackCreateVoteGameReadyActionItem,
+    ): ICallbackCreateVoteGameReadyAction => {
+        return {
+            type: PlayRoomActionType.CALLBACK_CREATE_VOTE_GAME_READY,
+            isSuccess,
+            item,
+        };
+    };
+
+    public requestDeleteVoteGameReadyAction = (
+        item: IRequestDeleteVoteGameReadyActionItem,
+    ): IRequestDeleteVoteGameReadyAction => {
+        return {
+            type: PlayRoomActionType.REQUEST_DELETE_VOTE_GAME_READY,
+            item,
+        };
+    };
+    public callbackDeleteVoteGameReadyAction = (
+        isSuccess: boolean,
+        item?: ICallbackDeleteVoteGameReadyActionItem,
+    ): ICallbackDeleteVoteGameReadyAction => {
+        return {
+            type: PlayRoomActionType.CALLBACK_DELETE_VOTE_GAME_READY,
             isSuccess,
             item,
         };

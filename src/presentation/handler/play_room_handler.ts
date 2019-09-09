@@ -9,22 +9,28 @@ import {
     IRequestInitPlayRoomAction,
     IRequestCreateGameOnPlayRoomAction,
     IRequestUpdatePlayRoomPlayerAction,
+    IRequestCreateVoteGameReadyAction,
+    IRequestDeleteVoteGameReadyAction,
 } from "../action/play_room_action";
 
 import {PlayRoom} from "../../domain/model/play_room";
 import {createPlayRoomUseCase, IPlayRoomUseCase} from "../../domain/usecase/play_room_usecae";
 import {createGameUseCase, IGameUseCase} from "../../domain/usecase/game_usecase";
+import {createVoteUseCase, IVoteUseCase} from "../../domain/usecase/vote_usecase";
 import {User} from "../../domain/model/user";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 import {Game} from "../../domain/model/game";
 import {Task} from "@redux-saga/types";
 import {eventChannel} from "@redux-saga/core";
+import {Vote, VoteEventType} from "../../domain/model/vote";
 
 const playRoomsUseCase: IPlayRoomUseCase = createPlayRoomUseCase();
 const gameUseCase: IGameUseCase = createGameUseCase();
+const voteUseCase: IVoteUseCase = createVoteUseCase();
 const actionCreator: IPlayRoomActionCreator = createPlayroomActionCreator();
 
 let playRoomChannelTask: Task;
+let votesOnplayRoomChannelTask: Task;
 
 const playRoomChannel = (id: string) => {
     const channel = eventChannel(emit => {
@@ -59,11 +65,44 @@ function* onPlayRoom(id: string) {
     }
 }
 
+const votesOnPlayRoomChannel = (playRoomId: string) => {
+    const channel = eventChannel(emit => {
+        voteUseCase.onVotesOnPlayRoom(playRoomId, (votes: Vote[]) =>{
+            emit({votes})
+        });
+
+        const unsubscribe = () => {
+            voteUseCase.offVoteOnPlayRoom();
+        };
+
+        return unsubscribe
+    });
+    return channel
+};
+
+function* onVotesOnPlayRoom(playRoomId: string) {
+    const channel = yield call(votesOnPlayRoomChannel, playRoomId);
+    while (true) {
+        try {
+            const { votes } = yield take(channel);
+            yield put(actionCreator.listenerOnVotesPlayRoomAction(true, {votes}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.listenerOnVotesPlayRoomAction(false));
+        } finally {
+            if (yield cancelled()) {
+                channel.close();
+            }
+        }
+    }
+}
+
 function* handleInitPlayRoomInPlayRoom() {
     while (true) {
         try {
             const action: IRequestInitPlayRoomAction = yield take(PlayRoomActionType.REQUEST_INIT_PLAY_ROOM);
             playRoomChannelTask = yield fork(onPlayRoom, action.item.id);
+            votesOnplayRoomChannelTask = yield fork(onVotesOnPlayRoom, action.item.id);
             yield put(actionCreator.callbackInitPlayRoomAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -77,6 +116,7 @@ function* handleFinalPlayRoomInPlayRoom() {
         try {
             yield take(PlayRoomActionType.REQUEST_FINAL_PLAY_ROOM);
             yield cancel(playRoomChannelTask);
+            yield cancel(votesOnplayRoomChannelTask);
             yield put(actionCreator.callbackFinalPlayRoomAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -130,6 +170,32 @@ function* handleUpdatePlayRoomPlayerInPlayRoom() {
     }
 }
 
+function* handleCreateVoteGameReadyInPlayRoom() {
+    while (true) {
+        try {
+            const action: IRequestCreateVoteGameReadyAction = yield take(PlayRoomActionType.REQUEST_CREATE_VOTE_GAME_READY);
+            yield call(createVoteOnPlayRoom, action.item.playRoomId, action.item.eventType, action.item.userId, action.item.message);
+            yield put(actionCreator.callbackCreateVoteGameReadyAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackCreateVoteGameReadyAction(false));
+        }
+    }
+}
+
+function* handleDeleteVoteGameReadyInPlayRoom() {
+    while (true) {
+        try {
+            const action: IRequestDeleteVoteGameReadyAction = yield take(PlayRoomActionType.REQUEST_DELETE_VOTE_GAME_READY);
+            yield call(deleteVoteOnPlayRoom, action.item.playRoomId, action.item.eventType);
+            yield put(actionCreator.callbackDeleteVoteGameReadyAction(true, {}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.callbackDeleteVoteGameReadyAction(false));
+        }
+    }
+}
+
 const getPlayRoom = (id: string): Promise<PlayRoom | null> => {
     return playRoomsUseCase.getPlayRoom(id);
 };
@@ -146,4 +212,12 @@ const createGameWithUpdatePlayRoom = (playRoomId: string, boardSize: number, pla
     return gameUseCase.createGameWithUpdatePlayRoom(playRoomId, boardSize, playerBlack, playerWhite);
 };
 
-export {handleInitPlayRoomInPlayRoom, handleFinalPlayRoomInPlayRoom, handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom, handleUpdatePlayRoomPlayerInPlayRoom}
+const createVoteOnPlayRoom = (playRoomId: string, eventType: VoteEventType, userId: string, message: string): Promise<void> => {
+    return voteUseCase.createVoteOnPlayRoom(playRoomId, eventType, userId, message);
+};
+
+const deleteVoteOnPlayRoom = (playRoomId: string, eventType: VoteEventType): Promise<void> => {
+    return voteUseCase.deleteVotesOnPlayRoom(playRoomId, eventType);
+};
+
+export {handleInitPlayRoomInPlayRoom, handleFinalPlayRoomInPlayRoom, handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom, handleUpdatePlayRoomPlayerInPlayRoom, handleCreateVoteGameReadyInPlayRoom, handleDeleteVoteGameReadyInPlayRoom}

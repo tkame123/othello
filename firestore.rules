@@ -40,9 +40,8 @@ service cloud.firestore {
           allow read, write: if isAuthenticated();
         }
         match /playroom/{playroomId} {
-          allow read;
-          allow create:
-              if isAuthenticated();
+          allow read:if isAuthenticated();
+          allow create:if isAuthenticated();
           allow update:
               if isAuthenticated() &&
               (getPlayroom(playroomId).data.playerBlack == null ||
@@ -56,6 +55,9 @@ service cloud.firestore {
                incomingData().playerBlack != incomingData().playerWhite);
           allow delete:
               if isAuthenticated();
+          match /vote/{voteId} {
+              allow read, write: if isAuthenticated();
+          }
         }
         match /score/{gameId} {
           allow read, write: if isAuthenticated();

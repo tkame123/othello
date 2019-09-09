@@ -7,6 +7,8 @@ import {
     IRequestGetPlayRoomActionItem,
     IRequestCreateGameOnPlayRoomActionItem,
     IRequestUpdatePlayRoomPlayerActionItem,
+    IRequestCreateVoteGameReadyActionItem,
+    IRequestDeleteVoteGameReadyActionItem,
 } from "../action/play_room_action_item"
 
 export interface IPlayRoomDispatcher {
@@ -22,6 +24,10 @@ export interface IPlayRoomDispatcher {
     createGameOnPlayRoom(item: IRequestCreateGameOnPlayRoomActionItem): void;
 
     updatePlayRoomPlayer(item: IRequestUpdatePlayRoomPlayerActionItem): void;
+
+    createVoteGameReady(item: IRequestCreateVoteGameReadyActionItem): void;
+
+    deleteVoteGameReady(item: IRequestDeleteVoteGameReadyActionItem): void;
 
 }
 
@@ -44,6 +50,12 @@ class Dispatcher implements IPlayRoomDispatcher {
 
     public updatePlayRoomPlayer = (item: IRequestUpdatePlayRoomPlayerActionItem,): void => {
         this.dispatch(this.actionCreator.requestUpdatePlayRoomPlayerAction(item));};
+
+    public createVoteGameReady = (item: IRequestCreateVoteGameReadyActionItem,): void => {
+        this.dispatch(this.actionCreator.requestCreateVoteGameReadyAction(item));};
+
+    public deleteVoteGameReady = (item: IRequestDeleteVoteGameReadyActionItem,): void => {
+        this.dispatch(this.actionCreator.requestDeleteVoteGameReadyAction(item));};
 
 }
 

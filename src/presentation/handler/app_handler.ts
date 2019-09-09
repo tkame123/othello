@@ -4,7 +4,7 @@ import {handleInitAuthUserInAuth, handleFinalAuthUserInAuth, handleGetAuthUserIn
 import {handleAddInAppNotificationMessage, handleHiddenInAppNotificationMessage} from "./app_notification_message_handler";
 import {handleInitGamesInGames, handleFinalGamesInGames, handleGetGamesInGames} from "./games_handler";
 import {handleInitGameInGame, handleFinalGameInGame, handleUpdateGameInGame, handleFinishGameInGame} from "./game_handler";
-import {handleInitPlayRoomInPlayRoom, handleFinalPlayRoomInPlayRoom, handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom, handleUpdatePlayRoomPlayerInPlayRoom} from "./play_room_handler";
+import {handleInitPlayRoomInPlayRoom, handleFinalPlayRoomInPlayRoom, handleGetPlayRoomInPlayRoom, handleCreateGameOnPlayRoomInPlayRoom, handleUpdatePlayRoomPlayerInPlayRoom, handleCreateVoteGameReadyInPlayRoom, handleDeleteVoteGameReadyInPlayRoom} from "./play_room_handler";
 import {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms, handleDeletePlayRoomsInPlayRooms} from "./play_rooms_handler";
 import {handleInitVisitorsInVisitors, handleFinalVisitorsInVisitors, handleUpdateVisitorInVisitors, handleDeleteVisitorInVisitors} from "./visitors_handler";
 
@@ -39,6 +39,8 @@ function* rootHandler() {
     yield fork(handleGetPlayRoomsInPlayRooms);
     yield fork(handleCreatePlayRoomsInPlayRooms);
     yield fork(handleDeletePlayRoomsInPlayRooms);
+    yield fork(handleCreateVoteGameReadyInPlayRoom);
+    yield fork(handleDeleteVoteGameReadyInPlayRoom);
 
     yield fork(handleInitVisitorsInVisitors);
     yield fork(handleFinalVisitorsInVisitors);

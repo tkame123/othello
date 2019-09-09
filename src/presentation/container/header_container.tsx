@@ -14,7 +14,7 @@ import {
 } from "../dispatcher/visitors_dispatcher";
 import {AppState} from "../store/app_state";
 import AuthContainer from "./auth_container";
-import AppNotificationContainer from "./app_notification";
+import AppNotificationContainer from "./app_notification_container";
 
 interface IProps extends RouteComponentProps<{}>{
     authDispatcher: IAuthDispatcher;

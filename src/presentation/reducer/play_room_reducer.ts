@@ -4,12 +4,14 @@ import {
     PlayRoomAction,
     PlayRoomActionType,
     IListenerOnPlayRoomAction,
+    IListenerOnVotesPlayRoomAction,
     ICallbackGetPlayRoomAction,
 } from "../action/play_room_action";
 
 const initialState: PlayRoomState = {
     playRoom: null,
     game: null,
+    votes: [],
     isLoading: false,
 };
 
@@ -22,12 +24,33 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
                 return Object.assign({}, state, {
                     playRoom: _action.item ? _action.item.playRoom : null,
                     game: _action.item ? _action.item.game : null,
+                    votes: state.votes,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case PlayRoomActionType.LISTENER_ON_VOTES_PLAY_ROOM: {
+            const _action = action as IListenerOnVotesPlayRoomAction;
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRoom: state.playRoom,
+                    game: state.game,
+                    votes: _action.item ? _action.item.votes : [],
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRoom: state.playRoom,
+                    game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             }
@@ -37,6 +60,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
                 game: state.game,
+                votes: state.votes,
                 isLoading: true,
             });
         }
@@ -45,12 +69,14 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             }
@@ -60,6 +86,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
                 game: state.game,
+                votes: state.votes,
                 isLoading: true,
             });
         }
@@ -68,12 +95,14 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
                 return Object.assign({}, state, {
                     playRoom: null,
                     game: null,
+                    votes: [],
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             }
@@ -83,6 +112,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
                 game: state.game,
+                votes: state.votes,
                 isLoading: true,
             });
         }
@@ -92,12 +122,14 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
                 return Object.assign({}, state, {
                     playRoom: _action.item ? _action.item.playRoom : null,
                     game: _action.item ? _action.item.game : null,
+                    votes: state.votes,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             }
@@ -107,6 +139,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
                 game: state.game,
+                votes: state.votes,
                 isLoading: true,
             });
         }
@@ -115,12 +148,14 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             }
@@ -130,6 +165,7 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
             return Object.assign({}, state, {
                 playRoom: state.playRoom,
                 game: state.game,
+                votes: state.votes,
                 isLoading: true,
             });
         }
@@ -138,12 +174,66 @@ const playRoomReducer: Reducer<PlayRoomState, PlayRoomAction> = (state = initial
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             } else {
                 return Object.assign({}, state, {
                     playRoom: state.playRoom,
                     game: state.game,
+                    votes: state.votes,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case PlayRoomActionType.REQUEST_CREATE_VOTE_GAME_READY: {
+            return Object.assign({}, state, {
+                playRoom: state.playRoom,
+                game: state.game,
+                votes: state.votes,
+                isLoading: true,
+            });
+        }
+        case PlayRoomActionType.CALLBACK_CREATE_VOTE_GAME_READY: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRoom: state.playRoom,
+                    game: state.game,
+                    votes: state.votes,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRoom: state.playRoom,
+                    game: state.game,
+                    votes: state.votes,
+                    isLoading: false,
+                });
+            }
+        }
+
+        case PlayRoomActionType.REQUEST_DELETE_VOTE_GAME_READY: {
+            return Object.assign({}, state, {
+                playRoom: state.playRoom,
+                game: state.game,
+                votes: state.votes,
+                isLoading: true,
+            });
+        }
+        case PlayRoomActionType.CALLBACK_DELETE_VOTE_GAME_READY: {
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    playRoom: state.playRoom,
+                    game: state.game,
+                    votes: state.votes,
+                    isLoading: false,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    playRoom: state.playRoom,
+                    game: state.game,
+                    votes: state.votes,
                     isLoading: false,
                 });
             }

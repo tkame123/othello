@@ -19,7 +19,7 @@ const NotificationBarComponent: React.FC<IProps> = (props) => {
 
     return (
         <Wrapper>
-            {appNotificationMessages.map((appNotificationMessage: AppNotificationMessage) => {
+            {appNotificationMessages.map((appNotificationMessage: AppNotificationMessage, index) => {
                 const isHidden: boolean = appNotificationMessage.isHidden;
                 const id: string = appNotificationMessage.id;
                 const message: string = appNotificationMessage.message;
@@ -27,7 +27,7 @@ const NotificationBarComponent: React.FC<IProps> = (props) => {
 
                 if (!isHidden) {
                     return (
-                        <Inner appNotificationType={appNotificationType}>
+                        <Inner key={index} appNotificationType={appNotificationType}>
                             <NotificationText >
                                 {message}
                             </NotificationText>

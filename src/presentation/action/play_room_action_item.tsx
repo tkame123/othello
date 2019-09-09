@@ -1,10 +1,15 @@
 import {PlayRoom} from "../../domain/model/play_room";
 import {User} from "../../domain/model/user";
 import {Game} from "../../domain/model/game";
+import {Vote, VoteEventType} from "../../domain/model/vote";
 
 export interface IListenerOnPlayRoomActionItem {
     playRoom: PlayRoom,
     game: Game | null,
+}
+
+export interface IListenerOnVotesPlayRoomActionItem {
+    votes: Vote[],
 }
 
 export interface IRequestInitPlayRoomActionItem {
@@ -42,4 +47,20 @@ export interface IRequestUpdatePlayRoomPlayerActionItem {
     playerWhite: User | null,
 }
 export interface ICallbackUpdatePlayRoomPlayerActionItem {
+}
+
+export interface IRequestCreateVoteGameReadyActionItem {
+    playRoomId: string,
+    eventType: VoteEventType,
+    userId: string,
+    message: string,
+}
+export interface ICallbackCreateVoteGameReadyActionItem {
+}
+
+export interface IRequestDeleteVoteGameReadyActionItem {
+    playRoomId: string,
+    eventType: VoteEventType,
+}
+export interface ICallbackDeleteVoteGameReadyActionItem {
 }
