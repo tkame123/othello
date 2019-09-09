@@ -13,7 +13,7 @@ export interface IListenerOnVotesPlayRoomActionItem {
 }
 
 export interface IRequestInitPlayRoomActionItem {
-    id: string;
+    playRoomId: string;
 }
 export interface ICallbackInitPlayRoomActionItem {
 }
@@ -24,7 +24,7 @@ export interface ICallbackFinalPlayRoomActionItem {
 }
 
 export interface IRequestGetPlayRoomActionItem {
-    id: string;
+    playRoomId: string;
 }
 export interface ICallbackGetPlayRoomActionItem {
     playRoom: PlayRoom,
@@ -41,7 +41,7 @@ export interface ICallbackCreateGameOnPlayRoomActionItem {
 }
 
 export interface IRequestUpdatePlayRoomPlayerActionItem {
-    id: string;
+    playRoomId: string;
     gameId: string | null,
     playerBlack: User | null,
     playerWhite: User | null,

@@ -10,7 +10,7 @@ import {
 } from "../action/visitors_action";
 
 import {Visitor} from "../../domain/model/visitor";
-import {createVisitorUseCase, IVisitorUseCase} from "../../domain/usecase/visirot_usercase";
+import {createVisitorUseCase, IVisitorUseCase} from "../../domain/usecase/visitor_usercase";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 import {AppState} from "../store/app_state";
 import {AuthState} from "../store/auth_state";

@@ -22,7 +22,7 @@ import {
 import {createAppNotificationMessageActionCreator} from "../action/app_notification_message_action";
 import {AppNotificationType} from "../../domain/model/app_notification_message";
 
-interface IProps extends RouteComponentProps<{id: string}>{
+interface IProps extends RouteComponentProps<{gameId: string, playRoomId: string}>{
     state: GameState;
     authState: AuthState;
     dispatcher: IGameDispatcher;
@@ -43,8 +43,8 @@ export class GameContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
-        const id: string = this.props.match.params.id;
-        this.props.dispatcher.initGame({id});
+        const gameId: string = this.props.match.params.gameId;
+        this.props.dispatcher.initGame({gameId});
     }
 
     public componentWillUnmount(): void {

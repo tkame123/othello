@@ -23,7 +23,7 @@ const PlayRoomInfoComponent: React.FC<IProps> = (props) => {
             <PlayRoomCard>
                 {`createdAt: ${playRoom.createdAt.toLocaleTimeString()} ${playRoom.createdAt.toLocaleDateString()}`} <br/>
                 {gameId && "You can Play Game, Click this"}
-                {gameId && <PlayRoomLink to={`/game/${gameId}`} />}
+                {gameId && <PlayRoomLink to={`/playroom/${playRoom.id}/game/${gameId}`} />}
                 <br/><br/>
                 Now visitors: {visitors.length}
                 <br/><br/>

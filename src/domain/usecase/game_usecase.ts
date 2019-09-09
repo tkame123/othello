@@ -19,11 +19,11 @@ export interface IGameUseCase {
 
     offGames(): void;
 
-    onGame(id: string, callback: (game: Game | null) => void): void;
+    onGame(gameId: string, callback: (game: Game | null) => void): void;
 
     offGame(): void;
 
-    getGame(id: string): Promise<Game | null>;
+    getGame(gameId: string): Promise<Game | null>;
 
     getGames(): Promise<Game[]>;
 
@@ -33,7 +33,7 @@ export interface IGameUseCase {
 
     createGameWithUpdatePlayRoom(playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void>;
 
-    updateGame(id: string, gameStatus: GameStatus): Promise<void>;
+    updateGameWithPlayRoom(gameId: string, gameStatus: GameStatus): Promise<void>;
 
 }
 
@@ -60,8 +60,8 @@ class GameUseCase implements IGameUseCase {
         this.unsubscribeGames();
     }
 
-    public onGame(id: string, callback: (game: Game | null) => void): void {
-        this.unsubscribeGame = firebase.firestore().collection(gameRef).doc(id).onSnapshot((doc: firebase.firestore.DocumentSnapshot) => {
+    public onGame(gameId: string, callback: (game: Game | null) => void): void {
+        this.unsubscribeGame = firebase.firestore().collection(gameRef).doc(gameId).onSnapshot((doc: firebase.firestore.DocumentSnapshot) => {
             if (!doc.exists) {callback(null)}
             const game: Game = this.helperGetGame(doc);
             callback(game)
@@ -74,9 +74,9 @@ class GameUseCase implements IGameUseCase {
         this.unsubscribeGame();
     }
 
-    public getGame = (id: string): Promise<Game | null> => {
+    public getGame = (gameId: string): Promise<Game | null> => {
         return new Promise<Game | null>((resolve, reject) => {
-            firebase.firestore().collection(gameRef).doc(id).get().then((doc: firebase.firestore.DocumentSnapshot) => {
+            firebase.firestore().collection(gameRef).doc(gameId).get().then((doc: firebase.firestore.DocumentSnapshot) => {
                 if (!doc.exists) { resolve(null)}
                 const game: Game = this.helperGetGame(doc);
                 resolve(game);
@@ -136,6 +136,8 @@ class GameUseCase implements IGameUseCase {
         return new Promise<void>((resolve, reject) => {
             const batch: firebase.firestore.WriteBatch = firebase.firestore().batch();
             const newGameId: string = firebase.firestore().collection(gameRef).doc().id;
+            const gameDocRef: firebase.firestore.DocumentReference = firebase.firestore().collection(gameRef).doc(newGameId);
+            const playRoomDocRef: firebase.firestore.DocumentReference = firebase.firestore().collection(playRoomRef).doc(playRoomId);
 
             const gameParams = {
                 playerBlack: {
@@ -164,8 +166,8 @@ class GameUseCase implements IGameUseCase {
                 updatedAt: new Date(),
             };
 
-            batch.set(firebase.firestore().collection(gameRef).doc(newGameId), gameParams,{ merge: true });
-            batch.set(firebase.firestore().collection(playRoomRef).doc(playRoomId), prayRoomUpdateParams,{ merge: true });
+            batch.set(gameDocRef, gameParams,{ merge: true });
+            batch.set(playRoomDocRef, prayRoomUpdateParams,{ merge: true });
             batch.commit().then(() =>{
                 resolve();
             }).catch((error: any) => {
@@ -174,12 +176,26 @@ class GameUseCase implements IGameUseCase {
          });
     };
 
-    public updateGame = (id: string, gameStatus: GameStatus): Promise<void> => {
-        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameRef).doc(id);
+    public updateGameWithPlayRoom = (gameId: string, gameStatus: GameStatus): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            ref.update({
-                gameStatus: gameStatus,
-                updatedAt: new Date(),
+            return firebase.firestore().collection(playRoomRef).where("gameId", "==", gameId).get().then((docs: firebase.firestore.QuerySnapshot) =>{
+                const batch: firebase.firestore.WriteBatch = firebase.firestore().batch();
+                const gameDocRef: firebase.firestore.DocumentReference = firebase.firestore().collection(gameRef).doc(gameId);
+
+                const gameParams = {
+                    gameStatus: gameStatus,
+                    updatedAt: new Date(),
+                };
+                const prayRoomUpdateParams = {
+                    gameId: gameStatus === GameStatus.GameStatus_End ? null : gameId,
+                    updatedAt: new Date(),
+                };
+
+                docs.forEach((item) => {
+                    batch.set(item.ref, prayRoomUpdateParams, { merge: true })
+                });
+                batch.set(gameDocRef, gameParams, { merge: true });
+                return batch.commit()
             }).then(() =>{
                 resolve();
             }).catch((error: any) => {

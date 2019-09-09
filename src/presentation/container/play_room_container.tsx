@@ -25,7 +25,7 @@ import {Visitor} from "../../domain/model/visitor";
 import {Vote, VoteEventType} from "../../domain/model/vote";
 import {Game} from "../../domain/model/game";
 
-interface IProps extends RouteComponentProps<{id: string}>{
+interface IProps extends RouteComponentProps<{playRoomId: string}>{
     state: PlayRoomState;
     authState: AuthState;
     visitorsState: VisitorsState;
@@ -50,8 +50,8 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
-        const id: string = this.props.match.params.id;
-        this.props.dispatcher.initPlayRoom({id: id});
+        const playRoomId: string = this.props.match.params.playRoomId;
+        this.props.dispatcher.initPlayRoom({playRoomId});
     }
 
     public componentWillUnmount(): void {
@@ -70,7 +70,7 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         const votes: Vote[] = this.props.state.votes;
         const nextVotes: Vote[] = nextProps.state.votes;
 
-        const playRoomId: string = this.props.match.params.id;
+        const playRoomId: string = this.props.match.params.playRoomId;
         const eventType: VoteEventType = VoteEventType.VoteEvent_GAME_READY;
 
         if (!game && nextPlayerBlack && nextPlayerWhite && (playerBlack === null || playerWhite === null)) {
@@ -130,7 +130,7 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
             this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need Login" });
             return
         }
-        const playRoomId: string = this.props.match.params.id;
+        const playRoomId: string = this.props.match.params.playRoomId;
         const eventType: VoteEventType = VoteEventType.VoteEvent_GAME_READY;
         const userId: string = user.id;
         const message: string = user.email;
@@ -140,16 +140,16 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
     private handleVoteGameReadyDelete = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        const playRoomId: string = this.props.match.params.id;
+        const playRoomId: string = this.props.match.params.playRoomId;
         const eventType: VoteEventType = VoteEventType.VoteEvent_GAME_READY;
         this.props.dispatcher.deleteVoteGameReady({playRoomId, eventType});
     };
 
     private handleUpdatePlayRoomPlayer = (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
-        const id: string = this.props.match.params.id;
+        const playRoomId: string = this.props.match.params.playRoomId;
         const gameId = null;
-        this.props.dispatcher.updatePlayRoomPlayer({id, gameId, playerBlack, playerWhite});
+        this.props.dispatcher.updatePlayRoomPlayer({playRoomId, gameId, playerBlack, playerWhite});
     };
 
     private handleCreateNewGame = (event?: React.MouseEvent<HTMLButtonElement>): void => {
@@ -158,7 +158,7 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
             this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need Player" });
             return
         }
-        const playRoomId: string = this.props.match.params.id;
+        const playRoomId: string = this.props.match.params.playRoomId;
         const playerBlack: User = this.props.state.playRoom.playerBlack;
         const playerWhite: User = this.props.state.playRoom.playerWhite;
         const boardSize: number = config().board.size;

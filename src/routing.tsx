@@ -43,8 +43,8 @@ export class Routing extends React.Component<IProps, IState> {
                 {authState &&
                     <Switch>
                         <Route path='/playrooms' component={PlayRoomsContainer}/>
-                        <Route path='/playroom/:id' component={PlayRoomContainer}/>
-                        <Route path='/game/:id' component={GameContainer}/>
+                        <Route exact={true} path='/playroom/:playRoomId' component={PlayRoomContainer}/>
+                        <Route exact={true} path='/playroom/:playRoomId/game/:gameId' component={GameContainer}/>
                         <Redirect to="/playrooms"/>
                     </Switch>
                 }

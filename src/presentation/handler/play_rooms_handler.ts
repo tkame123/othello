@@ -106,7 +106,7 @@ function* handleDeletePlayRoomsInPlayRooms() {
         try {
             const action: IRequestDeletePlayRoomAction = yield take(PlayRoomsActionType.REQUEST_DELETE_PLAY_ROOMS);
             for (const playRoom of action.item.playRooms) {
-                yield call(deletePlayRooms, playRoom.id);
+                yield call(deletePlayRoom, playRoom.id);
             }
             yield put(actionCreator.callbackDeletePlayRoomAction(true, {}));
         } catch (error) {
@@ -124,8 +124,8 @@ const createPlayRoom = (): Promise<void> => {
     return playRoomsUseCase.createPlayRoom();
 };
 
-const deletePlayRooms = (id: string): Promise<void> => {
-    return playRoomsUseCase.deletePlayRoom(id);
+const deletePlayRoom = (playroomId: string): Promise<void> => {
+    return playRoomsUseCase.deletePlayRoom(playroomId);
 };
 
 export {handleInitPlayRoomsInPlayRooms, handleFinalPlayRoomsInPlayRooms, handleGetPlayRoomsInPlayRooms, handleCreatePlayRoomsInPlayRooms, handleDeletePlayRoomsInPlayRooms}

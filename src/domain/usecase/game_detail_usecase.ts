@@ -9,13 +9,13 @@ const gameDetailRef: string = `version/${version}/gameDetail`;
 
 export interface IGameDetailUseCase {
 
-    connectGameDetail(id:string) : Promise<GameDetail[]>;
+    connectGameDetail(gameId:string) : Promise<GameDetail[]>;
 
     onGameDetailDiff(callback: (gameDetail: GameDetail) => void): void;
 
     offGameDetail(): void;
 
-    setGameDetail(id: string, turn: number, cell: Cell) : Promise<void>;
+    setGameDetail(gameId: string, turn: number, cell: Cell) : Promise<void>;
 
 }
 
@@ -25,10 +25,10 @@ class GameDetailUseCase implements IGameDetailUseCase {
     private gameId: string = "";
     private gameDetails: GameDetail[] = [];
 
-    public connectGameDetail = (id:string): Promise<GameDetail[]> => {
+    public connectGameDetail = (gameId:string): Promise<GameDetail[]> => {
 
-        this.gameId = id;
-        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(id);
+        this.gameId = gameId;
+        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(gameId);
         return new Promise<GameDetail[]>((resolve, reject) => {
             ref.collection("move").orderBy("turn").get().then((snapshot: firebase.firestore.QuerySnapshot) => {
                 let gameDetails: GameDetail[] = [];
@@ -69,8 +69,8 @@ class GameDetailUseCase implements IGameDetailUseCase {
         this.unsubscribeGameDetail();
     }
 
-    public setGameDetail = (id: string, turn: number, cell: Cell): Promise<void> =>{
-        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(id).collection("move").doc();
+    public setGameDetail = (gameId: string, turn: number, cell: Cell): Promise<void> =>{
+        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(gameDetailRef).doc(gameId).collection("move").doc();
         return new Promise<void>((resolve, reject) => {
             ref.set({
                 turn: turn,

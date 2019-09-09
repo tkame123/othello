@@ -14,19 +14,19 @@ export interface IPlayRoomUseCase {
 
     offPlayrooms(): void;
 
-    onPlayRoom(id: string, callback: (playRoom: PlayRoom | null) => void): void;
+    onPlayRoom(playRoomId: string, callback: (playRoom: PlayRoom | null) => void): void;
 
     offPlayroom(): void;
 
     getPlayRooms(): Promise<PlayRoom[]>;
 
-    getPlayRoom(id: string): Promise<PlayRoom | null>;
+    getPlayRoom(playRoomId: string): Promise<PlayRoom | null>;
 
     createPlayRoom(): Promise<void>;
 
-    updatePlayRoom(id: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void>;
+    updatePlayRoom(playRoomId: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void>;
 
-    deletePlayRoom(id: string): Promise<void>;
+    deletePlayRoom(playRoomId: string): Promise<void>;
 
 }
 
@@ -53,8 +53,8 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         this.unsubscribePlayRooms();
     }
 
-    public onPlayRoom(id: string, callback: (playRooms: PlayRoom | null) => void): void {
-        this.unsubscribePlayRoom = firebase.firestore().collection(playRoomRef).doc(id).onSnapshot((doc: firebase.firestore.DocumentSnapshot) => {
+    public onPlayRoom(playRoomId: string, callback: (playRooms: PlayRoom | null) => void): void {
+        this.unsubscribePlayRoom = firebase.firestore().collection(playRoomRef).doc(playRoomId).onSnapshot((doc: firebase.firestore.DocumentSnapshot) => {
             if (!doc.exists) {callback(null)}
             const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
             callback(playRoom)
@@ -67,9 +67,9 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         this.unsubscribePlayRoom();
     }
 
-    public getPlayRoom = (id: string): Promise<PlayRoom | null> => {
+    public getPlayRoom = (playroomId: string): Promise<PlayRoom | null> => {
         return new Promise<PlayRoom | null>((resolve, reject) => {
-            firebase.firestore().collection(playRoomRef).doc(id).get().then((doc) => {
+            firebase.firestore().collection(playRoomRef).doc(playroomId).get().then((doc) => {
                 if (!doc.exists) { resolve(null)}
                 const playRoom: PlayRoom = this.helperGetPlayRoom(doc);
                 resolve(playRoom);
@@ -110,8 +110,8 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         });
     };
 
-    public updatePlayRoom = (id: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void> => {
-        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(playRoomRef).doc(id);
+    public updatePlayRoom = (playRoomId: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void> => {
+        const ref: firebase.firestore.DocumentReference = firebase.firestore().collection(playRoomRef).doc(playRoomId);
         return new Promise<void>((resolve, reject) => {
             const paramsPlayerBlack = playerBlack
                 ? { id: playerBlack.id, email: playerBlack.email }
@@ -132,9 +132,9 @@ class PlayRoomUseCase implements IPlayRoomUseCase {
         });
     };
 
-    public deletePlayRoom = (id: string): Promise<void> => {
+    public deletePlayRoom = (playRoomId: string): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
-            firebase.firestore().collection(playRoomRef).doc(id).delete().then(() => {
+            firebase.firestore().collection(playRoomRef).doc(playRoomId).delete().then(() => {
                 resolve();
             }).catch((error: any) => {
                 reject(handleErrorFirebaseFirestore(error));

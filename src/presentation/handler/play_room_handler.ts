@@ -101,8 +101,8 @@ function* handleInitPlayRoomInPlayRoom() {
     while (true) {
         try {
             const action: IRequestInitPlayRoomAction = yield take(PlayRoomActionType.REQUEST_INIT_PLAY_ROOM);
-            playRoomChannelTask = yield fork(onPlayRoom, action.item.id);
-            votesOnplayRoomChannelTask = yield fork(onVotesOnPlayRoom, action.item.id);
+            playRoomChannelTask = yield fork(onPlayRoom, action.item.playRoomId);
+            votesOnplayRoomChannelTask = yield fork(onVotesOnPlayRoom, action.item.playRoomId);
             yield put(actionCreator.callbackInitPlayRoomAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -129,7 +129,7 @@ function* handleGetPlayRoomInPlayRoom() {
     while (true) {
         try {
             const action: IRequestGetPlayRoomAction = yield take(PlayRoomActionType.REQUEST_GET_PLAY_ROOM);
-            const playRoom: PlayRoom = yield call(getPlayRoom, action.item.id);
+            const playRoom: PlayRoom = yield call(getPlayRoom, action.item.playRoomId);
             const game: Game | null = playRoom.gameId
                 ? yield call(getGame, playRoom.gameId)
                 : null;
@@ -148,7 +148,7 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
             yield call(createGameWithUpdatePlayRoom, action.item.playRoomId, action.item.boardSize, action.item.playerBlack, action.item.playerWhite);
             const playRoom: PlayRoom = yield call(getPlayRoom, action.item.playRoomId);
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, {}));
-            yield put(push(`/game/${playRoom.gameId}`));
+            yield put(push(`/playroom/${playRoom.id}/game/${playRoom.gameId}`));
 
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -161,7 +161,7 @@ function* handleUpdatePlayRoomPlayerInPlayRoom() {
     while (true) {
         try {
             const action: IRequestUpdatePlayRoomPlayerAction = yield take(PlayRoomActionType.REQUEST_UPDATE_PLAY_ROOM_PLAYER);
-            yield call(updatePlayRoom, action.item.id, null, action.item.playerBlack, action.item.playerWhite);
+            yield call(updatePlayRoom, action.item.playRoomId, null, action.item.playerBlack, action.item.playerWhite);
             yield put(actionCreator.callbackUpdatePlayRoomPlayerAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
@@ -196,16 +196,16 @@ function* handleDeleteVoteGameReadyInPlayRoom() {
     }
 }
 
-const getPlayRoom = (id: string): Promise<PlayRoom | null> => {
-    return playRoomsUseCase.getPlayRoom(id);
+const getPlayRoom = (playRoomId: string): Promise<PlayRoom | null> => {
+    return playRoomsUseCase.getPlayRoom(playRoomId);
 };
 
-const getGame = (id: string): Promise<Game | null> => {
-    return gameUseCase.getGame(id);
+const getGame = (gameId: string): Promise<Game | null> => {
+    return gameUseCase.getGame(gameId);
 };
 
-const updatePlayRoom = (id: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void> => {
-    return playRoomsUseCase.updatePlayRoom(id, gameId, playerBlack, playerWhite);
+const updatePlayRoom = (playRoomId: string, gameId: string | null , playerBlack: User | null, playerWhite: User | null): Promise<void> => {
+    return playRoomsUseCase.updatePlayRoom(playRoomId, gameId, playerBlack, playerWhite);
 };
 
 const createGameWithUpdatePlayRoom = (playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void> => {

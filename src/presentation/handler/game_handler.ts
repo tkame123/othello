@@ -99,10 +99,10 @@ function* handleInitGameInGame() {
     while (true) {
         try {
             const action: IRequestInitGameAction = yield take(GameActionType.REQUEST_INIT_GAME);
-            const game: Game | null = yield call(getGame, action.item.id);
+            const game: Game | null = yield call(getGame, action.item.gameId);
             if (!game) { throw new Error("")}
             const initGameTree: GameTree = makeGameTree(Board.New(game.boardSize), State.State_Black, false, 1);
-            const gameDetails: GameDetail[] = yield call(connectGameDetail, action.item.id);
+            const gameDetails: GameDetail[] = yield call(connectGameDetail, action.item.gameId);
 
             // 履歴の反映
             let gameTree: GameTree = initGameTree;
@@ -190,8 +190,8 @@ function* handleFinishGameInGame() {
     }
 }
 
-const getGame = (id: string): Promise<Game | null> => {
-    return gameUsecase.getGame(id);
+const getGame = (gameId: string): Promise<Game | null> => {
+    return gameUsecase.getGame(gameId);
 };
 
 const getScore = (gameId: string): Promise<Score | null> => {
@@ -202,16 +202,16 @@ const setScore = (game: Game, board: Board): Promise<void> => {
     return gameUsecase.setScore(game, board);
 };
 
-const updateGame = (id: string, gameStatus: GameStatus): Promise<void> => {
-    return gameUsecase.updateGame(id, gameStatus);
+const updateGame = (gameId: string, gameStatus: GameStatus): Promise<void> => {
+    return gameUsecase.updateGameWithPlayRoom(gameId, gameStatus);
 };
 
-const connectGameDetail = (id:string): Promise<GameDetail[]> => {
-    return gameDetailUsecase.connectGameDetail(id);
+const connectGameDetail = (gameId:string): Promise<GameDetail[]> => {
+    return gameDetailUsecase.connectGameDetail(gameId);
 };
 
-const setGameDetail = (id: string, turn: number, cell: Cell) : Promise<void> => {
-    return gameDetailUsecase.setGameDetail(id, turn, cell);
+const setGameDetail = (gameId: string, turn: number, cell: Cell) : Promise<void> => {
+    return gameDetailUsecase.setGameDetail(gameId, turn, cell);
 };
 
 const makeGameTree = (board: Board, player: Player, wasPassed: boolean, turn: number):GameTree => {

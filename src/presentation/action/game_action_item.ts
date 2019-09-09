@@ -9,7 +9,7 @@ export interface IListenerOnGameDetailDiffActionItem {
 }
 
 export interface IRequestInitGameActionItem {
-    id: string;
+    gameId: string;
 }
 export interface ICallbackInitGameActionItem {
     game: Game,
