@@ -14,11 +14,13 @@ interface IProps {
     game: Game;
     gameTree: GameTree;
     score: Score | null;
+    handleSurrender: (event: React.MouseEvent<HTMLButtonElement>) => void;
+
 }
 
 const GameControllerComponent: React.FC<IProps> = (props) => {
 
-    const {isPlayer, isMyTurn, game, gameTree, score} = props;
+    const {isPlayer, isMyTurn, game, gameTree, score, handleSurrender} = props;
 
     const playerBlack: User = game.playerBlack;
     const playerWhite: User = game.playerWhite;
@@ -46,6 +48,8 @@ const GameControllerComponent: React.FC<IProps> = (props) => {
                     </PlayerContents>
                 </PlayerBox>
             </Container>
+
+            <button onClick={handleSurrender}>投了</button>
         </>
     );
 

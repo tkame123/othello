@@ -80,9 +80,21 @@ export class GameContainer extends React.Component <IProps, IState> {
                 gameDetails={gameDetails}
                 score={score}
                 handleToggleBoard={this.handleToggleBoard}
+                handleSurrender={this.handleSurrender}
             />
         )
 
+    };
+
+    private handleSurrender = (event: React.MouseEvent<HTMLButtonElement>): void => {
+        event.preventDefault();
+        const game: Game | null = this.props.state.game;
+        const gameTree: GameTree | null = this.props.state.gameTree;
+       if (game === null || gameTree === null ) {
+           this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Not In Game" });
+           return
+       }
+        this.props.dispatcher.finishGame({game, gameTree});
     };
 
     private handleToggleBoard = (cell: Cell , isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>): void => {

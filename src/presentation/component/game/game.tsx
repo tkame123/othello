@@ -18,11 +18,12 @@ interface IProps {
     gameDetails: GameDetail[];
     score: Score | null;
     handleToggleBoard: (cell: Cell, isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>) => void;
+    handleSurrender: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const GameComponent: React.FC<IProps> = (props) => {
 
-    const {isInit, myPlayer, game, gameTree, gameDetails, score, handleToggleBoard} = props;
+    const {isInit, myPlayer, game, gameTree, gameDetails, score, handleToggleBoard, handleSurrender} = props;
 
     if (isInit) { return <Progress/>}
     if (!game || !gameTree) { return <Progress/>}
@@ -47,6 +48,7 @@ const GameComponent: React.FC<IProps> = (props) => {
                 game={game}
                 gameTree={gameTree}
                 score={score}
+                handleSurrender={handleSurrender}
             />
 
             <GameBoardComponent
