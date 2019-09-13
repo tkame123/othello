@@ -167,7 +167,7 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         this.setState({isModalForVoteGameReady: false});
     };
 
-    private handleUpdatePlayRoomPlayer = (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLButtonElement>): void => {
+    private handleUpdatePlayRoomPlayer = (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLDivElement>): void => {
         event.preventDefault();
         if (this.props.state.playRoom && this.props.state.playRoom.gameId !== null) {
             this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "In Playing Game" });

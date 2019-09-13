@@ -1,7 +1,6 @@
 import React from 'react';
 import {PlayRoom} from "../../../domain/model/play_room";
 
-import PlayRoomInfoComponent from "./play_room_info";
 import Progress from "../common/progress";
 import PlayRoomControllerComponent from "./play_room_controller";
 import {Visitor} from "../../../domain/model/visitor";
@@ -14,7 +13,7 @@ interface IProps {
     user: User | null
     playRoom: PlayRoom | null;
     visitors: Visitor[];
-    handleUpdatePlayRoomPlayer: (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLButtonElement>) => void;
+    handleUpdatePlayRoomPlayer: (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLDivElement>) => void;
     handleVoteGameReadyCreate: (event: React.MouseEvent<HTMLButtonElement>) => void;
     handleCancelGameReady: (event: (React.MouseEvent | React.KeyboardEvent)) => void;
 }
@@ -31,20 +30,16 @@ const PlayRoomComponent: React.FC<IProps> = (props) => {
             <PlayRoomControllerComponent
                 isModalForVoteGameReady={isModalForVoteGameReady}
                 playRoom={playRoom}
+                visitors={visitors}
                 user={user}
                 handleUpdatePlayRoomPlayer={handleUpdatePlayRoomPlayer}
                 handleVoteGameReadyCreate={handleVoteGameReadyCreate}
                 handleCancelGameReady={handleCancelGameReady}
             />
 
-            <PlayRoomInfoComponent
-                playRoom={playRoom}
-                visitors={visitors}
-            />
         </>
     );
 
 };
-
 
 export default PlayRoomComponent;
