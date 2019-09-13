@@ -33,8 +33,9 @@ service cloud.firestore {
               if isAuthenticated();
           allow update:
               if isAuthenticated() &&
+                // Gameの更新はPlayerのみ実施可能
                 (getGame(gameId).data.playerBlack.id == myAuthId() ||
-                 getPlayroom(gameId).data.playerWhite.id == myAuthId());
+                 getGame(gameId).data.playerWhite.id == myAuthId());
         }
         match /gameDetail/{gameId=**} {
           allow read, write: if isAuthenticated();
@@ -44,6 +45,9 @@ service cloud.firestore {
           allow create:if isAuthenticated();
           allow update:
               if isAuthenticated() &&
+              // Player登録は以下のRuleに従う
+              // 　WhiteとBlackは別々のPlayerとなる
+              // 　Playerの解除は自分自身しか出来ない
               (getPlayroom(playroomId).data.playerBlack == null ||
                getPlayroom(playroomId).data.playerBlack == incomingData().playerBlack ||
                getPlayroom(playroomId).data.playerBlack.id == myAuthId()) &&

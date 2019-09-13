@@ -40,8 +40,8 @@ export class RootHeaderContainer extends React.Component <IProps, IState> {
     }
 
     public componentWillUnmount(): void {
-        this.props.authDispatcher.finalAuthUser({});
         this.props.visitorsDispatcher.finalVisitors({});
+        this.props.authDispatcher.finalAuthUser({});
     }
 
     public render(): JSX.Element {

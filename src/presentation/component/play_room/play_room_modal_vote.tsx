@@ -1,6 +1,4 @@
 import React from 'react';
-// import styled from "styled-components";
-// import {config} from "../../../util/config";
 import {Modal} from "../common/modal";
 import Button from "../common/button";
 
@@ -13,8 +11,6 @@ interface IProps {
 const PlayRoomModalVoteComponent: React.FC<IProps> = (props) => {
 
     const {isModalForVoteGameReady, handleVoteGameReadyCreate, handleCancelGameReady} = props;
-
-    console.log(isModalForVoteGameReady);
 
     return (
         <Modal
