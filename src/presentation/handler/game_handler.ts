@@ -183,6 +183,7 @@ function* handleFinishGameInGame() {
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
             yield put(actionCreator.callbackFinishGameAction(true, { game, score}));
+
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackFinishGameAction(false));

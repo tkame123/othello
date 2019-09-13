@@ -25,7 +25,7 @@ interface IState {
     isInit: boolean,
 }
 
-export class HeaderContainer extends React.Component <IProps, IState> {
+export class RootHeaderContainer extends React.Component <IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
@@ -72,4 +72,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     };
 };
 
-export default (withRouter(connect(mapStateToProps, mapDispatchToProps)(HeaderContainer)));
+export default (withRouter(connect(mapStateToProps, mapDispatchToProps)(RootHeaderContainer)));

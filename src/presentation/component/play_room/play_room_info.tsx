@@ -1,8 +1,8 @@
 import React from 'react';
 import {PlayRoom} from "../../../domain/model/play_room";
-import {Link} from "react-router-dom";
+// import {Link} from "react-router-dom";
 import styled from "styled-components";
-import {config} from "../../../util/config";
+// import {config} from "../../../util/config";
 import {Visitor} from "../../../domain/model/visitor";
 
 interface IProps {
@@ -12,8 +12,7 @@ interface IProps {
 
 const PlayRoomInfoComponent: React.FC<IProps> = (props) => {
 
-    const {playRoom, visitors} = props;
-    const gameId: string | null = playRoom.gameId;
+    const {playRoom} = props;
 
     return (
         <Wrapper>
@@ -22,12 +21,6 @@ const PlayRoomInfoComponent: React.FC<IProps> = (props) => {
 
             <PlayRoomCard>
                 {`createdAt: ${playRoom.createdAt.toLocaleTimeString()} ${playRoom.createdAt.toLocaleDateString()}`} <br/>
-                {gameId && "You can Play Game, Click this"}
-                {gameId && <PlayRoomLink to={`/playroom/${playRoom.id}/game/${gameId}`} />}
-                <br/><br/>
-                Now visitors: {visitors.length}
-                <br/><br/>
-
             </PlayRoomCard>
 
         </Wrapper>
@@ -57,14 +50,14 @@ const PlayRoomCard = styled.div`
       position: relative;
 `;
 
-const PlayRoomLink = styled(Link)`
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      &:hover {
-        opacity: 0.1;
-        background-color: ${config().style.color.primary};
-      }
-`;
+// const PlayRoomLink = styled(Link)`
+//       position: absolute;
+//       top: 0;
+//       left: 0;
+//       width: 100%;
+//       height: 100%;
+//       &:hover {
+//         opacity: 0.1;
+//         background-color: ${config().style.color.primary};
+//       }
+// `;

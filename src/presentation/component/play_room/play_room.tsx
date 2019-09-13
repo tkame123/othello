@@ -15,14 +15,13 @@ interface IProps {
     playRoom: PlayRoom | null;
     visitors: Visitor[];
     handleUpdatePlayRoomPlayer: (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLButtonElement>) => void;
-    handleCreateNewGame: (event: React.MouseEvent<HTMLButtonElement>) => void;
     handleVoteGameReadyCreate: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    handleVoteGameReadyDelete: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    handleCancelGameReady: (event: (React.MouseEvent | React.KeyboardEvent)) => void;
 }
 
 const PlayRoomComponent: React.FC<IProps> = (props) => {
 
-    const {isInit, isModalForVoteGameReady, user, playRoom, visitors, handleUpdatePlayRoomPlayer, handleCreateNewGame, handleVoteGameReadyCreate, handleVoteGameReadyDelete} = props;
+    const {isInit, isModalForVoteGameReady, user, playRoom, visitors, handleUpdatePlayRoomPlayer, handleVoteGameReadyCreate, handleCancelGameReady} = props;
 
     if (isInit) { return <Progress/>}
     if (!playRoom) { return <Progress/>}
@@ -34,9 +33,8 @@ const PlayRoomComponent: React.FC<IProps> = (props) => {
                 playRoom={playRoom}
                 user={user}
                 handleUpdatePlayRoomPlayer={handleUpdatePlayRoomPlayer}
-                handleCreateNewGame={handleCreateNewGame}
                 handleVoteGameReadyCreate={handleVoteGameReadyCreate}
-                handleVoteGameReadyDelete={handleVoteGameReadyDelete}
+                handleCancelGameReady={handleCancelGameReady}
             />
 
             <PlayRoomInfoComponent

@@ -148,7 +148,7 @@ function* handleCreateGameOnPlayRoomInPlayRoom() {
             yield call(createGameWithUpdatePlayRoom, action.item.playRoomId, action.item.boardSize, action.item.playerBlack, action.item.playerWhite);
             const playRoom: PlayRoom = yield call(getPlayRoom, action.item.playRoomId);
             yield put(actionCreator.callbackCreateGameOnPlayRoomAction(true, {}));
-            yield put(push(`/playroom/${playRoom.id}/game/${playRoom.gameId}`));
+            yield put(push(`/playroom/${playRoom.id}?g=${playRoom.gameId}`));
 
         } catch (error) {
             yield fork(handleErrorForHandler, error);

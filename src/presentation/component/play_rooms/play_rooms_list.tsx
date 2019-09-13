@@ -26,7 +26,8 @@ const PlayRoomsListComponent: React.FC<IProps> = (props) => {
                                 {`createdAt: ${item.createdAt.toLocaleTimeString()} ${item.createdAt.toLocaleDateString()}`} <br/>
                                 {`Black: ${item.playerBlack ? item.playerBlack.email : "empty"}`} <br/>
                                 {`White: ${item.playerWhite ? item.playerWhite.email : "empty"}`} <br/>
-                                <PlayRoomLink key={index}  to={`/playroom/${item.id}`}/>
+                                {item.gameId && <PlayRoomLink key={index}  to={`/playroom/${item.id}?g=${item.gameId}`}/>}
+                                {item.gameId == null && <PlayRoomLink key={index}  to={`/playroom/${item.id}`}/>}
                             </PlayRoomCard>
                         </PlayRoomListLi>)
                 })}

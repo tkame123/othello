@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Action, Dispatch} from "redux";
-import {RouteComponentProps} from "react-router";
+import {RouteComponentProps, withRouter} from "react-router";
 import {connect} from "react-redux";
 import {createPlayroomActionCreator} from "../action/play_room_action"
 import {createPlayRoomDispatcher, IPlayRoomDispatcher,} from "../dispatcher/play_room_dispatcher";
@@ -63,30 +63,42 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
     public shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
         const game: Game | null = this.props.state.game;
+        const nextGame: Game | null = nextProps.state.game;
         const playerBlack: User | null = this.props.state.playRoom && this.props.state.playRoom.playerBlack;
         const playerWhite: User | null = this.props.state.playRoom && this.props.state.playRoom.playerWhite;
         const nextPlayerBlack: User | null = nextProps.state.playRoom && nextProps.state.playRoom.playerBlack;
         const nextPlayerWhite: User | null = nextProps.state.playRoom && nextProps.state.playRoom.playerWhite;
+        const user: User | null = this.props.authState.user;
         const votes: Vote[] = this.props.state.votes;
         const nextVotes: Vote[] = nextProps.state.votes;
 
         const playRoomId: string = this.props.match.params.playRoomId;
         const eventType: VoteEventType = VoteEventType.VoteEvent_GAME_READY;
 
+        // ゲーム中
+        if (game !== nextGame && nextGame) {
+            this.setState({isModalForVoteGameReady: false});
+            return false;
+        }
+
+        // ゲーム開始投票の表示：Black、Whiteが揃った場合
         if (!game && nextPlayerBlack && nextPlayerWhite && (playerBlack === null || playerWhite === null)) {
             this.props.dispatcher.deleteVoteGameReady({playRoomId, eventType});
             this.setState({isModalForVoteGameReady: true});
             return false;
         }
+        // ゲーム開始投票の表示解除：Black、Whiteの揃いが解除された場合
         if (!game && playerBlack && playerWhite && (nextPlayerBlack === null || nextPlayerWhite === null)) {
             this.props.dispatcher.deleteVoteGameReady({playRoomId, eventType});
             this.setState({isModalForVoteGameReady: false});
             return false;
         }
 
-        if (!game && votes.length !== nextVotes.length && nextVotes.length === 2) {
+        // ゲームの作成：開始投票が揃った場合
+        if (!game && user && (votes.length !== nextVotes.length) && nextVotes.length === 2 && nextPlayerBlack && (nextPlayerBlack.id === user.id)) {
             this.props.dispatcher.deleteVoteGameReady({playRoomId, eventType});
             this.handleCreateNewGame();
+            return false;
         }
 
         return true;
@@ -105,8 +117,6 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
 
         const user: User | null = authState.user;
 
-        console.log(isModalForVoteGameReady);
-
         return (
             <PlayRoomComponent
                 isInit={isInit}
@@ -116,11 +126,30 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
                 playRoom={playRoom}
                 visitors={visitors}
                 handleUpdatePlayRoomPlayer={this.handleUpdatePlayRoomPlayer}
-                handleCreateNewGame={this.handleCreateNewGame}
                 handleVoteGameReadyCreate={this.handleVoteGameReadyCreate}
-                handleVoteGameReadyDelete={this.handleVoteGameReadyDelete}
+                handleCancelGameReady={this.handleCancelGameReady}
             />
         )
+    };
+
+    private handleCancelGameReady = (event: (React.MouseEvent | React.KeyboardEvent)): void => {
+        event.preventDefault();
+        const user: User | null = this.props.authState.user;
+        const playRoom: PlayRoom | null = this.props.state.playRoom;
+        if (!user) {
+            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need Login" });
+            return
+        }
+        if (!playRoom) {
+            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need PlayRoom" });
+            return
+        }
+        const playerBlack: User | null = playRoom.playerBlack && playRoom.playerBlack.id === user.id ? null : playRoom.playerBlack;
+        const playerWhite: User | null = playRoom.playerWhite && playRoom.playerWhite.id === user.id ? null : playRoom.playerWhite;
+        const playRoomId: string = this.props.match.params.playRoomId;
+        const gameId: string | null = playRoom.gameId;
+        this.props.dispatcher.updatePlayRoomPlayer({playRoomId, gameId, playerBlack, playerWhite});
+        this.setState({isModalForVoteGameReady: false});
     };
 
     private handleVoteGameReadyCreate = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -138,22 +167,18 @@ export class PlayRoomContainer extends React.Component <IProps, IState> {
         this.setState({isModalForVoteGameReady: false});
     };
 
-    private handleVoteGameReadyDelete = (event: React.MouseEvent<HTMLButtonElement>): void => {
-        event.preventDefault();
-        const playRoomId: string = this.props.match.params.playRoomId;
-        const eventType: VoteEventType = VoteEventType.VoteEvent_GAME_READY;
-        this.props.dispatcher.deleteVoteGameReady({playRoomId, eventType});
-    };
-
     private handleUpdatePlayRoomPlayer = (playerBlack: User | null, playerWhite: User |null ) => (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
+        if (this.props.state.playRoom && this.props.state.playRoom.gameId !== null) {
+            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "In Playing Game" });
+            return
+        }
         const playRoomId: string = this.props.match.params.playRoomId;
         const gameId = null;
         this.props.dispatcher.updatePlayRoomPlayer({playRoomId, gameId, playerBlack, playerWhite});
     };
 
-    private handleCreateNewGame = (event?: React.MouseEvent<HTMLButtonElement>): void => {
-        // event.preventDefault();
+    private handleCreateNewGame = (): void => {
         if (!(this.props.state.playRoom && this.props.state.playRoom.playerBlack && this.props.state.playRoom.playerWhite)) {
             this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need Player" });
             return
@@ -184,4 +209,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PlayRoomContainer);
+export default (withRouter(connect(mapStateToProps, mapDispatchToProps)(PlayRoomContainer)));

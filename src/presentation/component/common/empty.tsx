@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from 'styled-components'
-import {config} from "../../../util/config"
 
 interface IProps{
 }
@@ -9,7 +8,7 @@ const EmptyData: React.FC<IProps> = (props) => {
 
     return (
         <Wrapper>
-            <Image className="far fa-folder-open fa-4x" />
+            <Title>Empty Data</Title>
         </Wrapper>
     )
 };
@@ -19,12 +18,14 @@ const Wrapper = styled.div`
     height: 100vh;
 `;
 
-const Image = styled.i`
+const Title = styled.div`
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: ${config().style.color.primaryLight};
+    text-align: center;
+    font-family: 'Amatic SC', cursive;
+    font-size: 18px;
 `;
 
 export default EmptyData;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Action, Dispatch} from "redux";
-import {RouteComponentProps} from "react-router";
+import {RouteComponentProps, withRouter} from "react-router";
 import {connect} from "react-redux";
 import {createGameActionCreator} from "../action/game_action"
 import {
@@ -22,7 +22,8 @@ import {
 import {createAppNotificationMessageActionCreator} from "../action/app_notification_message_action";
 import {AppNotificationType} from "../../domain/model/app_notification_message";
 
-interface IProps extends RouteComponentProps<{gameId: string, playRoomId: string}>{
+interface IProps extends RouteComponentProps<{playRoomId: string}>{
+    gameId: string;
     state: GameState;
     authState: AuthState;
     dispatcher: IGameDispatcher;
@@ -43,7 +44,7 @@ export class GameContainer extends React.Component <IProps, IState> {
     };
 
     public componentDidMount() {
-        const gameId: string = this.props.match.params.gameId;
+        const gameId: string = this.props.gameId;
         this.props.dispatcher.initGame({gameId});
     }
 
@@ -94,7 +95,7 @@ export class GameContainer extends React.Component <IProps, IState> {
            this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Not In Game" });
            return
        }
-        this.props.dispatcher.finishGame({game, gameTree});
+       this.props.dispatcher.finishGame({game, gameTree});
     };
 
     private handleToggleBoard = (cell: Cell , isPlayer: boolean, isMyTurn: boolean) => (event: React.MouseEvent<HTMLTableDataCellElement>): void => {
@@ -131,4 +132,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(GameContainer);
+export default (withRouter(connect(mapStateToProps, mapDispatchToProps)(GameContainer)));
