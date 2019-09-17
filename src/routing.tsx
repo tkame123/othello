@@ -7,6 +7,9 @@ import RootPlayRoomContainer from "./presentation/container/root_play_room_conta
 import PlayRoomsContainer from "./presentation/container/play_rooms_container";
 import TopContainer from "./presentation/container/top_container";
 import {AuthState} from "./presentation/store/auth_state";
+import {AuthStateType} from "./domain/model/user";
+
+import Progress from "./presentation/component/common/progress";
 
 interface IProps extends RouteComponentProps<{}>{
     state: AuthState;
@@ -27,19 +30,21 @@ export class Routing extends React.Component<IProps, IState> {
 
         const {state} = this.props;
 
-        const authState: boolean = state.authState;
+        const authState: AuthStateType = state.authState;
+
+        if (authState === AuthStateType.INITIALIZING) { return <Progress />}
 
         return (
             <React.Fragment>
 
-                {!authState &&
+                {authState === AuthStateType.UNKNOWN &&
                     <Switch>
                         <Route path='/top' component={TopContainer}/>
                         <Redirect to="/top"/>
                     </Switch>
                 }
 
-                {authState &&
+                {authState === AuthStateType.LOGIN_USER &&
                     <Switch>
                         <Route path='/playrooms' component={PlayRoomsContainer}/>
                         <Route path='/playroom/:playRoomId' component={RootPlayRoomContainer}/>

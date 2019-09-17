@@ -19,9 +19,9 @@ interface IProps {
 
 const GameControllerComponent: React.FC<IProps> = (props) => {
 
-    const {isPlayer, isMyTurn, game, handleSurrender} = props;
+    const {isPlayer, isMyTurn, game, score, handleSurrender} = props;
 
-    const isFinished: boolean = game.gameStatus === GameStatus.GameStatus_End;
+    const isFinished: boolean = game.gameStatus === GameStatus.GameStatus_End_Processing;
 
     return (
         <>
@@ -31,9 +31,18 @@ const GameControllerComponent: React.FC<IProps> = (props) => {
             {!isFinished && isPlayer && isMyTurn && <StatusContents>Your Turn</StatusContents>}
             {!isFinished && isPlayer && !isMyTurn && <StatusContents>Opponent Turn</StatusContents>}
 
-            <ControlBoxWrapper>
-                <Button onClick={handleSurrender}>Give Up</Button>
-            </ControlBoxWrapper>
+            {isFinished &&
+                <ScoreBoxWrapper>
+                    <div>BlackScore:{score && score.playerBlack.value}</div>
+                    <div>WhiteScore:{score && score.playerWhite.value}</div>
+                </ScoreBoxWrapper>
+            }
+
+            {!isFinished && isPlayer && isMyTurn &&
+                <ControlBoxWrapper>
+                    <Button onClick={handleSurrender}>Give Up</Button>
+                </ControlBoxWrapper>
+            }
         </>
     );
 
@@ -46,6 +55,13 @@ const StatusContents = styled.div`
     padding: 5px 0px;
     text-align: center;
     background-color: ${config().style.color.secondaryDark};
+`;
+
+const ScoreBoxWrapper = styled.div`
+    display: flex;
+    justify-content: space-around;
+    margin: 0.2em;
+    padding: 5px 0px;
 `;
 
 const ControlBoxWrapper = styled.div`

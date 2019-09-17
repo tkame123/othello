@@ -1,12 +1,8 @@
-import {put, take, call, fork, cancel, cancelled, select} from "redux-saga/effects";
+import {call, cancel, cancelled, fork, put, select, take} from "redux-saga/effects";
 import {eventChannel, Task} from 'redux-saga'
 
-import {
-    createAuthActionCreator,
-    AuthActionType,
-    IAuthActionCreator,
-} from "../action/auth_action";
-import {User} from "../../domain/model/user";
+import {AuthActionType, createAuthActionCreator, IAuthActionCreator,} from "../action/auth_action";
+import {AuthStateType, User} from "../../domain/model/user";
 import {createAuthUseCase, IAuthUseCase} from "../../domain/usecase/auth_usecase";
 import {handleErrorForHandler} from "./handleErrorForHandler";
 import {createVisitorsActionCreator, IVisitorsActionCreator} from "../action/visitors_action";
@@ -39,7 +35,7 @@ function* onAuth() {
     while (true) {
         try {
             const { user } = yield take(channel);
-            const authState: boolean = !!user;
+            const authState: AuthStateType = user? AuthStateType.LOGIN_USER : AuthStateType.UNKNOWN;
             const selector = (state: AppState) => state.authReducer;
             const _state: AuthState = yield select(selector);
             if (user) {
@@ -90,7 +86,7 @@ function* handleGetAuthUserInAuth() {
         try {
             yield take(AuthActionType.REQUEST_GET_AUTH_USER_AUTH);
             const user: User | null = yield call(getAuthUser);
-            const authState: boolean = !!user;
+            const authState: AuthStateType = user? AuthStateType.LOGIN_USER : AuthStateType.UNKNOWN;
             yield put(actionCreator.callbackGetAuthUserAction(true, {user, authState}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);

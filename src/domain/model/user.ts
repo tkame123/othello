@@ -1,5 +1,12 @@
 import {createId} from "../../util/id";
 
+export enum AuthStateType {
+    UNKNOWN = 0,
+    INITIALIZING = 1,
+    LOGIN_USER = 2,
+    GUEST = 3,
+}
+
 export class User {
 
     public static New(email: string): User {

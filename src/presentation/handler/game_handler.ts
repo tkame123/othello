@@ -1,11 +1,11 @@
-import {call, put, take, fork, select, cancelled, cancel} from "redux-saga/effects";
+import {call, cancel, cancelled, fork, put, select, take} from "redux-saga/effects";
 
 import {
     createGameActionCreator,
     GameActionType,
     IGameActionCreator,
-    IRequestInitGameAction,
     IRequestFinishGameAction,
+    IRequestInitGameAction,
     IRequestUpdateGameAction,
 } from "../action/game_action";
 
@@ -74,7 +74,6 @@ function* onGameDetailDiff() {
             const score: Score = yield call(getScore, game.id);
 
             yield put(actionCreator.listenerOnGameDetailDiffAction(true, {gameTree, gameDetail, score}));
-
 
             // 終了判定 && 終了処理
             let isFinished: boolean = false;
@@ -178,12 +177,19 @@ function* handleFinishGameInGame() {
         try {
             const action: IRequestFinishGameAction = yield take(GameActionType.REQUEST_FINISH_GAME);
             const gameTree: GameTree = action.item.gameTree;
-            yield call(updateGame, action.item.game.id, GameStatus.GameStatus_End);
-            const game: Game = yield call(getGame, action.item.game.id);
+            const _game: Game = action.item.game;
+            let game: Game = _game;
+            if (_game.gameStatus === GameStatus.GameStatus_End_Processing ) {
+                yield call(finishedWithPlayRoom, action.item.game.id);
+                game = yield call(getGame, action.item.game.id);
+            }
+            if (_game.gameStatus === GameStatus.GameStatus_Playing ) {
+                yield call(endProcessingGame, action.item.game.id);
+                game = yield call(getGame, action.item.game.id);
+            }
             yield call(setScore, game, gameTree.board);
             const score: Score = yield call(getScore, game.id);
             yield put(actionCreator.callbackFinishGameAction(true, { game, score}));
-
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackFinishGameAction(false));
@@ -203,8 +209,12 @@ const setScore = (game: Game, board: Board): Promise<void> => {
     return gameUsecase.setScore(game, board);
 };
 
-const updateGame = (gameId: string, gameStatus: GameStatus): Promise<void> => {
-    return gameUsecase.updateGameWithPlayRoom(gameId, gameStatus);
+const endProcessingGame = (gameId: string): Promise<void> => {
+    return gameUsecase.endProcessingGame(gameId);
+};
+
+const finishedWithPlayRoom = (gameId: string): Promise<void> => {
+    return gameUsecase.finishedWithPlayRoom(gameId);
 };
 
 const connectGameDetail = (gameId:string): Promise<GameDetail[]> => {

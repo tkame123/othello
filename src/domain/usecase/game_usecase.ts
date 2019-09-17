@@ -33,7 +33,9 @@ export interface IGameUseCase {
 
     createGameWithUpdatePlayRoom(playRoomId: string, boardSize: number, playerBlack: User, playerWhite: User): Promise<void>;
 
-    updateGameWithPlayRoom(gameId: string, gameStatus: GameStatus): Promise<void>;
+    endProcessingGame(gameId: string): Promise<void>;
+
+    finishedWithPlayRoom(gameId: string): Promise<void>;
 
 }
 
@@ -176,18 +178,31 @@ class GameUseCase implements IGameUseCase {
          });
     };
 
-    public updateGameWithPlayRoom = (gameId: string, gameStatus: GameStatus): Promise<void> => {
+    public endProcessingGame = (gameId: string): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            return firebase.firestore().collection(gameRef).doc(gameId).update({
+                gameStatus: GameStatus.GameStatus_End_Processing,
+                updatedAt: new Date(),
+            }).then(() =>{
+                resolve();
+            }).catch((error: any) => {
+                reject(handleErrorFirebaseFirestore(error));
+            })
+        });
+    };
+
+    public finishedWithPlayRoom = (gameId: string): Promise<void> => {
         return new Promise<void>((resolve, reject) => {
             return firebase.firestore().collection(playRoomRef).where("gameId", "==", gameId).get().then((docs: firebase.firestore.QuerySnapshot) =>{
                 const batch: firebase.firestore.WriteBatch = firebase.firestore().batch();
                 const gameDocRef: firebase.firestore.DocumentReference = firebase.firestore().collection(gameRef).doc(gameId);
 
                 const gameParams = {
-                    gameStatus: gameStatus,
+                    gameStatus: GameStatus.GameStatus_Finished,
                     updatedAt: new Date(),
                 };
                 const prayRoomUpdateParams = {
-                    gameId: gameStatus === GameStatus.GameStatus_End ? null : gameId,
+                    gameId: null,
                     updatedAt: new Date(),
                 };
 

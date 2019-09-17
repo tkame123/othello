@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: www
-          image: kamekameacr.azurecr.io/tkame123/othello:1.0
+          image: docker.io/tkameyama/othello:1.0
           ports:
             - containerPort: 80
           livenessProbe:

@@ -3,13 +3,14 @@ import {AuthState} from "../store/auth_state";
 import {
     AuthAction,
     AuthActionType,
-    IListenerOnAuthUserAction,
     ICallbackGetAuthUserAction,
+    IListenerOnAuthUserAction,
 } from "../action/auth_action";
+import {AuthStateType} from "../../domain/model/user";
 
 const initialState: AuthState = {
     user: null,
-    authState: false,
+    authState: AuthStateType.INITIALIZING,
     isLoading: false,
 };
 
@@ -21,7 +22,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: _action.item ? _action.item.user : null,
-                    authState: _action.item ? _action.item.authState : false,
+                    authState: _action.item ? _action.item.authState : AuthStateType.UNKNOWN,
                     isLoading: state.isLoading,
                 });
             } else {
@@ -67,7 +68,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: null,
-                    authState: null,
+                    authState: AuthStateType.UNKNOWN,
                     isLoading: false,
                 });
             } else {
@@ -91,7 +92,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: _action.item ? _action.item.user : null,
-                    authState: _action.item ? _action.item.authState : false,
+                    authState: _action.item ? _action.item.authState : AuthStateType.UNKNOWN,
                     isLoading: false,
                 });
             } else {
@@ -114,7 +115,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: state.user,
-                    authState: true,
+                    authState: state.authState,
                     isLoading: false,
                 });
             } else {
@@ -137,7 +138,7 @@ const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, actio
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     user: state.user,
-                    authState: false,
+                    authState: state.authState,
                     isLoading: false,
                 });
             } else {

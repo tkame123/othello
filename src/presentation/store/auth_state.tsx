@@ -1,7 +1,7 @@
-import {User} from "../../domain/model/user";
+import {User, AuthStateType} from "../../domain/model/user";
 
 export type AuthState = {
     user: User | null,
-    authState: boolean,
+    authState: AuthStateType,
     isLoading: boolean,
 };
