@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: othello-deploy
+  labels:
+    app: othello-deploy
+spec:
+  replicas: 3 # レプリケーションの増減数
+  selector:
+    matchLabels:
+      app: othello-deploy
+  template:
+    metadata:
+      labels:
+        app: othello-deploy
+    spec:
+      containers:
+        - name: www
+          image: kamekameacr.azurecr.io/tkame123/othello:latest
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 1
+            initialDelaySeconds: 3
+            periodSeconds: 1
