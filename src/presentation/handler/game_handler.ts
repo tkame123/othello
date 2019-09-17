@@ -27,7 +27,40 @@ const gameTreeUsecase: IGameTreeUseCase = createGameGreeUseCase();
 
 const actionCreator: IGameActionCreator = createGameActionCreator();
 
+let gameChannelTask: Task;
 let gameDetailChannelTask: Task;
+
+const gameChannel = (gameId: string) => {
+    const channel = eventChannel(emit => {
+        gameUsecase.onGame(gameId,(game: Game | null) =>{
+            emit({game})
+        });
+
+        const unsubscribe = () => {
+            gameUsecase.offGame();
+        };
+
+        return unsubscribe
+    });
+    return channel
+};
+
+function* onGame(gameId: string) {
+    const channel = yield call(gameChannel, gameId);
+    while (true) {
+        try {
+            const { game } = yield take(channel);
+            yield put(actionCreator.listenerOnGameAction(true, {game}));
+        } catch (error) {
+            yield fork(handleErrorForHandler, error);
+            yield put(actionCreator.listenerOnGameAction(false));
+        } finally {
+            if (yield cancelled()) {
+                channel.close();
+            }
+        }
+    }
+}
 
 const gameDetailChannel = () => {
     const channel = eventChannel(emit => {
@@ -68,10 +101,8 @@ function* onGameDetailDiff() {
                 return []
             });
             const gameTree = nextGameTree(result[0].gameTreePromise);
-            const game: Game = _game;
-
-            yield call(setScore, game, gameTree.board);
-            const score: Score = yield call(getScore, game.id);
+            yield call(setScore, _game, gameTree.board);
+            const score: Score = yield call(getScore, _game.id);
 
             yield put(actionCreator.listenerOnGameDetailDiffAction(true, {gameTree, gameDetail, score}));
 
@@ -80,7 +111,7 @@ function* onGameDetailDiff() {
             if (gameTree.moves === []) { isFinished = true }
             if (gameTree.moves.length === 1 && gameTree.moves[0].cell === null) { isFinished = true }
             if (isFinished) {
-                yield put(actionCreator.requestFinishGameAction({ game, gameTree }));
+                yield put(actionCreator.requestFinishGameAction({ game: _game, gameTree }));
             }
 
         } catch (error) {
@@ -120,6 +151,7 @@ function* handleInitGameInGame() {
             }
 
             // 同期処理の起動
+            gameChannelTask = yield fork(onGame, game.id);
             gameDetailChannelTask = yield fork(onGameDetailDiff);
 
             yield call(setScore, game, gameTree.board);
@@ -145,6 +177,7 @@ function* handleFinalGameInGame() {
     while (true) {
         try {
             yield take(GameActionType.REQUEST_FINAL_GAME);
+            yield cancel(gameChannelTask);
             yield cancel(gameDetailChannelTask);
             yield put(actionCreator.callbackFinalGameAction(true, {}));
 
@@ -188,8 +221,8 @@ function* handleFinishGameInGame() {
                 game = yield call(getGame, action.item.game.id);
             }
             yield call(setScore, game, gameTree.board);
-            const score: Score = yield call(getScore, game.id);
-            yield put(actionCreator.callbackFinishGameAction(true, { game, score}));
+            // const score: Score = yield call(getScore, game.id);
+            yield put(actionCreator.callbackFinishGameAction(true, {}));
         } catch (error) {
             yield fork(handleErrorForHandler, error);
             yield put(actionCreator.callbackFinishGameAction(false));

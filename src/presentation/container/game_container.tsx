@@ -3,14 +3,11 @@ import {Action, Dispatch} from "redux";
 import {RouteComponentProps, withRouter} from "react-router";
 import {connect} from "react-redux";
 import {createGameActionCreator} from "../action/game_action"
-import {
-    createGameDispatcher,
-    IGameDispatcher,
-} from "../dispatcher/game_dispatcher";
+import {createGameDispatcher, IGameDispatcher,} from "../dispatcher/game_dispatcher";
 import {AppState} from "../store/app_state";
 import {GameState} from "../store/game_state";
 import {AuthState} from "../store/auth_state";
-import {Game} from "../../domain/model/game";
+import {Game, GameStatus} from "../../domain/model/game";
 import GameComponent from "../component/game/game";
 import {Cell, GameDetail, GameTree, Move} from "../../domain/model/game_detail";
 import {User} from "../../domain/model/user";
@@ -104,6 +101,7 @@ export class GameContainer extends React.Component <IProps, IState> {
             this.props.noticeDispatcher.add({ type: AppNotificationType.WARN, message: "Need LogIn!!" });
             return
         }
+        if (this.props.state.game.gameStatus !== GameStatus.GameStatus_Playing ) { return }
         if (!isPlayer || !isMyTurn ) { return }
         const moves: Move[] = this.props.state.gameTree.moves;
         const finded: Move | undefined = moves.find((item: Move): boolean => {

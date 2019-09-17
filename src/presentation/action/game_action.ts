@@ -1,6 +1,7 @@
 import {Action} from "redux";
 
 import{
+    IListenerOnGameActionItem,
     IListenerOnGameDetailDiffActionItem,
     IRequestInitGameActionItem,
     IRequestFinalGameActionItem,
@@ -13,6 +14,7 @@ import{
 } from "./game_action_item";
 
 export enum GameActionType {
+    LISTENER_ON_GAME = "GAME_LISTENER_ON_GAME",
     LISTENER_ON_GAME_DETAIL_DIFF = "GAME_LISTENER_ON_GAME_DETAIL_DIFF",
 
     REQUEST_INIT_GAME = "GAME_REQUEST_INIT_GAME",
@@ -27,6 +29,12 @@ export enum GameActionType {
     REQUEST_FINISH_GAME = "GAME_REQUEST_FINISH_GAME",
     CALLBACK_FINISH_GAME = "GAME_CALLBACK_FINISH_GAME",
 
+}
+
+export interface IListenerOnGameAction extends Action {
+    type: GameActionType.LISTENER_ON_GAME;
+    isSuccess: boolean;
+    item?: IListenerOnGameActionItem;
 }
 
 export interface IListenerOnGameDetailDiffAction extends Action {
@@ -76,6 +84,7 @@ export interface ICallbackFinishGameAction extends Action {
 }
 
 export type GameAction =
+    IListenerOnGameAction |
     IListenerOnGameDetailDiffAction |
     IRequestInitGameAction |
     ICallbackInitGameAction |
@@ -87,6 +96,11 @@ export type GameAction =
     ICallbackFinishGameAction;
 
 export interface IGameActionCreator {
+
+    listenerOnGameAction(
+        isSuccess: boolean,
+        item?: IListenerOnGameActionItem,
+    ): IListenerOnGameAction;
 
     listenerOnGameDetailDiffAction(
         isSuccess: boolean,
@@ -128,6 +142,17 @@ export interface IGameActionCreator {
 }
 
 class ActionCreator implements IGameActionCreator {
+
+    public listenerOnGameAction = (
+        isSuccess: boolean,
+        item?: IListenerOnGameActionItem,
+    ): IListenerOnGameAction => {
+        return {
+            type: GameActionType.LISTENER_ON_GAME,
+            isSuccess,
+            item,
+        };
+    };
 
     public listenerOnGameDetailDiffAction = (
         isSuccess: boolean,

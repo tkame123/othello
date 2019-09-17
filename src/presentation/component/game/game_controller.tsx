@@ -32,10 +32,15 @@ const GameControllerComponent: React.FC<IProps> = (props) => {
             {!isFinished && isPlayer && !isMyTurn && <StatusContents>Opponent Turn</StatusContents>}
 
             {isFinished &&
-                <ScoreBoxWrapper>
-                    <div>BlackScore:{score && score.playerBlack.value}</div>
-                    <div>WhiteScore:{score && score.playerWhite.value}</div>
-                </ScoreBoxWrapper>
+                <>
+                    <ScoreBoxWrapper>
+                        <div>BlackScore:{score && score.playerBlack.value}</div>
+                        <div>WhiteScore:{score && score.playerWhite.value}</div>
+                    </ScoreBoxWrapper>
+                    <ControlBoxWrapper>
+                        <Button onClick={handleSurrender}>Clear</Button>
+                    </ControlBoxWrapper>
+                </>
             }
 
             {!isFinished && isPlayer && isMyTurn &&
@@ -43,6 +48,13 @@ const GameControllerComponent: React.FC<IProps> = (props) => {
                     <Button onClick={handleSurrender}>Give Up</Button>
                 </ControlBoxWrapper>
             }
+
+            {!isFinished && isPlayer && !isMyTurn &&
+            <ControlBoxWrapper>
+                <Button disabled={true} onClick={handleSurrender}>Give Up</Button>
+            </ControlBoxWrapper>
+            }
+
         </>
     );
 

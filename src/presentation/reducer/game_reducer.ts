@@ -3,6 +3,7 @@ import {GameState} from "../store/game_state";
 import {
     GameAction,
     GameActionType,
+    IListenerOnGameAction,
     IListenerOnGameDetailDiffAction,
     ICallbackInitGameAction,
     ICallbackFinishGameAction,
@@ -18,6 +19,27 @@ const initialState: GameState = {
 
 const gameReducer: Reducer<GameState, GameAction> = (state = initialState, action: GameAction): GameState => {
     switch (action.type) {
+
+        case GameActionType.LISTENER_ON_GAME: {
+            const _action = action as IListenerOnGameAction;
+            if (action.isSuccess) {
+                return Object.assign({}, state, {
+                    game: _action.item ? _action.item.game : null,
+                    gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
+                    score: state.score,
+                    isLoading: true,
+                });
+            } else {
+                return Object.assign({}, state, {
+                    game: state.game,
+                    gameTree: state.gameTree,
+                    gameDetails: state.gameDetails,
+                    score: state.score,
+                    isLoading: false,
+                });
+            }
+        }
 
         case GameActionType.LISTENER_ON_GAME_DETAIL_DIFF: {
             const _action = action as IListenerOnGameDetailDiffAction;
@@ -145,10 +167,10 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
             const _action = action as ICallbackFinishGameAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
-                    game: _action.item ? _action.item.game : null,
+                    game: state.game,
                     gameTree: state.gameTree,
                     gameDetails: state.gameDetails,
-                    score: _action.item ? _action.item.score : null,
+                    score: state.score,
                     isLoading: false,
                 });
             } else {

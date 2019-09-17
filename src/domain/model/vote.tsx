@@ -1,6 +1,7 @@
 export enum VoteEventType {
     VoteEvent_UNKNOWN = 0,
     VoteEvent_GAME_READY = 1,
+    VoteEvent_GAME_RETRY = 2,
 }
 
 export type TParamsVoteFrom  = {
