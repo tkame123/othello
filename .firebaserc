@@ -1,6 +1,0 @@
-{
-  "projects": {
-    "prod": "tkame123-othello",
-    "dev": "tkame123-othello-dev"
-  }
-}

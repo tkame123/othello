@@ -2,6 +2,7 @@
 
 # firebase
 .firebase/
+.firebaserc
 firebase-debug.log
 
 # dependencies
