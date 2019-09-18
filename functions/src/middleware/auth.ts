@@ -18,9 +18,11 @@ const auth = async (req: IAuthRequest, res: Express.Response, next: Express.Next
             } catch (error) {
                 console.error(error.message);
                 res.status(401).send("Unauthorized");
+                return
             }
         } else {
             res.status(401).send("Unauthorized");
+            return
         }
     }
     next();
