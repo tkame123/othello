@@ -5,7 +5,7 @@ metadata:
   labels:
     app: othello-deploy
 spec:
-  replicas: 3 # レプリケーションの増減数
+  replicas: 1 # レプリケーションの増減数
   selector:
     matchLabels:
       app: othello-deploy
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: www
-          image: docker.io/tkameyama/othello:1.0
+          image: kamekameacr.azurecr.io/tkame123/othello:2.0
           ports:
             - containerPort: 80
           livenessProbe:
@@ -29,3 +29,5 @@ spec:
             failureThreshold: 1
             initialDelaySeconds: 3
             periodSeconds: 1
+      imagePullSecrets:
+        - name: acr
