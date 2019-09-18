@@ -5,4 +5,5 @@
 ### Firebase:
 - Auth
 - FireStore
+- Functions
 - Hosting

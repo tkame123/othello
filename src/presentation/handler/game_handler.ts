@@ -266,5 +266,4 @@ const nextGameTree = (promise: any):GameTree => {
     return gameTreeUsecase.nextGameTree(promise);
 };
 
-
 export {handleInitGameInGame, handleFinalGameInGame, handleUpdateGameInGame, handleFinishGameInGame}

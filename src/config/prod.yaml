@@ -7,6 +7,8 @@ firebase:
   storageBucket: "tkame123-othello.appspot.com"
   messagingSenderId: "650086036833"
   appId: "1:650086036833:web:100a41fb2683c527"
+api:
+  firebase: "https://us-central1-tkame123-othello.cloudfunctions.net/api"
 sentry:
   sentryDsn: "https://6b6b01f85cfa408da6a4cfa053e0984b@sentry.io/1550122"
 appNotificationMessages:

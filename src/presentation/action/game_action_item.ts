@@ -40,6 +40,4 @@ export interface IRequestFinishGameActionItem {
     gameTree: GameTree,
 }
 export interface ICallbackFinishGameActionItem {
-    // game: Game,
-    // score: Score,
 }

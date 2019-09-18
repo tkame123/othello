@@ -6,7 +6,6 @@ import {
     IListenerOnGameAction,
     IListenerOnGameDetailDiffAction,
     ICallbackInitGameAction,
-    ICallbackFinishGameAction,
 } from "../action/game_action";
 
 const initialState: GameState = {
@@ -164,7 +163,6 @@ const gameReducer: Reducer<GameState, GameAction> = (state = initialState, actio
             });
         }
         case GameActionType.CALLBACK_FINISH_GAME: {
-            const _action = action as ICallbackFinishGameAction;
             if (action.isSuccess) {
                 return Object.assign({}, state, {
                     game: state.game,
