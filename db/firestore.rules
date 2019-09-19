@@ -20,6 +20,7 @@ service cloud.firestore {
         text.size() <= max &&
         text.size() >= min;
     }
+
     match /version/{v} {
         function getGame(gameId) {
             return get(/databases/$(database)/documents/version/$(v)/game/$(gameId));
@@ -27,6 +28,7 @@ service cloud.firestore {
         function getPlayroom(playroomId) {
             return get(/databases/$(database)/documents/version/$(v)/playroom/$(playroomId));
         }
+
         match /game/{gameId} {
           allow read;
           allow create:
@@ -37,9 +39,11 @@ service cloud.firestore {
                 (getGame(gameId).data.playerBlack.id == myAuthId() ||
                  getGame(gameId).data.playerWhite.id == myAuthId());
         }
+
         match /gameDetail/{gameId=**} {
           allow read, write: if isAuthenticated();
         }
+
         match /playroom/{playroomId} {
           allow read:if isAuthenticated();
           allow create:if isAuthenticated();
@@ -59,16 +63,20 @@ service cloud.firestore {
                incomingData().playerBlack != incomingData().playerWhite);
           allow delete:
               if isAuthenticated();
+
           match /vote/{voteId} {
               allow read, write: if isAuthenticated();
           }
         }
+
         match /score/{gameId} {
           allow read, write: if isAuthenticated();
         }
+
         match /visitor/{userId} {
           allow read, write;
         }
+
     }
   }
 }

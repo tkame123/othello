@@ -1,0 +1,12 @@
+{
+  "verbose": true,
+  "transform": {
+    "\\.ts": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+  },
+  "testRegex": "test/.*test.ts",
+  "moduleFileExtensions": [
+    "ts",
+    "js",
+    "json"
+  ]
+}
